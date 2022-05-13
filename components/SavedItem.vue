@@ -1,35 +1,54 @@
 <template>
-  <div>
-    <v-card class="mx-auto my-4 el" max-width="300">
-      <div class="px-4 py-4">
-        <v-img
-          contain
-          max-width="800"
-          max-height="200"
-          :src="savedItem.product.image_url"
-        />
-      </div>
-      <v-card-text class="text--primary">
-        <div class="d-flex justify-space-between">
-          <span class="text-h5 text--primary">{{
-            savedItem.product.name
-          }}</span>
-          <v-btn color="primary" icon @click="deleteItem"
+  <v-col cols="12" md="6">
+    <v-card
+      class="el"
+      :to="{ name: 'product-id', params: { id: savedItem.product.id } }"
+    >
+      <v-img :src="savedItem.product.image_url" height="200" contain>
+        <template #placeholder>
+          <v-skeleton-loader class="mx-auto" type="image@2"></v-skeleton-loader>
+        </template>
+      </v-img>
+      <v-card-title class="text-md-body-1 justify-space-between">
+        <span
+          :to="{ name: 'product-id', params: { id: savedItem.product.id } }"
+          >{{ savedItem.product.name }}</span
+        >
+        <v-card-actions>
+          <v-btn color="primary" icon v-on="on" @click.prevent="deleteItem"
             ><v-icon>mdi-bookmark</v-icon></v-btn
           >
+        </v-card-actions>
+      </v-card-title>
+      <v-card-subtitle class="accent--text pb-3 font-weight-bold">
+        {{ $formatMoney(savedItem.product.price) }}
+      </v-card-subtitle>
+      <v-card-text>
+        <div class="d-flex mb-3">
+          <v-rating
+            color="warning"
+            background-color="grey lighten-1"
+            class="ms-n1 me-1"
+            length="1"
+            readonly
+            dense
+            size="20"
+            :value="1"
+          ></v-rating>
+          <span
+            >{{ savedItem.product.reviews_aggregate.aggregate.avg.rating }} ({{
+              savedItem.product.reviews_aggregate.aggregate.count
+            }}
+            Review)</span
+          >
         </div>
-        <div>{{ savedItem.product.description.substring(0, 35) + '...' }}</div>
-        <div>Category: {{ savedItem.product.category }}</div>
         <div>
-          {{ $formatMoney(savedItem.product.price) }}
-        </div>
-        <div>Stock: {{ savedItem.product.stock }}</div>
-        <div>
-          Rating: {{ savedItem.product.reviews_aggregate.aggregate.avg.rating }}
+          Sold
+          {{ savedItem.product.order_items_aggregate.aggregate.count }}
         </div>
       </v-card-text>
     </v-card>
-  </div>
+  </v-col>
 </template>
 
 <script>

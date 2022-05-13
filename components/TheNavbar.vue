@@ -36,7 +36,7 @@
       ><v-icon>mdi-cart</v-icon></v-btn
     >
     <v-text-field
-      v-if="isSearch"
+      v-if="isSearch || searchMode"
       v-model="query"
       label="Search"
       prepend-inner-icon="mdi-magnify"
@@ -89,8 +89,8 @@ export default {
   },
   data() {
     return {
-      isSearch: false,
-      query: '',
+      searchMode: false,
+      queryInput: '',
     }
   },
   computed: {
@@ -106,6 +106,22 @@ export default {
         this.$vuetify.theme.dark = !this.$vuetify.theme.dark
       },
     },
+    isSearch: {
+      get() {
+        return this.$route.query.q || this.searchMode
+      },
+      set(value) {
+        this.searchMode = value
+      },
+    },
+    query: {
+      get() {
+        return this.$route.query.q
+      },
+      set(value) {
+        this.queryInput = value
+      },
+    },
   },
   methods: {
     searchToggle() {
@@ -115,7 +131,7 @@ export default {
       this.$router.push({
         name: 'search',
         query: {
-          q: this.query,
+          q: this.queryInput,
         },
       })
     },

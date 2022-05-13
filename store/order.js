@@ -4,11 +4,26 @@ const state = () => ({
     city: [],
     ongkir: [],
   },
+  destination: {
+    provinsi: {},
+    kotaKabupaten: {},
+    kecamatan: {},
+    kelurahan: {},
+    alamat: '',
+    noHp: '',
+  },
+  courierService: {
+    service: '',
+    price: 0,
+  },
 })
 
 const getters = {
   getTujuan: (state) => {
     return state.tujuan
+  },
+  getCourierService: (state) => {
+    return state.courierService
   },
 }
 
@@ -18,6 +33,9 @@ const mutations = {
   },
   DELETE_TUJUAN(state, param) {
     state.tujuan = param
+  },
+  SET_COURIER_SERVICE(state, param) {
+    state.courierService = param
   },
 }
 
@@ -45,6 +63,7 @@ const actions = {
       })
   },
   fetchOngkir({ commit }, param) {
+    commit('SET_TUJUAN', { ongkir: [] })
     this.$axios
       .$post('/api/cost', {
         ...param,
@@ -61,6 +80,12 @@ const actions = {
   },
   deleteTujuan({ commit }) {
     commit('DELETE_TUJUAN', { province: [], city: [], ongkir: [] })
+  },
+  saveCourierService({ commit }, param) {
+    commit('SET_COURIER_SERVICE', param)
+  },
+  deleteCourierService({ commit }) {
+    commit('SET_COURIER_SERVICE', { service: '', price: 0 })
   },
 }
 

@@ -1,9 +1,30 @@
 <template>
   <BaseLoading v-if="$apollo.loading" />
   <v-container v-else>
+    <h2 class="mt-2 mb-7 text-center">Checkout</h2>
+    <v-row v-if="cart.length" dense>
+      <v-col cols="12" sm="8" md="6" class="mx-auto mb-2">
+        <template v-for="(orderItem, index) in cart">
+          <v-fade-transition :key="orderItem.id">
+            <CheckoutItem :index="index" :order-item="orderItem" />
+          </v-fade-transition>
+        </template>
+        <CheckoutShippingDetail :total-weight="totalWeight" />
+      </v-col>
+      <v-col cols="12" md="4" class="mx-auto">
+        <CheckoutSummary
+          :total-price="totalPrice"
+          :total-item="totalItem"
+          :total-weight="totalWeight"
+          @make-order="makeOrder"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
+  <!-- <v-container v-else>
+    <h2 class="mt-2 mb-7 text-center">Checkout</h2>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <p>Checkout</p>
         <CheckoutItem
           v-for="(orderItem, index) in cart"
           :key="orderItem.id"
@@ -110,7 +131,7 @@
         </v-form>
       </v-col>
     </v-row>
-  </v-container>
+  </v-container> -->
 </template>
 
 <script>
@@ -159,6 +180,14 @@ export default {
         0
       )
       return totalPrice + this.courierService.price
+    },
+    totalItem() {
+      const itemQuantity = this.cart.map((item) => item.quantity)
+      const totalItem = itemQuantity.reduce(
+        (previousValue, currentValue) => previousValue + currentValue,
+        0
+      )
+      return totalItem
     },
     totalWeight() {
       const weightPerItem = this.cart.map(
