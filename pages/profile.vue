@@ -3,9 +3,9 @@
     <p>Profile Page</p>
     <div v-if="$apollo.loading">Loading...</div>
     <div v-else>
-      <img :src="user.picture" />
-      <p>Hi {{ user.username }}!</p>
-      <p>Email {{ user.fullname }}!</p>
+      <img :src="user.picture" class="rounded-circle" />
+      <p>Hi, {{ user.username }}!</p>
+      <p>Email: {{ user.fullname }}</p>
     </div>
   </div>
 </template>

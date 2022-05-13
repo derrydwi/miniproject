@@ -2,30 +2,21 @@
   <div>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <div v-if="$auth.loggedIn" style="height: 100vh">
+        <div
+          v-if="$auth.loggedIn"
+          :style="[$apollo.loading && { 'min-height': '90vh' }]"
+        >
           <div v-if="$apollo.loading">Loading...</div>
-          <div v-else>
-            <p>Token: {{ $auth.getToken('auth0') }}</p>
-          </div>
-          <p>
-            Now that you're authenticated, maybe you should try going to our
-            <nuxt-link to="/secret" class="link">super secret page</nuxt-link>!
-          </p>
           <v-btn @click="$auth.logout()">Logout</v-btn>
           <v-btn :to="{ name: 'cart' }">Cart</v-btn>
           <v-btn :to="{ name: 'order' }">Order</v-btn>
           <v-btn :to="{ name: 'profile' }">Profile</v-btn>
         </div>
-        <div v-else style="height: 100vh">
+        <div v-else :style="[$apollo.loading && { 'min-height': '90vh' }]">
           <v-btn
             @click="$auth.loginWith('auth0', { params: { prompt: 'login' } })"
             >Login</v-btn
           >
-          <p>
-            You're not authenticated yet. Maybe you want to
-            <a class="link" @click="$auth.login()">sign in</a> and see what
-            happens?
-          </p>
         </div>
         <div>PRODUCT</div>
         <v-card

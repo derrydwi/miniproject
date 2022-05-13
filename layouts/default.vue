@@ -45,7 +45,6 @@
         hide-details="auto"
         style="max-width: 200px"
         color="teal"
-        autofocus
         single-line
         clearable
         @blur="!query && searchToggle()"
@@ -97,9 +96,14 @@ export default {
           to: '/',
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
+          icon: 'mdi-note-text',
+          title: 'Terms & Conditions',
+          to: '/terms',
+        },
+        {
+          icon: 'mdi-information',
+          title: 'About Us',
+          to: '/about',
         },
       ],
       itemsLoggedIn: [
@@ -124,15 +128,20 @@ export default {
           to: '/profile',
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
+          icon: 'mdi-note-text',
+          title: 'Terms & Conditions',
+          to: '/terms',
+        },
+        {
+          icon: 'mdi-information',
+          title: 'About Us',
+          to: '/about',
         },
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js',
+      title: 'Good Desire',
       isSearch: true,
       query: '',
     }
