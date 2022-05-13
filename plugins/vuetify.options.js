@@ -1,7 +1,14 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default function () {
-  const dark = JSON.parse(localStorage.getItem('vuex')).theme.isDark
+  let dark
+  if (localStorage.getItem('vuex')) {
+    try {
+      dark = JSON.parse(localStorage.getItem('vuex')).theme.isDark
+    } catch (error) {
+      dark = false
+    }
+  }
   return {
     theme: {
       dark,

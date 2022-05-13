@@ -8,6 +8,23 @@ export default function ({ app }, inject) {
       .slice(0, -3)
   })
 
+  inject('formatDateTime', (dateTime) => {
+    const dateOption = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+    const timeOption = {
+      hour: '2-digit',
+      minute: '2-digit',
+    }
+    return `${new Date(dateTime).toLocaleDateString(
+      'en-US',
+      dateOption
+    )} ${new Date(dateTime).toLocaleTimeString('en-US', timeOption)}`
+  })
+
   inject('relativeTime', (d1, d2 = new Date()) => {
     const units = {
       year: 24 * 60 * 60 * 1000 * 365,
