@@ -20,7 +20,11 @@ export default {
   css: ['@sweetalert2/theme-material-ui', '~/assets/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/formatter.js', '~/plugins/swal.js'],
+  plugins: [
+    '~/plugins/persistedstate.js',
+    '~/plugins/formatter.js',
+    '~/plugins/swal.js',
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

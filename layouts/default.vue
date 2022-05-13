@@ -53,7 +53,7 @@
       <v-btn v-else icon @click="searchToggle"
         ><v-icon>mdi-magnify</v-icon></v-btn
       >
-      <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
+      <v-btn icon @click="isDark = !isDark">
         <v-icon size="20">mdi-brightness-7</v-icon>
       </v-btn>
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
@@ -145,6 +145,25 @@ export default {
       isSearch: true,
       query: '',
     }
+  },
+  computed: {
+    isDark: {
+      get() {
+        return this.$store.getters['theme/getIsDark']
+      },
+      set() {
+        this.$store.dispatch('theme/saveIsDark')
+      },
+    },
+  },
+  watch: {
+    isDark: {
+      handler(value) {
+        this.$vuetify.theme.dark = value
+      },
+      immediate: true,
+      deep: true,
+    },
   },
   methods: {
     searchToggle() {
