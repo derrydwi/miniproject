@@ -32,6 +32,7 @@
         min-height="40"
         depressed
         block
+        :disabled="!isValid"
         @click="$emit('make-order')"
         >Checkout</v-btn
       >
@@ -40,13 +41,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'CartSummary',
   props: {
-    isValid: {
-      type: Boolean,
-      default: false,
-    },
     totalPrice: {
       type: Number,
       default: 0,
@@ -61,9 +60,10 @@ export default {
     },
   },
   computed: {
-    courierService() {
-      return this.$store.getters['order/getCourierService']
-    },
+    ...mapGetters('checkout', {
+      courierService: 'getCourierService',
+      isValid: 'getIsValid',
+    }),
   },
 }
 </script>
