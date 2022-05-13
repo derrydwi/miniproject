@@ -10,6 +10,7 @@ export const getProduct = gql`
       image_url
       price
       stock
+      weight
       reviews_aggregate {
         aggregate {
           avg {
@@ -33,6 +34,7 @@ export const getCart = gql`
         image_url
         price
         stock
+        weight
       }
     }
   }
@@ -72,6 +74,7 @@ export const getProductDetail = gql`
       image_url
       price
       stock
+      weight
       reviews_aggregate {
         aggregate {
           avg {
@@ -121,6 +124,7 @@ export const subscriptionCart = gql`
         image_url
         price
         stock
+        weight
       }
     }
   }
@@ -191,6 +195,58 @@ export const deleteCart = gql`
   mutation ($_in: [Int!]) {
     delete_cart(where: { id: { _in: $_in } }) {
       affected_rows
+    }
+  }
+`
+
+export const updateStock = gql`
+  mutation ($objects: [product_insert_input!]!) {
+    insert_product(
+      objects: $objects
+      on_conflict: { constraint: product_pkey, update_columns: stock }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+export const subscriptionProduct = gql`
+  subscription {
+    product {
+      id
+      name
+      description
+      image_url
+      price
+      stock
+      weight
+      reviews_aggregate {
+        aggregate {
+          avg {
+            rating
+          }
+          count(columns: id)
+        }
+      }
+    }
+  }
+`
+
+export const getUser = gql`
+  query ($id: String!) {
+    user: users_by_pk(id: $id) {
+      id
+      username
+      fullname
+      picture
+    }
+  }
+`
+
+export const updatePayOrder = gql`
+  mutation ($id: Int!, $is_paid: Boolean!) {
+    update_order_by_pk(pk_columns: { id: $id }, _set: { is_paid: $is_paid }) {
+      id
     }
   }
 `

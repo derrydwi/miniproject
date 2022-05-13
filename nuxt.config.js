@@ -17,10 +17,10 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ['~/assets/main.css'],
+  css: ['@sweetalert2/theme-material-ui', '~/assets/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  // plugins: [{ src: '~/plugins/apollo-ws-client.js', mode: 'client' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -31,6 +31,8 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    // https://google-fonts.nuxtjs.org/
+    '@nuxtjs/google-fonts',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -43,12 +45,14 @@ export default {
     '@nuxtjs/auth',
     // https://www.npmjs.com/package/@nuxtjs/apollo
     '@nuxtjs/apollo',
+    // https://www.npmjs.com/package/@sweetalert2/theme-material-ui
+    'vue-sweetalert2/nuxt/no-css',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    baseURL: 'https://miniproject-express.netlify.app',
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -61,6 +65,12 @@ export default {
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    treeShake: true,
+    defaultAssets: {
+      font: {
+        family: 'Open Sans',
+      },
+    },
     theme: {
       dark: true,
       themes: {
@@ -82,8 +92,9 @@ export default {
 
   auth: {
     redirect: {
-      login: '/', // redirect user when not connected
-      home: '/product',
+      // login: '/',
+      // logout: '/',
+      // home: '/',
       callback: '/callback',
     },
     strategies: {
@@ -98,19 +109,25 @@ export default {
 
   apollo: {
     clientConfigs: {
-      // default: '~/plugins/apollo-config.js',
-      default: {
-        httpEndpoint: 'https://capital-airedale-21.hasura.app/v1/graphql',
-        wsEndpoint: 'wss://capital-airedale-21.hasura.app/v1/graphql',
-        tokenName: 'auth._token.auth0',
-        // httpLinkOptions: {
-        //   headers: {
-        //     'x-hasura-default-role': 'anonymous',
-        //   },
-        // },
-      },
+      default: '~/plugins/apollo-config.js',
+      // default: {
+      //   httpEndpoint: 'https://capital-airedale-21.hasura.app/v1/graphql',
+      //   wsEndpoint: 'wss://capital-airedale-21.hasura.app/v1/graphql',
+      //   tokenName: 'auth._token.auth0',
+      // httpLinkOptions: {
+      //   headers: {
+      //     'x-hasura-default-role': 'anonymous',
+      //   },
+      // },
+      // },
+      // },
+      // authenticationType: '',
     },
-    authenticationType: '',
-    // },
+  },
+
+  googleFonts: {
+    families: {
+      'Open+Sans': true,
+    },
   },
 }

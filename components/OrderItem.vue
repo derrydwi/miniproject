@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="mx-auto my-4" max-width="300">
+    <v-card class="mx-auto my-4 el" max-width="300">
       <div class="px-4 py-4">
         <v-img
           contain
