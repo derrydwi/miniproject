@@ -10,6 +10,7 @@ export const getOrder = gql`
       shipping_price
       total_price
       status
+      transaction_token
       created_at
       order_items {
         id
@@ -68,6 +69,7 @@ export const subscriptionOrder = gql`
       shipping_price
       total_price
       status
+      transaction_token
       created_at
       order_items {
         id

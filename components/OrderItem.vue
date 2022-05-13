@@ -96,6 +96,20 @@ export default {
   },
   methods: {
     pay() {
+      if (this.orderItem.transaction_token) {
+        window.snap.pay(this.orderItem.transaction_token, {
+          onSuccess() {
+            history.back()
+          },
+          onPending() {
+            history.back()
+          },
+          onError() {
+            history.back()
+          },
+        })
+        return
+      }
       const body = {
         transaction_details: {
           order_id: this.orderItem.id,
@@ -122,31 +136,18 @@ export default {
           // eslint-disable-next-line no-console
           console.log(result.data)
           window.snap.pay(result.data.transactionToken, {
-            onSuccess(result) {
-              // this.$showAlert({ text: 'Payment Success', icon: 'success' })
-              alert('Payment Success')
-              // eslint-disable-next-line no-console
-              console.log(result)
+            onSuccess() {
+              history.back()
             },
-            onPending(result) {
-              // this.$showAlert({ text: 'Wating your payment', icon: 'info' })
-              alert('Wating your payment')
-              // eslint-disable-next-line no-console
-              console.log(result)
+            onPending() {
+              history.back()
             },
-            onError(result) {
-              // this.$showAlert({ text: 'Payment Failed', icon: 'error' })
-              alert('Payment Failed')
-              // eslint-disable-next-line no-console
-              console.log(result)
+            onError() {
+              history.back()
             },
           })
         })
         .catch((error) => {
-          // this.$showAlert({
-          //   text: `Can't make payment. ${error.message}`,
-          //   icon: 'error',
-          // })
           alert(`Can't make payment. ${error.message}`)
         })
     },

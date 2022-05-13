@@ -12,6 +12,12 @@ const snap = new midtransClient.Snap({
   clientKey: 'SB-Mid-client-JLNwUU1q9S-ilzd2',
 })
 
+const header = {
+  headers: {
+    'x-hasura-admin-secret': 123456,
+  },
+}
+
 app.get('/test', function (req, res) {
   res.send('Test successful')
 })
@@ -70,7 +76,37 @@ app.post('/pay', function (req, res, next) {
     .then((transaction) => {
       const transactionToken = transaction.token
       const transactionRedirectUrl = transaction.redirect_url
-      res.send({ transactionToken, transactionRedirectUrl })
+      const body = {
+        query: `
+          mutation updateToken($id: Int!, $transaction_token: String!) {
+            updateToken: update_order_by_pk(pk_columns: {id: $id}, _set: {transaction_token: $transaction_token}) {
+              id
+              transaction_token
+            }
+          }      
+        `,
+        variables: {
+          id: req.body.transaction_details.order_id,
+          transaction_token: transactionToken,
+        },
+      }
+
+      axios
+        .post('https://capital-airedale-21.hasura.app/v1/graphql', body, header)
+        .then((result) => {
+          // eslint-disable-next-line no-console
+          console.log(result.data.data.updateToken)
+          res.send({
+            transactionToken,
+            transactionRedirectUrl,
+            token: result.data.data.updateToken,
+          })
+        })
+        .catch((err) => {
+          res.json(err)
+        })
+
+      // res.send({ transactionToken, transactionRedirectUrl })
     })
     .catch((e) => {
       res.send(e.message)
@@ -117,12 +153,6 @@ app.post('/notification', function (req, res, next) {
         id: orderId,
         status,
         response_midtrans: responseMidtrans,
-      },
-    }
-
-    const header = {
-      headers: {
-        'x-hasura-admin-secret': 123456,
       },
     }
 
