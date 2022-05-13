@@ -1,37 +1,22 @@
 <template>
   <v-card class="mx-auto pa-4 mb-4" width="800" outlined>
-    <div class="d-flex justify-start align-center mb-4 text-md-body-2">
-      <span class="me-4">{{
-        new Date(orderItem.created_at).toLocaleDateString('en-US', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
-      }}</span>
-      <span class="me-4">{{
-        new Date(orderItem.created_at).toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      }}</span>
-      <span class="me-4"
-        >INV/{{
-          new Date()
-            .toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-            })
-            .replace('-', '/')
-            .split('T')[0]
-            .replace('-', '/')
-        }}/{{ orderItem.id }}</span
-      >
-      <v-chip :color="statusColor" label small class="text-capitalize">{{
-        orderItem.status
-      }}</v-chip>
-    </div>
+    <v-container>
+      <v-row>
+        <v-col cols="6" align="left" class="px-md-0">
+          <span class="me-4">{{ $formatDateTime(orderItem.created_at) }}</span>
+        </v-col>
+        <v-col cols="6" align="right" class="px-md-0">
+          <span>{{ getInv }}</span>
+          <v-chip
+            :color="statusColor"
+            label
+            small
+            class="ms-4 text-capitalize"
+            >{{ orderItem.status }}</v-chip
+          >
+        </v-col>
+      </v-row>
+    </v-container>
     <v-list-item
       v-for="item in orderItem.order_items"
       :key="item.id"
@@ -77,28 +62,9 @@
             <v-timeline class="mb-4">
               <v-timeline-item small>
                 <template #opposite>
-                  <span class="text-start"
-                    >{{
-                      new Date(orderItem.created_at).toLocaleDateString(
-                        'en-US',
-                        {
-                          weekday: 'short',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        }
-                      )
-                    }}
-                    {{
-                      new Date(orderItem.created_at).toLocaleTimeString(
-                        'en-US',
-                        {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }
-                      )
-                    }}</span
-                  >
+                  <span class="text-start">{{
+                    $formatDateTime(orderItem.created_at)
+                  }}</span>
                 </template>
                 <div class="py-4 font-weight-bold accent--text">
                   Order Received
@@ -113,28 +79,7 @@
                   }}
                 </div>
                 <template #opposite>
-                  <span
-                    >{{
-                      new Date(orderItem.updated_at).toLocaleDateString(
-                        'en-US',
-                        {
-                          weekday: 'short',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        }
-                      )
-                    }}
-                    {{
-                      new Date(orderItem.updated_at).toLocaleTimeString(
-                        'en-US',
-                        {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }
-                      )
-                    }}</span
-                  >
+                  <span>{{ $formatDateTime(orderItem.updated_at) }}</span>
                 </template>
               </v-timeline-item>
             </v-timeline>
@@ -142,9 +87,7 @@
             <p class="text-md-body-1 font-weight-bold">Item Detail</p>
             <div class="d-flex justify-space-between mb-4">
               <span>Total Item</span>
-              <span class="text-right"
-                >{{ orderItem.order_items.length }} item</span
-              >
+              <span class="text-right">{{ totalItem }} item</span>
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Total Weight</span>
@@ -158,7 +101,7 @@
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Address</span>
-              <span class="text-right">{{ orderItem.alamat }}</span>
+              <span class="text-right ps-8">{{ orderItem.alamat }}</span>
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Phone Number</span>
@@ -232,6 +175,17 @@ export default {
     ],
   },
   computed: {
+    getInv() {
+      return `INV/${new Date()
+        .toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        })
+        .replace('-', '/')
+        .split('T')[0]
+        .replace('-', '/')}/${this.orderItem.id}`
+    },
     statusColor() {
       switch (this.orderItem.status) {
         case 'PENDING':
@@ -243,6 +197,16 @@ export default {
         default:
           return 'secondary'
       }
+    },
+    totalItem() {
+      const itemQuantity = this.orderItem.order_items.map(
+        (item) => item.quantity
+      )
+      const totalItem = itemQuantity.reduce(
+        (previousValue, currentValue) => previousValue + currentValue,
+        0
+      )
+      return totalItem
     },
     totalItemPrice() {
       const pricePerItem = this.orderItem.order_items.map(

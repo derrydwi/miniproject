@@ -46,6 +46,7 @@
     "prettier": "^2.5.1",
     "vue-jest": "^3.0.4",
     "vue-sweetalert2": "^5.0.2",
+    "vuex-persistedstate": "^4.1.0",
     "webpack": "^4.46.0"
   },
   "peerDependencies": {
