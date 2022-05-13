@@ -2,10 +2,10 @@
   <BaseLoading v-if="$apollo.loading" />
   <v-container v-else>
     <v-row dense>
-      <v-col md="9" class="mx-auto">
-        <h1 class="my-2 text-capitalize text-center">
+      <v-col cols="12" md="9" class="mx-auto">
+        <h2 class="my-2 text-capitalize text-center">
           {{ $route.params.name }}
-        </h1>
+        </h2>
         <v-row class="my-3">
           <template v-for="productItem in product">
             <v-fade-transition :key="productItem.id">
@@ -22,7 +22,7 @@
                       ></v-skeleton-loader>
                     </template>
                   </v-img>
-                  <v-card-title class="text-md-body-1 font-weight-bold mb-2">{{
+                  <v-card-title class="text-md-body-1 mb-2">{{
                     productItem.name
                   }}</v-card-title>
                   <v-card-subtitle class="accent--text pb-3 font-weight-bold">

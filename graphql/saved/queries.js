@@ -21,6 +21,11 @@ export const getSaved = gql`
             count(columns: id)
           }
         }
+        order_items_aggregate {
+          aggregate {
+            count(columns: id)
+          }
+        }
       }
     }
   }
@@ -59,6 +64,11 @@ export const subscriptionSaved = gql`
             avg {
               rating
             }
+            count(columns: id)
+          }
+        }
+        order_items_aggregate {
+          aggregate {
             count(columns: id)
           }
         }

@@ -9,9 +9,9 @@
         ></v-progress-circular>
       </v-row>
     </div>
-    <h1 class="ms-8 mb-md-12 mb-4 text-capitalize font-weight-regular">
+    <h2 class="ms-8 mb-md-12 mb-4 text-capitalize font-weight-regular">
       {{ category }}
-    </h1>
+    </h2>
     <v-slide-group :show-arrows="$vuetify.breakpoint.mdAndUp" class="mb-16">
       <v-slide-item v-for="productItem in product" :key="productItem.id">
         <v-card

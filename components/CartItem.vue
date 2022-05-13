@@ -1,8 +1,63 @@
 <template>
-  <div>
-    <v-card class="mx-auto my-4 el" max-width="300">
+  <v-card class="mx-auto pa-4" width="600" outlined>
+    <v-list-item>
+      <v-list-item-avatar tile size="150">
+        <v-img contain :src="cartItem.product.image_url" />
+      </v-list-item-avatar>
+      <v-list-item-content>
+        <v-list-item-title class="text-h6 mb-4">
+          {{ cartItem.product.name }}
+        </v-list-item-title>
+        <v-list-item-subtitle class="accent--text font-weight-bold">{{
+          $formatMoney(cartItem.product.price)
+        }}</v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+    <v-card-actions>
+      <span class="text-md-body-2">Stock: {{ cartItem.product.stock }}</span>
+      <v-spacer />
+      <v-btn color="grey" icon class="text-right" @click.prevent="deleteItem"
+        ><v-icon>mdi-delete-outline</v-icon></v-btn
+      >
+      <v-btn
+        color="primary"
+        icon
+        :disabled="quantity === 1 || quantity > cartItem.product.stock"
+        @click.prevent="changeStock('decrement')"
+        ><v-icon>mdi-minus</v-icon></v-btn
+      >
+      <v-text-field
+        v-model.number="quantity"
+        type="number"
+        color="primary"
+        class="input-quantity centered-input mt-n2"
+        style="max-width: 120px"
+        dense
+        hide-details="auto"
+        :rules="[numberRule]"
+        @change="changeStock('input')"
+      ></v-text-field>
+      <v-btn
+        color="primary"
+        icon
+        :disabled="quantity >= cartItem.product.stock"
+        @click.prevent="changeStock('increment')"
+        ><v-icon>mdi-plus</v-icon></v-btn
+      >
+    </v-card-actions>
+  </v-card>
+
+  <!-- <v-card
+      class="mx-auto my-4 el"
+      max-width="300"
+      :to="{ name: 'product-id', params: { id: cartItem.product.id } }"
+    >
       <div class="text-right">
-        <v-btn color="primary" icon class="text-right" @click="deleteItem"
+        <v-btn
+          color="primary"
+          icon
+          class="text-right"
+          @click.prevent="deleteItem"
           ><v-icon>mdi-delete-outline</v-icon></v-btn
         >
       </div>
@@ -32,7 +87,7 @@
           color="primary"
           icon
           :disabled="quantity === 1 || quantity > cartItem.product.stock"
-          @click="changeStock('decrement')"
+          @click.prevent="changeStock('decrement')"
           ><v-icon>mdi-minus</v-icon></v-btn
         >
         <v-text-field
@@ -49,12 +104,11 @@
           color="primary"
           icon
           :disabled="quantity >= cartItem.product.stock"
-          @click="changeStock('increment')"
+          @click.prevent="changeStock('increment')"
           ><v-icon>mdi-plus</v-icon></v-btn
         >
       </v-card-actions>
-    </v-card>
-  </div>
+    </v-card> -->
 </template>
 
 <script>
