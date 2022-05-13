@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { getUser } from '~/graphql/queries'
+import { getUser } from '~/graphql/user/queries'
 
 export default {
   name: 'ProfilePage',
