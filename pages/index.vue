@@ -1,11 +1,9 @@
 <template>
-  <div>
-    <HomeCarousel :product="product" />
+  <BaseLoading v-if="$apollo.loading" />
+  <div v-else>
+    <HomeCarousel />
     <v-container :class="$vuetify.breakpoint.mdAndDown && 'pa-0'">
       <div v-for="category in categoryName" :key="category">
-        <h4 class="text-md-h4 text-h5 mb-md-12 mb-4 ms-8 text-capitalize">
-          {{ category }}
-        </h4>
         <ProductSlider :category="category" />
       </div>
     </v-container>
@@ -74,71 +72,71 @@
 </template>
 
 <script>
-import { getProduct } from '~/graphql/product/queries'
+// import { getProduct } from '~/graphql/product/queries'
 
-const pageSize = 10
+// const pageSize = 10
 
 export default {
   name: 'ProductPage',
-  apollo: {
-    product: {
-      query: getProduct,
-      variables() {
-        return {
-          limit: pageSize,
-          offset: 0,
-        }
-      },
-      error() {
-        this.$apollo.queries.product.refetch()
-      },
-    },
-  },
+  // apollo: {
+  //   product: {
+  //     query: getProduct,
+  //     variables() {
+  //       return {
+  //         limit: pageSize,
+  //         offset: 0,
+  //       }
+  //     },
+  //     error() {
+  //       this.$apollo.queries.product.refetch()
+  //     },
+  //   },
+  // },
   data() {
     return {
       categoryName: ['electronic', 'fashion', 'hobby', 'jewelry'],
     }
   },
-  computed: {
-    page: {
-      get() {
-        return this.$store.getters['product/getPage']
-      },
-      set(value) {
-        this.$store.dispatch('product/savePage', value)
-      },
-    },
-    hasMore: {
-      get() {
-        return this.$store.getters['product/getHasMore']
-      },
-      set(value) {
-        this.$store.dispatch('product/saveHasMore', value)
-      },
-    },
-  },
-  methods: {
-    fetchMore() {
-      this.page++
-      this.$apollo.queries.product.fetchMore({
-        variables: {
-          limit: pageSize,
-          offset: this.page * pageSize,
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          if (fetchMoreResult.product.length < pageSize) this.hasMore = false
-          return {
-            product: [...previousResult.product, ...fetchMoreResult.product],
-          }
-        },
-        error() {
-          this.$apollo.queries.product.refetch()
-        },
-      })
-    },
-    onIntersect(entries, observer, isIntersecting) {
-      if (isIntersecting && this.hasMore) this.fetchMore()
-    },
-  },
+  // computed: {
+  //   page: {
+  //     get() {
+  //       return this.$store.getters['product/getPage']
+  //     },
+  //     set(value) {
+  //       this.$store.dispatch('product/savePage', value)
+  //     },
+  //   },
+  //   hasMore: {
+  //     get() {
+  //       return this.$store.getters['product/getHasMore']
+  //     },
+  //     set(value) {
+  //       this.$store.dispatch('product/saveHasMore', value)
+  //     },
+  //   },
+  // },
+  // methods: {
+  //   fetchMore() {
+  //     this.page++
+  //     this.$apollo.queries.product.fetchMore({
+  //       variables: {
+  //         limit: pageSize,
+  //         offset: this.page * pageSize,
+  //       },
+  //       updateQuery: (previousResult, { fetchMoreResult }) => {
+  //         if (fetchMoreResult.product.length < pageSize) this.hasMore = false
+  //         return {
+  //           product: [...previousResult.product, ...fetchMoreResult.product],
+  //         }
+  //       },
+  //       error() {
+  //         this.$apollo.queries.product.refetch()
+  //       },
+  //     })
+  //   },
+  //   onIntersect(entries, observer, isIntersecting) {
+  //     if (isIntersecting && this.hasMore) this.fetchMore()
+  //   },
+  // },
 }
 </script>

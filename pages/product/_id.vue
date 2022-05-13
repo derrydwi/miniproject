@@ -1,187 +1,186 @@
 <template>
   <v-container>
-    <div v-if="$apollo.loading">Loading...</div>
-    <div v-else>
-      <div v-if="$auth.loggedIn"></div>
-      <v-row justify="center">
-        <v-col cols="11" md="7">
-          <h4 class="text-center text-md-h4 font-weight-bold my-4">
-            {{ productDetail.name }}
-          </h4>
-          <div class="text-center mb-4">
-            <div class="d-flex justify-center align-center mt-2">
-              <v-rating
-                class="mr-2"
-                color="primary"
-                background-color="grey lighten-1"
-                half-increments
-                length="5"
-                readonly
-                dense
-                size="20"
-                :value="productDetail.reviews_aggregate.aggregate.avg.rating"
-              ></v-rating>
-              <span
-                >({{
-                  productDetail.reviews_aggregate.aggregate.count
-                }}
-                Review)</span
-              >
-            </div>
+    <BaseLoading v-if="$apollo.loading" />
+    <v-row v-else justify="center">
+      <v-col cols="11" md="7">
+        <h4 class="text-center text-md-h4 text-h5 font-weight-bold my-4">
+          {{ productDetail.name }}
+        </h4>
+        <div class="text-center mb-4">
+          <div class="d-flex justify-center align-center mt-2">
+            <v-rating
+              class="mr-2"
+              color="warning"
+              background-color="grey lighten-1"
+              half-increments
+              length="5"
+              readonly
+              dense
+              size="20"
+              :value="productDetail.reviews_aggregate.aggregate.avg.rating"
+            ></v-rating>
+            <span
+              >({{
+                productDetail.reviews_aggregate.aggregate.count
+              }}
+              Review)</span
+            >
           </div>
-          <h5 class="text-center text-md-h5 font-weight-bold mb-4">
-            {{ $formatMoney(productDetail.price) }}
-          </h5>
-          <v-img
-            :src="productDetail.image_url"
-            width="100%"
-            height="50vh"
-            class="rounded-lg mb-8"
-            contain
-          >
-            <template #placeholder>
-              <v-skeleton-loader
-                class="mx-auto"
-                type="image@2"
-              ></v-skeleton-loader>
-            </template>
-          </v-img>
+        </div>
+        <h5 class="text-center text-md-h5 text-h6 font-weight-bold mb-4">
+          {{ $formatMoney(productDetail.price) }}
+        </h5>
+        <div class="text-right">
           <v-btn
             v-if="$auth.loggedIn"
-            color="primary"
+            color="accent"
             icon
             @click="savedItemHandler"
             ><v-icon>{{
               isSaved ? 'mdi-bookmark' : 'mdi-bookmark-outline'
             }}</v-icon></v-btn
           >
-          <p class="mt-5 mb-4">
-            {{ productDetail.description }}
-          </p>
-          <p class="mt-5 mb-4">Category: {{ productDetail.category }}</p>
-          <p class="mt-5 mb-4">
-            {{
-              !productDetail.stock
-                ? 'Stok habis'
-                : `Stock: ${productDetail.stock}`
-            }}
-          </p>
-          <p class="mt-5 mb-4">Weight: {{ productDetail.weight }}</p>
-          <div class="d-flex justify-center align-center">
-            <v-btn
-              color="primary"
-              icon
-              :disabled="quantity === 1"
-              @click="quantity--"
-              ><v-icon>mdi-minus</v-icon></v-btn
-            >
-            <v-text-field
-              v-model.number="quantity"
-              type="number"
-              color="primary"
-              class="input-quantity centered-input mt-n2"
-              dense
-              hide-details="auto"
-              :rules="[numberRule]"
-            ></v-text-field>
-            <v-btn
-              color="primary"
-              icon
-              :disabled="quantity >= productDetail.stock"
-              @click="quantity++"
-              ><v-icon>mdi-plus</v-icon></v-btn
-            >
+        </div>
+        <v-img
+          :src="productDetail.image_url"
+          width="100%"
+          height="50vh"
+          class="mb-8"
+          contain
+        >
+          <template #placeholder>
+            <v-skeleton-loader
+              class="mx-auto"
+              type="image@2"
+            ></v-skeleton-loader>
+          </template>
+        </v-img>
+        <p class="mt-5 mb-4" style="line-height: 1.8">
+          {{ productDetail.description }}
+        </p>
+        <p class="mt-5 mb-4">Category: {{ productDetail.category }}</p>
+        <p class="mt-5 mb-4">
+          {{
+            !productDetail.stock
+              ? 'Stok habis'
+              : `Stock: ${productDetail.stock}`
+          }}
+        </p>
+        <p class="mt-5 mb-4">Weight: {{ productDetail.weight }}</p>
+        <div class="d-flex justify-center align-center">
+          <v-btn
+            color="accent"
+            icon
+            :disabled="quantity === 1"
+            @click="quantity--"
+            ><v-icon>mdi-minus</v-icon></v-btn
+          >
+          <v-text-field
+            v-model.number="quantity"
+            type="number"
+            color="accent"
+            class="input-quantity centered-input mt-n2"
+            dense
+            hide-details="auto"
+            :rules="[numberRule]"
+          ></v-text-field>
+          <v-btn
+            color="accent"
+            icon
+            :disabled="quantity >= productDetail.stock"
+            @click="quantity++"
+            ><v-icon>mdi-plus</v-icon></v-btn
+          >
+        </div>
+        <div class="text-center mb-8">
+          <v-btn
+            color="accent"
+            text
+            :disabled="
+              productDetail.stock === 0 || quantity > productDetail.stock
+            "
+            @click="addToCart"
+            ><v-icon class="mr-2">mdi-cart</v-icon> Add To Cart</v-btn
+          >
+        </div>
+        <div v-if="productDetail.reviews.length">
+          <h5 class="text-md-h5 mb-4">Review</h5>
+          <div v-for="review in productDetail.reviews" :key="review.id">
+            <div class="d-flex justify-start align-center mb-4">
+              <v-rating
+                color="warning"
+                background-color="grey lighten-1"
+                class="mr-4"
+                half-increments
+                length="5"
+                readonly
+                dense
+                size="20"
+                :value="review.rating"
+              ></v-rating>
+              <span>
+                {{ $relativeTime(review.created_at) }}
+              </span>
+            </div>
+            <div class="d-flex justify-start align-center mb-4">
+              <v-img
+                :src="review.user.picture"
+                max-width="30"
+                class="rounded-circle mr-2"
+              />
+              <span>{{ review.user.username }}</span>
+            </div>
+            <p class="mb-8">{{ review.comment }}</p>
           </div>
-          <div class="text-center mb-8">
+        </div>
+        <div v-else>
+          <v-alert type="info" color="accent" text>No review yet</v-alert>
+        </div>
+        <div v-if="$auth.loggedIn && isBought && !isReviewed">
+          <h6 class="text-md-h6 mb-4">Write Review</h6>
+          <v-form
+            ref="form"
+            v-model="isValid"
+            @submit.prevent="isValid && submitReview"
+          >
+            <v-rating
+              v-model="rating"
+              class="ml-n2 mb-4"
+              color="warning"
+              background-color="grey lighten-1"
+            ></v-rating>
+            <v-textarea
+              v-model="reviewDesc"
+              label="Review"
+              color="primary"
+              outlined
+            ></v-textarea>
             <v-btn
               color="primary"
               text
-              :disabled="
-                productDetail.stock === 0 || quantity > productDetail.stock
-              "
-              @click="addToCart"
-              ><v-icon class="mr-2">mdi-cart</v-icon> Add To Cart</v-btn
+              :disabled="!reviewDesc || !rating"
+              @click="submitReview"
+              ><v-icon class="mr-2">mdi-send</v-icon>Submit</v-btn
             >
-          </div>
-          <div v-if="productDetail.reviews.length">
-            <h5 class="text-md-h5 mb-4">Review</h5>
-            <div v-for="review in productDetail.reviews" :key="review.id">
-              <div class="d-flex justify-start align-center mb-4">
-                <v-rating
-                  color="primary"
-                  background-color="grey lighten-1"
-                  class="mr-4"
-                  half-increments
-                  length="5"
-                  readonly
-                  dense
-                  size="20"
-                  :value="review.rating"
-                ></v-rating>
-                <span>
-                  {{ $relativeTime(review.created_at) }}
-                </span>
-              </div>
-              <div class="d-flex justify-start align-center mb-4">
-                <v-img
-                  :src="review.user.picture"
-                  max-width="30"
-                  class="rounded-circle mr-2"
-                />
-                <span>{{ review.user.username }}</span>
-              </div>
-              <p class="mb-8">{{ review.comment }}</p>
-            </div>
-          </div>
-          <div v-else>
-            <v-alert type="info" color="primary" text>No review yet</v-alert>
-          </div>
-          <div v-if="$auth.loggedIn && isBought && !isReviewed">
-            <h6 class="text-md-h6 mb-4">Write Review</h6>
-            <v-form
-              ref="form"
-              v-model="isValid"
-              @submit.prevent="isValid && submitReview"
-            >
-              <v-rating
-                v-model="rating"
-                class="ml-n2 mb-4"
-                color="primary"
-                background-color="grey lighten-1"
-              ></v-rating>
-              <v-textarea
-                v-model="reviewDesc"
-                label="Review"
-                color="primary"
-                outlined
-              ></v-textarea>
-              <v-btn
-                color="primary"
-                text
-                :disabled="!reviewDesc || !rating"
-                @click="submitReview"
-                ><v-icon class="mr-2">mdi-send</v-icon>Submit</v-btn
-              >
-            </v-form>
-          </div>
-          <!-- <div v-else-if="$auth.loggedIn && isBought && isReviewed">
+          </v-form>
+        </div>
+        <!-- <div v-else-if="$auth.loggedIn && isBought && isReviewed">
             <v-alert type="info" color="primary" text
               >You're already review this product</v-alert
             >
           </div> -->
-          <div v-else-if="$auth.loggedIn && !isBought && !isReviewed">
-            <v-alert type="info" color="primary" text
-              >You can write a review after buying the product
-            </v-alert>
-          </div>
-          <div v-else-if="!$auth.loggedIn">
-            <v-alert type="info" color="primary" text
-              >Login to review this product</v-alert
-            >
-          </div>
-        </v-col>
-      </v-row>
-    </div>
+        <div v-else-if="$auth.loggedIn && !isBought && !isReviewed">
+          <v-alert type="info" color="accent" text
+            >You can write a review after buying the product
+          </v-alert>
+        </div>
+        <div v-else-if="!$auth.loggedIn">
+          <v-alert type="info" color="accent" text
+            >Login to review this product</v-alert
+          >
+        </div>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

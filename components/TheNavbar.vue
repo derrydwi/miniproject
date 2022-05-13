@@ -40,29 +40,45 @@
       @blur="!query && searchToggle()"
       @keyup.enter="search"
     ></v-text-field>
-    <v-btn v-else class="me-4" icon @click="searchToggle"
+    <v-btn v-else icon @click="searchToggle"
       ><v-icon>mdi-magnify</v-icon></v-btn
     >
-    <v-btn
-      v-if="$auth.loggedIn"
-      depressed
-      color="primary"
-      @click="$auth.logout()"
-      >Logout</v-btn
+    <v-badge
+      v-if="$auth.loggedIn && cart && cart.length > 0"
+      overlap
+      :content="cart.length"
     >
+      <v-btn icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
+    </v-badge>
+    <v-btn v-else icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
     <v-btn
-      v-else
-      depressed
       color="primary"
-      @click="$auth.loginWith('auth0', { params: { prompt: 'login' } })"
-      >Login</v-btn
+      class="ms-4"
+      @click="
+        $auth.loggedIn
+          ? $auth.logout()
+          : $auth.loginWith('auth0', { params: { prompt: 'login' } })
+      "
+      >{{ $auth.loggedIn ? 'Logout' : 'Login' }}</v-btn
     >
   </v-app-bar>
 </template>
 
 <script>
+import { getCart, subscriptionCart } from '~/graphql/cart/queries'
 export default {
   name: 'TheNavbar',
+  apollo: {
+    cart: {
+      query: getCart,
+      subscribeToMore: {
+        document: subscriptionCart,
+        updateQuery: (_, { subscriptionData }) => {
+          return { cart: subscriptionData.data.cart }
+        },
+      },
+    },
+  },
   props: {
     isDrawer: {
       type: Boolean,

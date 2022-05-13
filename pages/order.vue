@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <div v-if="$apollo.loading">Loading...</div>
+        <BaseLoading v-if="$apollo.loading" />
         <div v-else>
           <div>
             <p>Order</p>

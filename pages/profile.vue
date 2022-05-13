@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <p>Profile Page</p>
-    <div v-if="$apollo.loading">Loading...</div>
+    <BaseLoading v-if="$apollo.loading" />
     <div v-else>
       <img :src="user.picture" class="rounded-circle" />
       <p>Hi, {{ user.username }}!</p>

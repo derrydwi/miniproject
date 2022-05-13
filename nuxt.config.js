@@ -80,7 +80,7 @@ export default {
       themes: {
         light: {
           primary: colors.deepPurple.darken2,
-          accent: colors.grey.darken3,
+          accent: colors.deepPurple.lighten1,
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
           warning: colors.amber.base,
@@ -89,7 +89,7 @@ export default {
         },
         dark: {
           primary: colors.deepPurple.darken2,
-          accent: colors.grey.darken3,
+          accent: colors.deepPurple.lighten1,
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,
           warning: colors.amber.base,
