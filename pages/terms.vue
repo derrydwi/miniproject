@@ -162,5 +162,8 @@
 <script>
 export default {
   name: 'TermsPage',
+  head: {
+    title: 'Terms & Conditions',
+  },
 }
 </script>

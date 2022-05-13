@@ -38,5 +38,8 @@ export default {
       },
     },
   },
+  head: {
+    title: 'Saved',
+  },
 }
 </script>

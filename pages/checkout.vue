@@ -43,6 +43,9 @@ export default {
       },
     },
   },
+  head: {
+    title: 'Checkout',
+  },
   computed: {
     ...mapGetters('checkout', {
       alamat: 'getAlamat',

@@ -271,6 +271,9 @@ export default {
       },
     }
   },
+  head() {
+    return { title: this.title }
+  },
   computed: {
     sameItem() {
       return this.productDetail.carts[0]
@@ -285,6 +288,10 @@ export default {
       return this.productDetail.reviews.find(
         (x) => x.user.id === this.$auth.user.sub
       )
+    },
+    title() {
+      if (!this.productDetail) return 'Product Detail'
+      return this.productDetail.name
     },
   },
   methods: {

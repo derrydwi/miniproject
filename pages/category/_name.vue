@@ -87,5 +87,8 @@ export default {
       },
     },
   },
+  head() {
+    return { title: this.$capitalize(this.$route.params.name) }
+  },
 }
 </script>

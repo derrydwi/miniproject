@@ -62,6 +62,9 @@ export default {
       isValid: false,
     }
   },
+  head: {
+    title: 'Cart',
+  },
   computed: {
     totalPrice() {
       const pricePerItem = this.cart.map(

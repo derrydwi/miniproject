@@ -50,6 +50,14 @@ export default function ({ app }, inject) {
       .replace('-', '/')}/${orderId}`
   })
 
+  inject('capitalize', (text) => {
+    const eachWord = text.split(' ')
+    for (let i = 0; i < eachWord.length; i++) {
+      eachWord[i] = eachWord[i][0].toUpperCase() + eachWord[i].substr(1)
+    }
+    return eachWord.join(' ')
+  })
+
   inject('relativeTime', (d1, d2 = new Date()) => {
     const units = {
       year: 24 * 60 * 60 * 1000 * 365,
