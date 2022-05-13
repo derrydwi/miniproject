@@ -24,6 +24,52 @@ export const getProduct = gql`
   }
 `
 
+export const getAllProduct = gql`
+  query getAllProduct {
+    product(order_by: { id: desc }) {
+      id
+      name
+      description
+      category
+      image_url
+      price
+      stock
+      weight
+      reviews_aggregate {
+        aggregate {
+          avg {
+            rating
+          }
+          count(columns: id)
+        }
+      }
+    }
+  }
+`
+
+export const getProductByCategory = gql`
+  query getProductByCategory($_ilike: String!) {
+    product(order_by: { id: desc }, where: { category: { _ilike: $_ilike } }) {
+      id
+      name
+      description
+      category
+      image_url
+      price
+      stock
+      weight
+      reviews_aggregate {
+        aggregate {
+          avg {
+            rating
+          }
+          count(columns: id)
+        }
+      }
+    }
+  }
+`
+
 export const getProductByName = gql`
   query getProductByName($_ilike: String!) {
     product(order_by: { id: desc }, where: { name: { _ilike: $_ilike } }) {
@@ -50,6 +96,29 @@ export const getProductByName = gql`
 export const subscriptionProduct = gql`
   subscription subscriptionProduct($limit: Int!, $offset: Int!) {
     product(order_by: { id: desc }, limit: $limit, offset: $offset) {
+      id
+      name
+      description
+      category
+      image_url
+      price
+      stock
+      weight
+      reviews_aggregate {
+        aggregate {
+          avg {
+            rating
+          }
+          count(columns: id)
+        }
+      }
+    }
+  }
+`
+
+export const subscriptionProductByCategory = gql`
+  subscription subscriptionProductByCategory($_ilike: String!) {
+    product(order_by: { id: desc }, where: { category: { _ilike: $_ilike } }) {
       id
       name
       description

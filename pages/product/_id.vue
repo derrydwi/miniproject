@@ -46,6 +46,15 @@
               ></v-skeleton-loader>
             </template>
           </v-img>
+          <v-btn
+            v-if="$auth.loggedIn"
+            color="teal"
+            icon
+            @click="savedItemHandler"
+            ><v-icon>{{
+              isSaved ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+            }}</v-icon></v-btn
+          >
           <p class="mt-5 mb-4">
             {{ productDetail.description }}
           </p>
@@ -184,6 +193,7 @@ import {
   getProductDetailUser,
   subscriptionProductDetail,
 } from '~/graphql/productDetail/queries'
+import { deleteSaved, insertSaved } from '~/graphql/saved/queries'
 
 export default {
   name: 'DetailProductPage',
@@ -232,6 +242,9 @@ export default {
     },
     isBought() {
       return this.productDetail.order_items[0]
+    },
+    isSaved() {
+      return this.productDetail.saveds[0]
     },
     isReviewed() {
       return this.productDetail.reviews.find(
@@ -304,6 +317,26 @@ export default {
         .catch((error) => {
           this.$showAlert({
             text: `Can't submit the review. ${error.message}`,
+            icon: 'error',
+          })
+        })
+    },
+    savedItemHandler() {
+      this.$apollo
+        .mutate({
+          mutation: this.isSaved ? deleteSaved : insertSaved,
+          variables: {
+            ...(this.isSaved
+              ? { id: this.isSaved.id }
+              : { product_id: this.$route.params.id }),
+          },
+        })
+        .then(() => {
+          this.$showAlert({ text: 'Saved Product Updated', icon: 'success' })
+        })
+        .catch((error) => {
+          this.$showAlert({
+            text: `Can't update saved product. ${error.message}`,
             icon: 'error',
           })
         })
