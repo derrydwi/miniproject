@@ -72,7 +72,11 @@
 </template>
 
 <script>
-import { getOrder, subscriptionOrder, updatePayOrder } from '~/graphql/queries'
+import {
+  getOrder,
+  subscriptionOrder,
+  updatePayOrder,
+} from '~/graphql/order/queries'
 
 export default {
   name: 'OrderPage',
@@ -80,12 +84,10 @@ export default {
   apollo: {
     order: {
       query: getOrder,
-    },
-    $subscribe: {
-      order: {
-        query: subscriptionOrder,
-        result({ data }) {
-          this.order = data.order
+      subscribeToMore: {
+        document: subscriptionOrder,
+        updateQuery: (_, { subscriptionData }) => {
+          return { order: subscriptionData.data.order }
         },
       },
     },

@@ -2,7 +2,10 @@
   <div>
     <div v-if="$apollo.loading">Loading...</div>
     <div v-else>
-      <pre>cart: {{ cart }}</pre>
+      <div v-if="$auth.loggedIn">
+        <pre>sameItem: {{ sameItem }}</pre>
+        <pre>orderItemProductId: {{ isBought }}</pre>
+      </div>
       <v-row justify="center">
         <v-col cols="11" md="7">
           <h4 class="text-center text-md-h4 font-weight-bold my-4">
@@ -49,6 +52,7 @@
           <p class="mt-5 mb-4">
             {{ productDetail.description }}
           </p>
+          <p class="mt-5 mb-4">Category: {{ productDetail.category }}</p>
           <p class="mt-5 mb-4">
             {{
               !productDetail.stock
@@ -126,7 +130,7 @@
           <div v-else>
             <v-alert type="info" color="teal" text>No review yet</v-alert>
           </div>
-          <div v-if="$auth.loggedIn && !isReviewed">
+          <div v-if="$auth.loggedIn && isBought && !isReviewed">
             <h6 class="text-md-h6 mb-4">Write Review</h6>
             <v-form
               ref="form"
@@ -154,10 +158,15 @@
               >
             </v-form>
           </div>
-          <div v-else-if="$auth.loggedIn && isReviewed">
+          <!-- <div v-else-if="$auth.loggedIn && isBought && isReviewed">
             <v-alert type="info" color="teal" text
               >You're already review this product</v-alert
             >
+          </div> -->
+          <div v-else-if="$auth.loggedIn && !isBought && !isReviewed">
+            <v-alert type="info" color="teal" text
+              >You can write a review after buying the product
+            </v-alert>
           </div>
           <div v-else-if="!$auth.loggedIn">
             <v-alert type="info" color="teal" text
@@ -171,42 +180,35 @@
 </template>
 
 <script>
+import { insertToCart, updateToCart } from '~/graphql/cart/queries'
+import { insertReview } from '~/graphql/review/queries'
 import {
-  getProductDetail,
-  getCart,
-  insertToCart,
-  updateToCart,
-  subscriptionCart,
-  insertReview,
-  getOrder,
-} from '~/graphql/queries'
+  getProductDetailGuest,
+  getProductDetailUser,
+  subscriptionProductDetail,
+} from '~/graphql/productDetail/queries'
 
 export default {
   name: 'DetailProductPage',
   apollo: {
     productDetail: {
-      query: getProductDetail,
+      query() {
+        return this.$auth.loggedIn
+          ? getProductDetailUser
+          : getProductDetailGuest
+      },
       variables() {
         return { id: this.$route.params.id }
       },
-    },
-    cart: {
-      query: getCart,
-      skip() {
-        return !this.$auth.loggedIn
-      },
-    },
-    order: {
-      query: getOrder,
-      skip() {
-        return !this.$auth.loggedIn
-      },
-    },
-    $subscribe: {
-      cart: {
-        query: subscriptionCart,
-        result({ data }) {
-          this.cart = data.cart
+      subscribeToMore: {
+        document: subscriptionProductDetail,
+        variables() {
+          return { id: this.$route.params.id }
+        },
+        updateQuery: (_, { subscriptionData }) => {
+          return {
+            productDetail: subscriptionData.data.productDetail,
+          }
         },
         skip() {
           return !this.$auth.loggedIn
@@ -229,9 +231,10 @@ export default {
   },
   computed: {
     sameItem() {
-      return this.cart.find(
-        (x) => x.product.id === parseInt(this.$route.params.id)
-      )
+      return this.productDetail.carts[0]
+    },
+    isBought() {
+      return this.productDetail.order_items[0]
     },
     isReviewed() {
       return this.productDetail.reviews.find(
@@ -240,24 +243,26 @@ export default {
     },
   },
   methods: {
-    isLoginValidation() {
+    async isLoginValidation() {
       if (!this.$auth.loggedIn) {
         this.$showAlert({
           text: "You're Not Logged In\nRedirecting...",
           icon: 'info',
           timer: 1000,
         })
-        this.$auth.loginWith('auth0', { params: { prompt: 'login' } })
+        await this.$auth.loginWith('auth0', { params: { prompt: 'login' } })
       }
     },
     addToCart() {
       this.isLoginValidation()
       if (
         this.sameItem &&
-        this.quantity + this.sameItem.quantity > this.sameItem.product.stock
+        this.quantity + this.sameItem.quantity > this.productDetail.stock
       ) {
         this.$showAlert({
-          text: 'Quantity should not exceed the stock',
+          text: `Quantity should not exceed the stock. Current quantity in cart is ${
+            this.sameItem.quantity
+          }. Max is ${this.productDetail.stock - this.sameItem.quantity}`,
           icon: 'error',
         })
         return
@@ -297,7 +302,6 @@ export default {
           },
         })
         .then(() => {
-          this.$apollo.queries.productDetail.refetch()
           this.$showAlert({ text: 'Review Submitted', icon: 'success' })
         })
         .catch((error) => {

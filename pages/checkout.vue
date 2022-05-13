@@ -46,32 +46,6 @@
                   {{ data.item.type }} {{ data.item.city_name }}
                 </template></v-autocomplete
               >
-              <!-- <v-select
-              v-model="kecamatan"
-              :items="tujuan.kecamatan"
-              item-value="id"
-              item-text="nama"
-              return-object
-              label="Kecamatan"
-              outlined
-              color="teal"
-            ></v-select>
-            <v-select
-              v-model="kelurahan"
-              :items="tujuan.kelurahan"
-              item-value="id"
-              item-text="nama"
-              return-object
-              label="Kelurahan"
-              outlined
-              color="teal"
-            ></v-select>
-            <v-text-field
-              v-model="alamat"
-              label="Alamat"
-              outlined
-              color="teal"
-            ></v-text-field> -->
               <v-textarea
                 v-model="alamat"
                 label="Alamat"
@@ -125,6 +99,7 @@
                 Total Price:
                 {{ $formatMoney(totalPrice) }}
               </div>
+              <pre>{{ totalWeight }}</pre>
               <div class="text-center">
                 <v-btn
                   color="teal"
@@ -143,12 +118,9 @@
 </template>
 
 <script>
-import {
-  getCart,
-  subscriptionCart,
-  insertOrder,
-  insertOrderItem,
-} from '~/graphql/queries'
+import { getCart, subscriptionCart } from '~/graphql/cart/queries'
+import { insertOrder } from '~/graphql/order/queries'
+import { insertOrderItem } from '~/graphql/orderItem/queries'
 
 export default {
   name: 'CheckoutPage',
@@ -156,12 +128,10 @@ export default {
   apollo: {
     cart: {
       query: getCart,
-    },
-    $subscribe: {
-      cart: {
-        query: subscriptionCart,
-        result({ data }) {
-          this.cart = data.cart
+      subscribeToMore: {
+        document: subscriptionCart,
+        updateQuery: (_, { subscriptionData }) => {
+          return { cart: subscriptionData.data.cart }
         },
       },
     },
@@ -188,11 +158,21 @@ export default {
       const pricePerItem = this.cart.map(
         (item) => item.product.price * item.quantity
       )
-      const total = pricePerItem.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
+      const totalPrice = pricePerItem.reduce(
+        (prev, current) => prev + current,
         0
       )
-      return total + this.courierService.price
+      return totalPrice + this.courierService.price
+    },
+    totalWeight() {
+      const weightPerItem = this.cart.map(
+        (item) => item.product.weight * item.quantity
+      )
+      const totalWeight = weightPerItem.reduce(
+        (prev, current) => prev + current,
+        0
+      )
+      return totalWeight
     },
     tujuan() {
       return this.$store.getters['order/getTujuan']
@@ -235,7 +215,7 @@ export default {
         .mutate({
           mutation: insertOrder,
           variables: {
-            alamat: `${this.alamat}, ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
+            alamat: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
             no_hp: this.noHp,
             shipping_price: this.courierService.price,
             total_price: this.totalPrice,
@@ -284,9 +264,18 @@ export default {
     fetchOngkir() {
       if (this.kotaKabupaten.city_id && this.courier) {
         this.$store.dispatch('order/fetchOngkir', {
+          /*
+          ORIGIN
+          "city_id": "152",
+          "province_id": "6",
+          "province": "DKI Jakarta",
+          "type": "Kota",
+          "city_name": "Jakarta Pusat",
+          "postal_code": "10540"
+          */
           origin: 152,
           destination: this.kotaKabupaten.city_id,
-          weight: 500,
+          weight: this.totalWeight,
           courier: this.courier,
         })
         this.courierService = {

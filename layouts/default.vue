@@ -37,6 +37,23 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
+      <v-text-field
+        v-if="isSearch"
+        v-model="query"
+        label="Search"
+        prepend-inner-icon="mdi-magnify"
+        hide-details="auto"
+        style="max-width: 200px"
+        color="teal"
+        autofocus
+        single-line
+        clearable
+        @blur="!query && searchToggle()"
+        @keyup.enter="search"
+      ></v-text-field>
+      <v-btn v-else icon @click="searchToggle"
+        ><v-icon>mdi-magnify</v-icon></v-btn
+      >
       <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
         <v-icon size="20">mdi-brightness-7</v-icon>
       </v-btn>
@@ -116,7 +133,22 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Vuetify.js',
+      isSearch: true,
+      query: '',
     }
+  },
+  methods: {
+    searchToggle() {
+      this.isSearch = !this.isSearch
+    },
+    search() {
+      this.$router.push({
+        name: 'search',
+        query: {
+          q: this.query,
+        },
+      })
+    },
   },
 }
 </script>

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { getCart, subscriptionCart, deleteCart } from '~/graphql/queries'
+import { getCart, subscriptionCart, deleteCart } from '~/graphql/cart/queries'
 
 export default {
   name: 'CartPage',
@@ -48,12 +48,10 @@ export default {
   apollo: {
     cart: {
       query: getCart,
-    },
-    $subscribe: {
-      cart: {
-        query: subscriptionCart,
-        result({ data }) {
-          this.cart = data.cart
+      subscribeToMore: {
+        document: subscriptionCart,
+        updateQuery: (_, { subscriptionData }) => {
+          return { cart: subscriptionData.data.cart }
         },
       },
     },

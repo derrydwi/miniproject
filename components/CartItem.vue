@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { updateToCart, deleteItemFromCart } from '~/graphql/queries'
+import { updateToCart, deleteItemFromCart } from '~/graphql/cart/queries'
 
 export default {
   name: 'CartItem',

@@ -2,7 +2,7 @@
   <div>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <div v-if="$auth.loggedIn">
+        <div v-if="$auth.loggedIn" style="height: 100vh">
           <div v-if="$apollo.loading">Loading...</div>
           <div v-else>
             <p>Token: {{ $auth.getToken('auth0') }}</p>
@@ -16,7 +16,7 @@
           <v-btn :to="{ name: 'order' }">Order</v-btn>
           <v-btn :to="{ name: 'profile' }">Profile</v-btn>
         </div>
-        <div v-else>
+        <div v-else style="height: 100vh">
           <v-btn
             @click="$auth.loginWith('auth0', { params: { prompt: 'login' } })"
             >Login</v-btn
@@ -42,7 +42,6 @@
             })
           "
         >
-          <!-- <div class="px-4 py-4"> -->
           <v-img contain width="800" height="200" :src="productItem.image_url">
             <template #placeholder>
               <v-skeleton-loader
@@ -51,10 +50,10 @@
               ></v-skeleton-loader>
             </template>
           </v-img>
-          <!-- </div> -->
           <v-card-text class="text--primary">
             <p class="text-h5 text--primary">{{ productItem.name }}</p>
             <div>{{ productItem.description.substring(0, 35) + '...' }}</div>
+            <div>Category: {{ productItem.category }}</div>
             <div>
               {{ $formatMoney(productItem.price) }}
             </div>
@@ -68,21 +67,19 @@
             </div>
           </v-card-text>
         </v-card>
-        <pre>{{ $auth.user }}</pre>
+        <div v-if="$apollo.queries.product.loading">
+          Loading more product...
+        </div>
+        <v-card v-intersect="onIntersect" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import {
-  getProduct,
-  getCart,
-  subscriptionProduct,
-  subscriptionCart,
-  getOrder,
-  subscriptionOrder,
-} from '~/graphql/queries'
+import { getProduct } from '~/graphql/product/queries'
+
+const pageSize = 10
 
 export default {
   name: 'ProductPage',
@@ -90,47 +87,50 @@ export default {
     product: {
       prefetch: true,
       query: getProduct,
-    },
-    cart: {
-      query: getCart,
-      skip() {
-        return !this.$auth.loggedIn
+      variables() {
+        return {
+          limit: pageSize,
+          offset: 0,
+        }
       },
     },
-    order: {
-      query: getOrder,
-      skip() {
-        return !this.$auth.loggedIn
+  },
+  computed: {
+    page: {
+      get() {
+        return this.$store.getters['product/getPage']
+      },
+      set(value) {
+        this.$store.dispatch('product/savePage', value)
       },
     },
-    $subscribe: {
-      product: {
-        query: subscriptionProduct,
-        result({ data }) {
-          this.product = data.product
-        },
-        skip() {
-          return !this.$auth.loggedIn
-        },
+    hasMore: {
+      get() {
+        return this.$store.getters['product/getHasMore']
       },
-      cart: {
-        query: subscriptionCart,
-        result({ data }) {
-          this.cart = data.cart
-        },
-        skip() {
-          return !this.$auth.loggedIn
-        },
+      set(value) {
+        this.$store.dispatch('product/saveHasMore', value)
       },
-      order: {
-        query: subscriptionOrder,
-        result({ data }) {
-          this.order = data.order
+    },
+  },
+  methods: {
+    fetchMore() {
+      this.page++
+      this.$apollo.queries.product.fetchMore({
+        variables: {
+          limit: pageSize,
+          offset: this.page * pageSize,
         },
-        skip() {
-          return !this.$auth.loggedIn
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          if (fetchMoreResult.product.length < pageSize) this.hasMore = false
+          return {
+            product: [...previousResult.product, ...fetchMoreResult.product],
+          }
         },
-      },
+      })
+    },
+    onIntersect(entries, observer, isIntersecting) {
+      if (isIntersecting && this.hasMore) this.fetchMore()
     },
   },
 }
