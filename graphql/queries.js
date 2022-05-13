@@ -64,8 +64,8 @@ export const getOrder = gql`
 `
 
 export const getProductDetail = gql`
-  query ($_eq: Int!) {
-    productDetail: product(where: { id: { _eq: $_eq } }) {
+  query ($id: Int!) {
+    productDetail: product_by_pk(id: $id) {
       id
       name
       description
@@ -80,12 +80,15 @@ export const getProductDetail = gql`
           count(columns: id)
         }
       }
-      reviews {
+      reviews(order_by: { created_at: desc }) {
         id
-        name
         comment
         rating
         created_at
+        user {
+          username
+          picture
+        }
       }
     }
   }
@@ -176,10 +179,18 @@ export const subscriptionOrder = gql`
   }
 `
 
-export const deleteFromCart = gql`
+export const deleteItemFromCart = gql`
   mutation ($id: Int!) {
     delete_cart_by_pk(id: $id) {
       id
+    }
+  }
+`
+
+export const deleteCart = gql`
+  mutation ($_in: [Int!]) {
+    delete_cart(where: { id: { _in: $_in } }) {
+      affected_rows
     }
   }
 `
