@@ -1,5 +1,9 @@
 const state = () => ({
-  tujuan: {},
+  tujuan: {
+    province: [],
+    city: [],
+    ongkir: [],
+  },
 })
 
 const getters = {
@@ -19,31 +23,40 @@ const mutations = {
 
 const actions = {
   fetchWilayah({ commit }, param) {
+    // eslint-disable-next-line no-console
+    console.log('param', param)
     this.$axios
-      .$get(`https://dev.farizdotid.com/api/daerahindonesia/${param.type}`, {
-        params: { [param.param]: [param.id] },
+      .$get(`https://miniproject-express.netlify.app/${param.type}`, {
+        params: {
+          [param.param]: param.id,
+        },
       })
       .then((result) => {
         commit('SET_TUJUAN', {
-          ...(param.type === 'provinsi' && {
-            [param.type]: result[param.type],
-            kota: [],
-            kecamatan: [],
-            kelurahan: [],
-          }),
-          ...(param.type === 'kota' && {
-            [param.type]: result[param.response],
-            kecamatan: [],
-            kelurahan: [],
-          }),
-          ...(param.type === 'kecamatan' && {
-            [param.type]: result[param.type],
-            kelurahan: [],
-          }),
-          ...(param.type === 'kelurahan' && {
-            [param.type]: result[param.type],
+          [param.type]: result,
+          ...(param.type === 'province' && {
+            city: [],
           }),
         })
+        // eslint-disable-next-line no-console
+        console.log('result', result)
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log(error)
+      })
+  },
+  fetchOngkir({ commit }, param) {
+    // eslint-disable-next-line no-console
+    console.log('param ongkir', param)
+    this.$axios
+      .$post(`https://miniproject-express.netlify.app/cost`, {
+        ...param,
+      })
+      .then((result) => {
+        commit('SET_TUJUAN', { ongkir: result })
+        // eslint-disable-next-line no-console
+        console.log('result', result)
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -51,7 +64,7 @@ const actions = {
       })
   },
   deleteTujuan({ commit }) {
-    commit('DELETE_TUJUAN', {})
+    commit('DELETE_TUJUAN', { province: [], city: [], ongkir: [] })
   },
 }
 

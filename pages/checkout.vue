@@ -6,7 +6,6 @@
         <div v-else>
           <div>
             <p>Checkout</p>
-            {{ provinsi }}
             <OrderItem
               v-for="(orderItem, index) in cart"
               :key="orderItem.id"
@@ -15,9 +14,9 @@
             />
             <v-select
               v-model="provinsi"
-              :items="tujuan.provinsi"
-              item-value="id"
-              item-text="nama"
+              :items="tujuan.province"
+              item-value="province_id"
+              item-text="province"
               return-object
               label="Provinsi"
               outlined
@@ -25,15 +24,23 @@
             ></v-select>
             <v-select
               v-model="kotaKabupaten"
-              :items="tujuan.kota"
-              item-value="id"
-              item-text="nama"
+              :items="tujuan.city"
+              item-value="city_id"
+              item-text="city_name"
               return-object
+              :disabled="!tujuan.city.length"
               label="Kota / Kabupaten"
               outlined
               color="teal"
-            ></v-select>
-            <v-select
+            >
+              <template slot="selection" slot-scope="data">
+                {{ data.item.type }} {{ data.item.city_name }}
+              </template>
+              <template slot="item" slot-scope="data">
+                {{ data.item.type }} {{ data.item.city_name }}
+              </template></v-select
+            >
+            <!-- <v-select
               v-model="kecamatan"
               :items="tujuan.kecamatan"
               item-value="id"
@@ -58,7 +65,13 @@
               label="Alamat"
               outlined
               color="teal"
-            ></v-text-field>
+            ></v-text-field> -->
+            <v-textarea
+              v-model="alamat"
+              label="Alamat"
+              outlined
+              color="teal"
+            ></v-textarea>
             <v-text-field
               v-model="noHp"
               class="input-no-hp"
@@ -67,6 +80,35 @@
               outlined
               color="teal"
             ></v-text-field>
+            <v-radio-group v-model="courier">
+              <v-radio
+                v-for="item in courierItems"
+                :key="item"
+                :label="item"
+                :value="item"
+                color="teal"
+                class="text-uppercase"
+              ></v-radio>
+              <v-radio-group v-if="courier" v-model="courierService">
+                <v-radio
+                  v-for="(ongkirItem, index) in tujuan.ongkir"
+                  :key="index"
+                  :label="`${ongkirItem.service} | ${ongkirItem.cost[0].value
+                    .toLocaleString('id-id', {
+                      style: 'currency',
+                      currency: 'IDR',
+                    })
+                    .slice(0, -3)} | ${ongkirItem.cost[0].etd} ${
+                    courier !== 'pos' ? 'Day' : ''
+                  }`"
+                  :value="{
+                    service: ongkirItem.service,
+                    price: ongkirItem.cost[0].value,
+                  }"
+                  color="teal"
+                ></v-radio>
+              </v-radio-group>
+            </v-radio-group>
             <div>
               Total Price:
               {{
@@ -109,6 +151,9 @@ export default {
       kecamatan: {},
       kelurahan: {},
       alamat: '',
+      courier: '',
+      courierItems: ['jne', 'tiki', 'pos'],
+      courierService: '',
       noHp: '',
     }
   },
@@ -121,40 +166,53 @@ export default {
         (previousValue, currentValue) => previousValue + currentValue,
         0
       )
-      return total
+      return total + this.courierService.price
     },
     tujuan() {
       return this.$store.getters['order/getTujuan']
     },
   },
   watch: {
-    provinsi(value) {
+    provinsi() {
       this.$store.dispatch('order/fetchWilayah', {
-        type: 'kota',
-        response: 'kota_kabupaten',
-        param: 'id_provinsi',
-        id: value.id,
+        type: 'city',
+        param: 'province',
+        id: this.provinsi.province_id,
       })
     },
-    kotaKabupaten(value) {
-      this.$store.dispatch('order/fetchWilayah', {
-        type: 'kecamatan',
-        param: 'id_kota',
-        id: value.id,
-      })
+    courier() {
+      if (this.kotaKabupaten.city_id && this.courier) {
+        this.$store.dispatch('order/fetchOngkir', {
+          origin: 152,
+          destination: this.kotaKabupaten.city_id,
+          weight: 500,
+          courier: this.courier,
+        })
+        this.courierService = ''
+      }
     },
-    kecamatan(value) {
-      this.$store.dispatch('order/fetchWilayah', {
-        type: 'kelurahan',
-        param: 'id_kecamatan',
-        id: value.id,
-      })
+    kotaKabupaten() {
+      if (this.kotaKabupaten.city_id && this.courier) {
+        this.$store.dispatch('order/fetchOngkir', {
+          origin: 152,
+          destination: this.kotaKabupaten.city_id,
+          weight: 500,
+          courier: this.courier,
+        })
+      }
     },
+    // kecamatan(value) {
+    //   this.$store.dispatch('order/fetchWilayah', {
+    //     type: 'kelurahan',
+    //     param: 'id_kecamatan',
+    //     id: value.id,
+    //   })
+    // },
   },
   mounted() {
     this.subs()
     this.$store.dispatch('order/deleteTujuan')
-    this.$store.dispatch('order/fetchWilayah', { type: 'provinsi' })
+    this.$store.dispatch('order/fetchWilayah', { type: 'province' })
   },
   methods: {
     checkout() {
@@ -162,10 +220,10 @@ export default {
         .mutate({
           mutation: insertOrder,
           variables: {
-            alamat: `${this.alamat}, ${this.kelurahan.nama}, ${this.kecamatan.nama}, ${this.kotaKabupaten.nama}, ${this.provinsi.nama}`,
+            alamat: `${this.alamat}, ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
             no_hp: this.noHp,
-            shipping_price: 35000,
-            total_price: this.totalPrice + 35000,
+            shipping_price: this.courierService.price,
+            total_price: this.totalPrice,
           },
         })
         .then((result) => {

@@ -175,3 +175,11 @@ export const subscriptionOrder = gql`
     }
   }
 `
+
+export const deleteFromCart = gql`
+  mutation ($id: Int!) {
+    delete_cart_by_pk(id: $id) {
+      id
+    }
+  }
+`

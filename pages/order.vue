@@ -75,9 +75,6 @@
                     }}
                   </div>
                 </v-card-text>
-                <v-card-actions>
-                  <v-btn color="teal" text>Add To Cart</v-btn>
-                </v-card-actions>
               </div>
             </v-card>
           </div>
