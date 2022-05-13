@@ -17,8 +17,28 @@
                 {{ orderItem.provinsi }}
               </div>
               <div>No Hp: {{ orderItem.no_hp }}</div>
-              <div>Ongkos Kirim: {{ orderItem.shipping_price }}</div>
-              <div>Total: {{ orderItem.total_price }}</div>
+              <div>
+                Ongkos Kirim:
+                {{
+                  orderItem.shipping_price
+                    .toLocaleString('id-id', {
+                      style: 'currency',
+                      currency: 'IDR',
+                    })
+                    .slice(0, -3)
+                }}
+              </div>
+              <div>
+                Total:
+                {{
+                  orderItem.total_price
+                    .toLocaleString('id-id', {
+                      style: 'currency',
+                      currency: 'IDR',
+                    })
+                    .slice(0, -3)
+                }}
+              </div>
               <div>Telah Dibayar: {{ orderItem.is_paid }}</div>
               <div
                 v-for="item in orderItem.order_items"
@@ -71,7 +91,7 @@
 </template>
 
 <script>
-import { getOrder } from '~/graphql/queries'
+import { getOrder, subscriptionOrder } from '~/graphql/queries'
 
 export default {
   name: 'OrderPage',
@@ -79,6 +99,22 @@ export default {
   apollo: {
     order: {
       query: getOrder,
+    },
+  },
+  mounted() {
+    this.subs()
+  },
+  methods: {
+    subs() {
+      if (this.tagsSub) {
+        this.tagsSub.unsubscribe()
+      }
+      this.tagsSub = this.$apollo.queries.order.subscribeToMore({
+        document: subscriptionOrder,
+        updateQuery: (previousResult, { subscriptionData }) => {
+          return { order: subscriptionData.data.order }
+        },
+      })
     },
   },
 }
