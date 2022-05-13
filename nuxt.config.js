@@ -1,9 +1,11 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  ssr: false,
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - good-desire',
+    titleTemplate: '%s - Good Desire',
     title: 'good-desire',
     meta: [
       { charset: 'utf-8' },
@@ -37,6 +39,10 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    // https://auth.nuxtjs.org/
+    '@nuxtjs/auth',
+    // https://www.npmjs.com/package/@nuxtjs/apollo
+    '@nuxtjs/apollo',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -73,4 +79,27 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+
+  auth: {
+    redirect: {
+      login: '/', // redirect user when not connected
+      callback: '/callback',
+    },
+    strategies: {
+      local: false,
+      auth0: {
+        domain: 'dev-r13ssmnc.us.auth0.com',
+        client_id: 'zolkpMupBjXNYFnwmYET3JoKjKmNN00F',
+        audience: 'hasura',
+      },
+    },
+  },
+
+  apollo: {
+    clientConfigs: {
+      default: {
+        httpEndpoint: 'https://capital-airedale-21.hasura.app/v1/graphql',
+      },
+    },
+  },
 }
