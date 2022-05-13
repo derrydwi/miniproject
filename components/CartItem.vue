@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="mx-auto my-4" max-width="300">
+    <v-card class="mx-auto my-4 el" max-width="300">
       <div class="text-right">
         <v-btn color="teal" icon class="text-right" @click="deleteItem"
           ><v-icon>mdi-delete-outline</v-icon></v-btn
@@ -26,6 +26,7 @@
               })
               .slice(0, -3)
           }}
+          <div>Stock: {{ cartItem.product.stock }}</div>
           <div>Quantity: {{ cartItem.quantity }}</div>
           <div>
             Price:
@@ -44,28 +45,25 @@
         <v-btn
           color="teal"
           icon
-          @click="
-            quantity--
-            test()
-          "
+          :disabled="quantity === 1 || quantity > cartItem.product.stock"
+          @click="changeStock('decrement')"
           ><v-icon>mdi-minus</v-icon></v-btn
         >
         <v-text-field
           v-model.number="quantity"
           type="number"
-          class="input-quantity centered-input"
-          label="Stock"
-          solo
-          hide-details="true"
-          @keyup.enter="test"
+          color="teal"
+          class="input-quantity centered-input mt-n2"
+          dense
+          hide-details="auto"
+          :rules="[numberRule]"
+          @change="changeStock('input')"
         ></v-text-field>
         <v-btn
           color="teal"
           icon
-          @click="
-            quantity++
-            test()
-          "
+          :disabled="quantity >= cartItem.product.stock"
+          @click="changeStock('increment')"
           ><v-icon>mdi-plus</v-icon></v-btn
         >
       </v-card-actions>
@@ -93,24 +91,63 @@ export default {
   data() {
     return {
       quantity: 1,
+      numberRule: (v) => {
+        if (!isNaN(parseInt(v)) && v >= 1 && v <= this.cartItem.product.stock)
+          return true
+        return `Quantity has to be between 1 and ${this.cartItem.product.stock}`
+      },
     }
+  },
+  watch: {
+    cartItem() {
+      this.quantity = this.cartItem.quantity
+      if (this.cartItem.product.stock === 0) {
+        this.deleteItem()
+      }
+      // this.changeStock('input')
+    },
   },
   mounted() {
     this.quantity = this.cartItem.quantity
   },
   methods: {
-    test() {
+    validateStock() {
+      if (this.quantity < 1) {
+        // alert(`Minimum pembelian produk 1 item`)
+        this.quantity = 1
+        // alert('Quantity setted to min')
+      } else if (this.quantity > this.cartItem.product.stock) {
+        // alert(
+        //   `Maksimal pembelian produk ${this.cartItem.product.name} ${this.cartItem.product.stock} item`
+        // )
+        this.quantity = this.cartItem.product.stock
+        // alert('Quantity setted to max')
+      }
+    },
+    changeStock(type) {
+      this.validateStock()
       this.$apollo
         .mutate({
           mutation: updateToCart,
           variables: {
             id: this.cartItem.id,
-            quantity: this.quantity,
+            ...(type === 'decrement' && { quantity: this.quantity - 1 }),
+            ...(type === 'increment' && { quantity: this.quantity + 1 }),
+            ...(type === 'input' && { quantity: this.quantity }),
           },
         })
         .then((result) => {
           // eslint-disable-next-line no-console
           console.log('resulte', result)
+          this.$swal({
+            toast: true,
+            text: 'Quantity Updated',
+            icon: 'success',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: 'top-end',
+          })
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
@@ -128,6 +165,15 @@ export default {
         .then((result) => {
           // eslint-disable-next-line no-console
           console.log('result delete', result)
+          this.$swal({
+            toast: true,
+            text: 'Item Deleted',
+            icon: 'success',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: 'top-end',
+          })
         })
         .catch((error) => {
           // eslint-disable-next-line no-console

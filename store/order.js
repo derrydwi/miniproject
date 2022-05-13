@@ -26,7 +26,7 @@ const actions = {
     // eslint-disable-next-line no-console
     console.log('param', param)
     this.$axios
-      .$get(`https://miniproject-express.netlify.app/${param.type}`, {
+      .$get(`/${param.type}`, {
         params: {
           [param.param]: param.id,
         },
@@ -50,7 +50,7 @@ const actions = {
     // eslint-disable-next-line no-console
     console.log('param ongkir', param)
     this.$axios
-      .$post(`https://miniproject-express.netlify.app/cost`, {
+      .$post('/cost', {
         ...param,
       })
       .then((result) => {

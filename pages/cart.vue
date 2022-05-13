@@ -5,15 +5,26 @@
       <div v-else>
         <div>
           <p>Cart</p>
-          <CartItem
-            v-for="(cartItem, index) in cart"
-            :key="cartItem.id"
-            :index="index"
-            :cart-item="cartItem"
-          />
-          <v-btn v-if="cart.length" :to="{ name: 'checkout' }" color="teal" text
-            >Checkout</v-btn
+          <v-form
+            ref="form"
+            v-model="isValid"
+            @submit.prevent="isValid && $router.push({ name: 'checkout' })"
           >
+            <CartItem
+              v-for="(cartItem, index) in cart"
+              :key="cartItem.id"
+              :index="index"
+              :cart-item="cartItem"
+            />
+            <v-btn
+              v-if="cart.length"
+              :disabled="!isValid"
+              :to="{ name: 'checkout' }"
+              color="teal"
+              text
+              >Checkout</v-btn
+            >
+          </v-form>
         </div>
       </div>
     </v-col>
@@ -38,6 +49,11 @@ export default {
         },
       },
     },
+  },
+  data() {
+    return {
+      isValid: true,
+    }
   },
 }
 </script>

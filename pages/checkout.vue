@@ -12,7 +12,7 @@
               :index="index"
               :order-item="orderItem"
             />
-            <v-select
+            <v-autocomplete
               v-model="provinsi"
               :items="tujuan.province"
               item-value="province_id"
@@ -22,8 +22,8 @@
               label="Provinsi"
               outlined
               color="teal"
-            ></v-select>
-            <v-select
+            ></v-autocomplete>
+            <v-autocomplete
               v-model="kotaKabupaten"
               :items="tujuan.city"
               item-value="city_id"
@@ -39,7 +39,7 @@
               </template>
               <template slot="item" slot-scope="data">
                 {{ data.item.type }} {{ data.item.city_name }}
-              </template></v-select
+              </template></v-autocomplete
             >
             <!-- <v-select
               v-model="kecamatan"
@@ -83,7 +83,8 @@
               :disabled="!alamat"
               color="teal"
             ></v-text-field>
-            <v-radio-group v-model="courier">
+            <v-radio-group v-model="courier" :disabled="noHp.length < 12">
+              <p>Pilih Kurir</p>
               <v-radio
                 v-for="item in courierItems"
                 :key="item"
@@ -92,7 +93,12 @@
                 color="teal"
                 class="text-uppercase"
               ></v-radio>
-              <v-radio-group v-if="courier" v-model="courierService">
+              <v-radio-group
+                v-if="courier"
+                v-model="courierService"
+                :disabled="!courierItems"
+              >
+                <p>Pilih Layanan</p>
                 <v-radio
                   v-for="(ongkirItem, index) in tujuan.ongkir"
                   :key="index"
@@ -123,7 +129,15 @@
                   .slice(0, -3)
               }}
             </div>
-            <v-btn color="teal" text @click="checkout">Checkout</v-btn>
+            <div class="text-center">
+              <v-btn
+                color="teal"
+                text
+                :disabled="!courierService.service"
+                @click="makeOrder"
+                >Checkout</v-btn
+              >
+            </div>
           </div>
         </div>
       </v-col>
@@ -138,6 +152,7 @@ import {
   insertOrder,
   insertOrderItem,
   deleteCart,
+  updateStock,
 } from '~/graphql/queries'
 
 export default {
@@ -165,7 +180,10 @@ export default {
       alamat: '',
       courier: '',
       courierItems: ['jne', 'tiki', 'pos'],
-      courierService: '',
+      courierService: {
+        service: '',
+        price: 0,
+      },
       noHp: '',
     }
   },
@@ -204,7 +222,22 @@ export default {
     this.$store.dispatch('order/fetchWilayah', { type: 'province' })
   },
   methods: {
-    checkout() {
+    validateStock() {
+      // eslint-disable-next-line no-console
+      console.log(this.cart)
+      for (let index = 0; index < this.cart.length; index++) {
+        // const element = this.cart[index]
+        if (this.cart[index].quantity > this.cart[index].product.stock) {
+          alert(
+            `Kuantitas tidak sesuai, silahkan ubah kuantitas produk ${this.cart[index].product.name} terlebih dahulu`
+          )
+          return false
+        }
+      }
+      return true
+    },
+    makeOrder() {
+      if (!this.validateStock()) return
       this.$apollo
         .mutate({
           mutation: insertOrder,
@@ -218,44 +251,82 @@ export default {
         .then((result) => {
           // eslint-disable-next-line no-console
           console.log('result insert order', result)
-          const orderItem = this.cart.map((item) => ({
-            order_id: result.data.insert_order_one.id,
-            quantity: item.quantity,
-            product_id: item.product.id,
-            price: item.product.price * item.quantity,
-          }))
-          this.$apollo
-            .mutate({
-              mutation: insertOrderItem,
-              variables: {
-                objects: orderItem,
-              },
-            })
-            .then((result) => {
-              // eslint-disable-next-line no-console
-              console.log('result insert order item', result)
-              const cartItems = this.cart.map((item) => item.id)
-              this.$apollo
-                .mutate({
-                  mutation: deleteCart,
-                  variables: {
-                    _in: cartItems,
-                  },
-                })
-                .then((result) => {
-                  // eslint-disable-next-line no-console
-                  console.log('delete cart', result)
-                  this.$router.replace({ name: 'order' })
-                })
-                .catch((error) => {
-                  // eslint-disable-next-line no-console
-                  console.log('error', error)
-                })
-            })
-            .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.log('error', error)
-            })
+          this.makeOrderItem(result.data.insert_order_one.id)
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('error', error)
+        })
+    },
+    makeOrderItem(orderId) {
+      const orderItem = this.cart.map((item) => ({
+        order_id: orderId,
+        quantity: item.quantity,
+        product_id: item.product.id,
+        price: item.product.price * item.quantity,
+      }))
+      this.$apollo
+        .mutate({
+          mutation: insertOrderItem,
+          variables: {
+            objects: orderItem,
+          },
+        })
+        .then((result) => {
+          // eslint-disable-next-line no-console
+          console.log('result insert order item', result)
+          this.updateStock()
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('error', error)
+        })
+    },
+    updateStock() {
+      const newStock = this.cart.map((item) => ({
+        id: item.product.id,
+        stock: item.product.stock - item.quantity,
+      }))
+      this.$apollo
+        .mutate({
+          mutation: updateStock,
+          variables: {
+            objects: newStock,
+          },
+        })
+        .then((result) => {
+          // eslint-disable-next-line no-console
+          console.log('result update stock', result)
+          this.clearCart()
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('error', error)
+        })
+    },
+    clearCart() {
+      const cartItems = this.cart.map((item) => item.id)
+      this.$apollo
+        .mutate({
+          mutation: deleteCart,
+          variables: {
+            _in: cartItems,
+          },
+        })
+        .then((result) => {
+          // eslint-disable-next-line no-console
+          console.log('delete cart', result)
+          // alert('Berhasil Order')
+          this.$swal({
+            toast: true,
+            text: 'Order Successful',
+            icon: 'success',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: 'top-end',
+          })
+          this.$router.replace({ name: 'order' })
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
@@ -270,7 +341,10 @@ export default {
           weight: 500,
           courier: this.courier,
         })
-        this.courierService = ''
+        this.courierService = {
+          service: '',
+          price: 0,
+        }
       }
     },
   },
