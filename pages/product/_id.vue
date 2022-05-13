@@ -2,10 +2,7 @@
   <div>
     <div v-if="$apollo.loading">Loading...</div>
     <div v-else>
-      <div v-if="$auth.loggedIn">
-        <pre>sameItem: {{ sameItem }}</pre>
-        <pre>orderItemProductId: {{ isBought }}</pre>
-      </div>
+      <div v-if="$auth.loggedIn"></div>
       <v-row justify="center">
         <v-col cols="11" md="7">
           <h4 class="text-center text-md-h4 font-weight-bold my-4">
