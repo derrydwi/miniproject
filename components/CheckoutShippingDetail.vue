@@ -112,11 +112,11 @@
 </template>
 
 <script>
-import FormMixins from '~/mixins/FormMixins'
+import formMixins from '~/mixins/formMixins'
 
 export default {
   name: 'CheckoutShippingDetail',
-  mixins: [FormMixins],
+  mixins: [formMixins],
   props: {
     totalWeight: {
       type: Number,

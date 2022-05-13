@@ -73,8 +73,18 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en',
+      name: 'Good Desire',
+      short_name: 'Good Desire',
+      lang: 'id',
+      useWebmanifestExtension: false,
+      start_url: '/',
+      theme_color: '#512DA8',
+      background_color: '#000000',
     },
+  },
+
+  loading: {
+    color: '#512DA8',
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
