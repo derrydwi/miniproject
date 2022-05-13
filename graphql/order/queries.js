@@ -6,6 +6,7 @@ export const getOrder = gql`
     order(order_by: { id: desc }, limit: $limit, offset: $offset) {
       id
       alamat
+      nama
       no_hp
       shipping_price
       total_price
@@ -33,6 +34,7 @@ export const getOrder = gql`
 export const insertOrder = gql`
   mutation insertOrder(
     $alamat: String!
+    $nama: String!
     $no_hp: String!
     $shipping_price: bigint!
     $total_price: bigint!
@@ -42,6 +44,7 @@ export const insertOrder = gql`
     insert_order_one(
       object: {
         alamat: $alamat
+        nama: $nama
         no_hp: $no_hp
         shipping_price: $shipping_price
         total_price: $total_price
@@ -67,6 +70,7 @@ export const subscriptionOrder = gql`
     order(order_by: { id: desc }, limit: $limit, offset: $offset) {
       id
       alamat
+      nama
       no_hp
       shipping_price
       total_price

@@ -11,7 +11,7 @@
         <v-list-item-subtitle>
           <p>{{ orderItem.quantity }} item ({{ weightPerItem }})</p>
           <p class="font-weight-bold">
-            {{ $formatMoney(orderItem.product.price) }}
+            {{ $currency(orderItem.product.price) }}
           </p>
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -51,7 +51,7 @@ export default {
       return `${this.orderItem.quantity * this.orderItem.product.weight} g`
     },
     pricePerItem() {
-      return this.$formatMoney(
+      return this.$currency(
         this.orderItem.quantity * this.orderItem.product.price
       )
     },

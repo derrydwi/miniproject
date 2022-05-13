@@ -10,7 +10,7 @@
       <div class="d-flex justify-space-between mb-5">
         <span class="text-md-body-1 font-weight-bold">Total Price</span>
         <span class="text-md-body-1 font-weight-bold">{{
-          $formatMoney(totalPrice)
+          $currency(totalPrice)
         }}</span>
       </div>
       <v-btn

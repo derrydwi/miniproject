@@ -50,7 +50,7 @@
             <div>{{ productItem.description.substring(0, 35) + '...' }}</div>
             <div>Category: {{ productItem.category }}</div>
             <div>
-              {{ $formatMoney(productItem.price) }}
+              {{ $currency(productItem.price) }}
             </div>
             <div>Stock: {{ productItem.stock }}</div>
             <div>

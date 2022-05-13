@@ -26,7 +26,7 @@
                     productItem.name
                   }}</v-card-title>
                   <v-card-subtitle class="accent--text pb-3 font-weight-bold">
-                    {{ $formatMoney(productItem.price) }}
+                    {{ $currency(productItem.price) }}
                   </v-card-subtitle>
                   <v-card-text>
                     <div class="d-flex mb-3">
@@ -42,7 +42,9 @@
                       ></v-rating>
                       <span
                         >{{
-                          productItem.reviews_aggregate.aggregate.avg.rating
+                          $rating(
+                            productItem.reviews_aggregate.aggregate.avg.rating
+                          )
                         }}
                         ({{
                           productItem.reviews_aggregate.aggregate.count
@@ -116,7 +118,7 @@
               <p class="text-h5 text--primary">{{ productItem.name }}</p>
               <div>{{ productItem.description.substring(0, 35) + '...' }}</div>
               <div>
-                {{ $formatMoney(productItem.price) }}
+                {{ $currency(productItem.price) }}
               </div>
               <div>Stock: {{ productItem.stock }}</div>
               <div>

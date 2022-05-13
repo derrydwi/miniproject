@@ -1,9 +1,9 @@
 <template>
   <BaseLoading v-if="$apollo.loading" />
   <v-container v-else>
-    <v-row dense>
+    <h2 class="my-2 mb-7 text-capitalize text-center">Saved</h2>
+    <v-row v-if="saved.length" dense>
       <v-col cols="12" md="9" class="mx-auto">
-        <h2 class="my-2 text-capitalize text-center">Saved Product</h2>
         <v-row class="my-3">
           <template v-for="savedItem in saved">
             <v-fade-transition :key="savedItem.id">
@@ -11,6 +11,11 @@
             </v-fade-transition>
           </template>
         </v-row>
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col cols="12" md="6" class="mx-auto mt-4">
+        <v-alert type="info" color="accent" text>Saved is empty</v-alert>
       </v-col>
     </v-row>
   </v-container>
