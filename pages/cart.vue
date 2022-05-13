@@ -32,7 +32,11 @@
         />
       </v-col>
     </v-row>
-    <v-row v-else dense> Cart is empty </v-row>
+    <v-row v-else dense>
+      <v-col cols="12" md="6" class="mx-auto mt-4">
+        <v-alert type="info" color="accent" text>Cart is empty</v-alert>
+      </v-col>
+    </v-row>
     <!-- <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
         <p>Cart</p>
@@ -53,7 +57,7 @@
             :cart-item="cartItem"
           />
           <div v-if="cart.length">
-            Total Price: {{ $formatMoney(totalPrice) }}
+            Total Price: {{ $currency(totalPrice) }}
           </div>
           <v-btn
             v-if="cart.length"

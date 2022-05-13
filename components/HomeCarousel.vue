@@ -48,7 +48,7 @@
                 {{ productItem.name }}
               </h2>
               <p class="text-md-h5 text-subtitle-1 accent--text mt-5">
-                {{ $formatMoney(productItem.price) }}
+                {{ $currency(productItem.price) }}
               </p>
               <p class="text-md-body-2 mb-7" style="line-height: 1.8">
                 {{ productItem.description.substring(0, 140) + '...' }}

@@ -14,17 +14,17 @@
       <p class="text-md-body-1 font-weight-bold">Summary</p>
       <div class="d-flex justify-space-between mb-4">
         <span>Shipping Price</span>
-        <span>{{ $formatMoney(courierService.price) }}</span>
+        <span>{{ $currency(courierService.price) }}</span>
       </div>
       <div class="d-flex justify-space-between mb-4">
         <span>Total Price</span>
-        <span>{{ $formatMoney(totalPrice) }}</span>
+        <span>{{ $currency(totalPrice) }}</span>
       </div>
       <v-divider class="mb-4" />
       <div class="d-flex justify-space-between mb-5">
         <span class="text-md-h6 font-weight-bold accent--text">Total Bill</span>
         <span class="text-md-h6 font-weight-bold accent--text">{{
-          $formatMoney(totalPrice + courierService.price)
+          $currency(totalPrice + courierService.price)
         }}</span>
       </div>
       <v-btn

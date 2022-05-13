@@ -89,9 +89,9 @@ export default {
     strategies: {
       local: false,
       auth0: {
-        domain: 'dev-r13ssmnc.us.auth0.com',
-        client_id: 'zolkpMupBjXNYFnwmYET3JoKjKmNN00F',
-        audience: 'hasura',
+        domain: 'dev-rlo2p8gf.us.auth0.com',
+        client_id: 'kmEQpIWwM9mzQRgK6OW5fuM6CsnlRwb9',
+        audience: 'https://dev-rlo2p8gf.us.auth0.com/api/v2/',
       },
     },
   },

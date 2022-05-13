@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="6" align="left" class="px-md-0">
-          <span class="me-4">{{ $formatDateTime(orderItem.created_at) }}</span>
+          <span class="me-4">{{ $dateTime(orderItem.created_at) }}</span>
         </v-col>
         <v-col cols="6" align="right" class="px-md-0">
           <span>{{ getInv }}</span>
@@ -26,15 +26,23 @@
         <v-img contain :src="item.product.image_url" />
       </v-list-item-avatar>
       <v-list-item-content class="ms-4">
-        <v-list-item-title class="text-h6 mb-4">
+        <v-list-item-title
+          class="text-h6 mb-4 pointer"
+          @click="
+            $router.push({
+              name: 'product-id',
+              params: { id: item.product.id },
+            })
+          "
+        >
           {{ item.product.name }}
         </v-list-item-title>
         <v-list-item-subtitle class="d-flex justify-space-between">
           <span>
-            {{ item.quantity }} item x {{ $formatMoney(item.product.price) }}
+            {{ item.quantity }} item x {{ $currency(item.product.price) }}
           </span>
           <span class="font-weight-bold">
-            {{ $formatMoney(item.product.price * item.quantity) }}
+            {{ $currency(item.product.price * item.quantity) }}
           </span>
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -43,7 +51,7 @@
       <v-spacer />
       <span class="text-md-body-1 font-weight-bold me-4">Total Bill : </span>
       <span class="text-md-body-1 font-weight-bold accent--text">{{
-        $formatMoney(orderItem.total_price)
+        $currency(orderItem.total_price)
       }}</span>
     </v-card-actions>
     <v-card-actions class="justify-end">
@@ -63,7 +71,7 @@
               <v-timeline-item small>
                 <template #opposite>
                   <span class="text-start">{{
-                    $formatDateTime(orderItem.created_at)
+                    $dateTime(orderItem.created_at)
                   }}</span>
                 </template>
                 <div class="py-4 font-weight-bold accent--text">
@@ -79,7 +87,7 @@
                   }}
                 </div>
                 <template #opposite>
-                  <span>{{ $formatDateTime(orderItem.updated_at) }}</span>
+                  <span>{{ $dateTime(orderItem.updated_at) }}</span>
                 </template>
               </v-timeline-item>
             </v-timeline>
@@ -97,7 +105,7 @@
             <p class="text-md-body-1 font-weight-bold">Shipping Detail</p>
             <div class="d-flex justify-space-between mb-4">
               <span>Name</span>
-              <span class="text-right">{{ $auth.user.nickname }}</span>
+              <span class="text-right">{{ orderItem.nama }}</span>
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Address</span>
@@ -112,12 +120,12 @@
             <div class="d-flex justify-space-between mb-4">
               <span>Shipping Price</span>
               <span class="text-right">{{
-                $formatMoney(orderItem.shipping_price)
+                $currency(orderItem.shipping_price)
               }}</span>
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Total Price</span>
-              <span class="text-right">{{ $formatMoney(totalItemPrice) }}</span>
+              <span class="text-right">{{ $currency(totalItemPrice) }}</span>
             </div>
             <v-divider class="mb-4" />
             <div class="d-flex justify-space-between">
@@ -126,7 +134,7 @@
               >
               <span
                 class="text-md-h6 font-weight-bold accent--text text-right"
-                >{{ $formatMoney(orderItem.total_price) }}</span
+                >{{ $currency(orderItem.total_price) }}</span
               >
             </div>
           </v-card-text>
@@ -151,8 +159,17 @@
 </template>
 
 <script>
+import { getUser } from '~/graphql/user/queries'
 export default {
   name: 'OrderItem',
+  apollo: {
+    user: {
+      query: getUser,
+      variables() {
+        return { id: this.$auth.user.sub }
+      },
+    },
+  },
   props: {
     orderItem: {
       type: Object,

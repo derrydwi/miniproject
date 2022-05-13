@@ -12,7 +12,7 @@
             <v-list-item-title class="text-h6">{{
               user.username
             }}</v-list-item-title>
-            <v-list-item-subtitle>{{ user.fullname }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
           </v-list-item-content>
         </template>
         <v-list-item :to="{ name: 'profile' }">
@@ -129,11 +129,6 @@ export default {
           to: '/category',
         },
         {
-          icon: 'mdi-bookmark',
-          title: 'Saved',
-          to: '/saved',
-        },
-        {
           icon: 'mdi-cart',
           title: 'Cart',
           to: '/cart',
@@ -142,6 +137,11 @@ export default {
           icon: 'mdi-shopping',
           title: 'Order',
           to: '/order',
+        },
+        {
+          icon: 'mdi-bookmark',
+          title: 'Saved',
+          to: '/saved',
         },
         {
           icon: 'mdi-note-text',

@@ -33,7 +33,7 @@
               : productItem.name
           }}</v-card-title>
           <v-card-subtitle class="accent--text pb-3 font-weight-bold">
-            {{ $formatMoney(productItem.price) }}
+            {{ $currency(productItem.price) }}
           </v-card-subtitle>
           <v-card-text>
             <div class="d-flex">
@@ -48,7 +48,10 @@
                 :value="1"
               ></v-rating>
               <span
-                >{{ productItem.reviews_aggregate.aggregate.avg.rating }} | Sold
+                >{{
+                  $rating(productItem.reviews_aggregate.aggregate.avg.rating)
+                }}
+                | Sold
                 {{ productItem.order_items_aggregate.aggregate.count }}</span
               >
             </div>

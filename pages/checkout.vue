@@ -48,6 +48,7 @@ export default {
       alamat: 'getAlamat',
       kotaKabupaten: 'getKotaKabupaten',
       provinsi: 'getProvinsi',
+      nama: 'getNama',
       noHp: 'getNoHp',
       courierService: 'getCourierService',
     }),
@@ -98,8 +99,9 @@ export default {
         .mutate({
           mutation: insertOrder,
           variables: {
-            alamat: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
+            nama: this.nama,
             no_hp: this.noHp,
+            alamat: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
             shipping_price: this.courierService.price,
             total_price: this.totalPrice,
             status: 'PENDING',
@@ -170,11 +172,11 @@ export default {
           secure: true,
         },
         customer_details: {
-          first_name: this.$auth.user.nickname,
+          first_name: this.nama,
           email: this.$auth.user.email,
           phone: this.noHp,
           shipping_address: {
-            first_name: this.$auth.user.nickname,
+            first_name: this.nama,
             email: this.$auth.user.email,
             phone: this.noHp,
             address: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,

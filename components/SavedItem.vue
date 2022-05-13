@@ -14,14 +14,14 @@
           :to="{ name: 'product-id', params: { id: savedItem.product.id } }"
           >{{ savedItem.product.name }}</span
         >
-        <v-card-actions>
+        <v-card-actions class="me-n3">
           <v-btn color="primary" icon @click.prevent="deleteItem"
             ><v-icon>mdi-bookmark</v-icon></v-btn
           >
         </v-card-actions>
       </v-card-title>
       <v-card-subtitle class="accent--text pb-3 font-weight-bold">
-        {{ $formatMoney(savedItem.product.price) }}
+        {{ $currency(savedItem.product.price) }}
       </v-card-subtitle>
       <v-card-text>
         <div class="d-flex mb-3">
@@ -36,7 +36,10 @@
             :value="1"
           ></v-rating>
           <span
-            >{{ savedItem.product.reviews_aggregate.aggregate.avg.rating }} ({{
+            >{{
+              $rating(savedItem.product.reviews_aggregate.aggregate.avg.rating)
+            }}
+            ({{
               savedItem.product.reviews_aggregate.aggregate.count
             }}
             Review)</span

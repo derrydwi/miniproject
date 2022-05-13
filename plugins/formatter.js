@@ -1,5 +1,5 @@
 export default function ({ app }, inject) {
-  inject('formatMoney', (money) => {
+  inject('currency', (money) => {
     return new Intl.NumberFormat('id-ID', {
       currency: 'IDR',
       style: 'currency',
@@ -8,7 +8,11 @@ export default function ({ app }, inject) {
       .slice(0, -3)
   })
 
-  inject('formatDateTime', (dateTime) => {
+  inject('rating', (rating) => {
+    return Math.round(rating * 2) / 2
+  })
+
+  inject('dateTime', (dateTime) => {
     const dateOption = {
       weekday: 'short',
       year: 'numeric',
@@ -23,6 +27,15 @@ export default function ({ app }, inject) {
       'en-US',
       dateOption
     )} ${new Date(dateTime).toLocaleTimeString('en-US', timeOption)}`
+  })
+
+  inject('year', (date) => {
+    const dateOption = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }
+    return new Date(date).toLocaleDateString('en-US', dateOption)
   })
 
   inject('relativeTime', (d1, d2 = new Date()) => {

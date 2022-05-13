@@ -6,15 +6,31 @@
       v-model="isValid"
       @submit.prevent="isValid && $router.push({ name: 'checkout' })"
     >
-      <v-text-field
-        v-model="noHp"
-        class="input-no-hp"
-        label="No. Hp"
-        outlined
-        :counter="13"
-        :rules="[noHpRules]"
-        color="accent"
-      ></v-text-field>
+      <v-container fluid>
+        <v-row>
+          <v-col cols="12" sm="6" class="ps-0">
+            <v-text-field
+              v-model="nama"
+              label="Nama"
+              outlined
+              :rules="namaRules"
+              color="accent"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6" class="pe-0">
+            <v-text-field
+              v-model="noHp"
+              class="input-no-hp"
+              label="No. Hp"
+              outlined
+              :counter="13"
+              :rules="[noHpRules]"
+              :disabled="!nama"
+              color="accent"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
       <v-autocomplete
         v-model="provinsi"
         :items="tujuan.province"
@@ -80,7 +96,7 @@
           <v-radio
             v-for="(ongkirItem, index) in tujuan.ongkir"
             :key="index"
-            :label="`${ongkirItem.service} | ${$formatMoney(
+            :label="`${ongkirItem.service} | ${$currency(
               ongkirItem.cost[0].value
             )} | ${ongkirItem.cost[0].etd} ${courier !== 'pos' ? 'Day' : ''}`"
             :value="{
@@ -114,6 +130,7 @@ export default {
           !!Object.getOwnPropertyNames(v).length ||
           'Kota / Kabupaten is required',
       ],
+      namaRules: [(v) => !!v || 'Nama is required'],
       alamatRules: [(v) => !!v || 'Alamat is required'],
       noHpRules: (v) => {
         if (!isNaN(parseInt(v)) && v.length > 11 && v.length < 14) return true
@@ -127,6 +144,14 @@ export default {
   computed: {
     tujuan() {
       return this.$store.getters['checkout/getTujuan']
+    },
+    nama: {
+      get() {
+        return this.$store.getters['checkout/getNama']
+      },
+      set(value) {
+        this.$store.dispatch('checkout/saveNama', value)
+      },
     },
     noHp: {
       get() {

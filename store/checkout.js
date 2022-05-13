@@ -7,6 +7,7 @@ const state = () => ({
   provinsi: {},
   kotaKabupaten: {},
   alamat: '',
+  nama: '',
   noHp: '',
   courier: '',
   courierService: {
@@ -28,6 +29,9 @@ const getters = {
   },
   getAlamat: (state) => {
     return state.alamat
+  },
+  getNama: (state) => {
+    return state.nama
   },
   getNoHp: (state) => {
     return state.noHp
@@ -58,6 +62,9 @@ const mutations = {
   },
   SET_ALAMAT(state, param) {
     state.alamat = param
+  },
+  SET_NAMA(state, param) {
+    state.nama = param
   },
   SET_NO_HP(state, param) {
     state.noHp = param
@@ -130,6 +137,9 @@ const actions = {
   saveAlamat({ commit }, param) {
     commit('SET_ALAMAT', param)
   },
+  saveNama({ commit }, param) {
+    commit('SET_NAMA', param)
+  },
   saveNoHp({ commit }, param) {
     commit('SET_NO_HP', param)
   },
@@ -143,6 +153,7 @@ const actions = {
     commit('SET_PROVINSI', {})
     commit('SET_KOTA_KABUPATEN', {})
     commit('SET_ALAMAT', '')
+    commit('SET_NAMA', '')
     commit('SET_NO_HP', '')
     commit('SET_COURIER', '')
     commit('SET_COURIER_SERVICE', { service: '', price: 0 })
