@@ -15,7 +15,7 @@
           >{{ savedItem.product.name }}</span
         >
         <v-card-actions>
-          <v-btn color="primary" icon v-on="on" @click.prevent="deleteItem"
+          <v-btn color="primary" icon @click.prevent="deleteItem"
             ><v-icon>mdi-bookmark</v-icon></v-btn
           >
         </v-card-actions>

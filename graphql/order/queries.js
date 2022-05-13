@@ -2,8 +2,8 @@
 import gql from 'graphql-tag'
 
 export const getOrder = gql`
-  query getOrder {
-    order(order_by: { id: desc }) {
+  query getOrder($limit: Int!, $offset: Int!) {
+    order(order_by: { id: desc }, limit: $limit, offset: $offset) {
       id
       alamat
       no_hp
@@ -12,6 +12,7 @@ export const getOrder = gql`
       status
       transaction_token
       created_at
+      updated_at
       order_items {
         id
         quantity
@@ -62,8 +63,8 @@ export const updatePayOrder = gql`
 `
 
 export const subscriptionOrder = gql`
-  subscription subscriptionOrder {
-    order(order_by: { id: desc }) {
+  subscription subscriptionOrder($limit: Int!, $offset: Int!) {
+    order(order_by: { id: desc }, limit: $limit, offset: $offset) {
       id
       alamat
       no_hp
@@ -72,6 +73,7 @@ export const subscriptionOrder = gql`
       status
       transaction_token
       created_at
+      updated_at
       order_items {
         id
         quantity
