@@ -73,6 +73,9 @@ export const getProductDetailUser = gql`
         product_id
         quantity
       }
+      saveds {
+        id
+      }
     }
   }
 `
@@ -114,6 +117,9 @@ export const subscriptionProductDetail = gql`
         id
         product_id
         quantity
+      }
+      saveds {
+        id
       }
     }
   }

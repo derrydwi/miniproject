@@ -96,6 +96,11 @@ export default {
           to: '/',
         },
         {
+          icon: 'mdi-view-grid',
+          title: 'Category',
+          to: '/category',
+        },
+        {
           icon: 'mdi-note-text',
           title: 'Terms & Conditions',
           to: '/terms',
@@ -111,6 +116,16 @@ export default {
           icon: 'mdi-home',
           title: 'Home',
           to: '/',
+        },
+        {
+          icon: 'mdi-view-grid',
+          title: 'Category',
+          to: '/category',
+        },
+        {
+          icon: 'mdi-bookmark',
+          title: 'Saved',
+          to: '/saved',
         },
         {
           icon: 'mdi-cart',
