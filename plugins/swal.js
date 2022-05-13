@@ -1,5 +1,5 @@
 export default function ({ app }, inject) {
-  inject('showAlert', ({ text, icon, timer = 3000 }) => {
+  inject('showAlert', ({ text, icon, timer = 1500 }) => {
     app.$swal({
       toast: true,
       text,

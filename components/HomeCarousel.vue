@@ -1,9 +1,10 @@
 <template>
   <v-carousel
+    cycle
     hide-delimiters
     height="90vh"
-    :show-arrows="$vuetify.breakpoint.mdAndUp"
     class="mb-4"
+    :show-arrows="$vuetify.breakpoint.mdAndUp"
   >
     <template #prev="{ attrs, on }">
       <v-btn v-bind="attrs" color="transparent" fab depressed v-on="on">
@@ -15,16 +16,15 @@
         <v-icon size="20">mdi-arrow-right</v-icon>
       </v-btn>
     </template>
-    <template #placeholder>
+    <!-- <template #placeholder>
       <v-row class="fill-height" justify="center" align="center">
         <v-progress-circular
-          width="2"
-          size="150"
+          :size="150"
           color="primary"
           indeterminate
         ></v-progress-circular>
       </v-row>
-    </template>
+    </template> -->
     <v-carousel-item v-for="productItem in latestProduct" :key="productItem.id">
       <!-- <v-img height="100vh" :src="productItem.image_url" contain> -->
       <v-container :class="$vuetify.breakpoint.mdAndUp && 'fill-height'">
@@ -39,7 +39,11 @@
               "
               style="background-color: rgba(255, 255, 255, 0.8)"
             > -->
-            <v-card class="pa-md-10 pa-5 rounded-lg" elevation="0">
+            <v-card
+              class="pa-md-10 pa-5 rounded-lg"
+              elevation="0"
+              color="transparent"
+            >
               <h2 class="text-md-h3 text-h5">
                 {{ productItem.name }}
               </h2>
@@ -66,10 +70,8 @@
                 >Check It Out</v-btn
               >
             </v-card>
-            <!-- </div> -->
           </v-col>
           <v-col cols="12" md="5">
-            <!-- <v-img :src="productItem.image_url" class="mx-8" /> -->
             <v-img :src="productItem.image_url" class="mx-md-8 my-md-0 my-10">
               <template #placeholder>
                 <v-skeleton-loader
@@ -81,7 +83,6 @@
           </v-col>
         </v-row>
       </v-container>
-      <!-- </v-img> -->
     </v-carousel-item>
   </v-carousel>
 </template>
