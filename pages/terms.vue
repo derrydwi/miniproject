@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <h1 class="mb-4">Terms & Conditions</h1>
     <ol>
       <li>
@@ -156,7 +156,7 @@
         </p>
       </li>
     </ol>
-  </div>
+  </v-container>
 </template>
 
 <script>

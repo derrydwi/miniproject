@@ -9,14 +9,14 @@ const getters = {
 }
 
 const mutations = {
-  SET_IS_DARK(state) {
-    state.isDark = !state.isDark
+  SET_IS_DARK(state, param) {
+    state.isDark = param
   },
 }
 
 const actions = {
-  saveIsDark({ commit }) {
-    commit('SET_IS_DARK')
+  saveIsDark({ commit }, param) {
+    commit('SET_IS_DARK', param)
   },
 }
 

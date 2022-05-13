@@ -1,6 +1,15 @@
 <template>
   <div>
-    <v-row justify="center" align="center">
+    <HomeCarousel :product="product" />
+    <v-container :class="$vuetify.breakpoint.mdAndDown && 'pa-0'">
+      <div v-for="category in categoryName" :key="category">
+        <h4 class="text-md-h4 text-h5 mb-md-12 mb-4 ms-8 text-capitalize">
+          {{ category }}
+        </h4>
+        <ProductSlider :category="category" />
+      </div>
+    </v-container>
+    <!-- <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
         <div
           v-if="$auth.loggedIn"
@@ -8,9 +17,6 @@
         >
           <div v-if="$apollo.loading">Loading...</div>
           <v-btn @click="$auth.logout()">Logout</v-btn>
-          <v-btn :to="{ name: 'cart' }">Cart</v-btn>
-          <v-btn :to="{ name: 'order' }">Order</v-btn>
-          <v-btn :to="{ name: 'profile' }">Profile</v-btn>
         </div>
         <div v-else :style="[$apollo.loading && { 'min-height': '90vh' }]">
           <v-btn
@@ -63,7 +69,7 @@
         </div>
         <v-card v-intersect="onIntersect" />
       </v-col>
-    </v-row>
+    </v-row> -->
   </div>
 </template>
 
@@ -76,7 +82,6 @@ export default {
   name: 'ProductPage',
   apollo: {
     product: {
-      prefetch: true,
       query: getProduct,
       variables() {
         return {
@@ -88,6 +93,11 @@ export default {
         this.$apollo.queries.product.refetch()
       },
     },
+  },
+  data() {
+    return {
+      categoryName: ['electronic', 'fashion', 'hobby', 'jewelry'],
+    }
   },
   computed: {
     page: {

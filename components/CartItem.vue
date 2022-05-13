@@ -2,7 +2,7 @@
   <div>
     <v-card class="mx-auto my-4 el" max-width="300">
       <div class="text-right">
-        <v-btn color="teal" icon class="text-right" @click="deleteItem"
+        <v-btn color="primary" icon class="text-right" @click="deleteItem"
           ><v-icon>mdi-delete-outline</v-icon></v-btn
         >
       </div>
@@ -29,7 +29,7 @@
       </v-card-text>
       <v-card-actions>
         <v-btn
-          color="teal"
+          color="primary"
           icon
           :disabled="quantity === 1 || quantity > cartItem.product.stock"
           @click="changeStock('decrement')"
@@ -38,7 +38,7 @@
         <v-text-field
           v-model.number="quantity"
           type="number"
-          color="teal"
+          color="primary"
           class="input-quantity centered-input mt-n2"
           dense
           hide-details="auto"
@@ -46,7 +46,7 @@
           @change="changeStock('input')"
         ></v-text-field>
         <v-btn
-          color="teal"
+          color="primary"
           icon
           :disabled="quantity >= cartItem.product.stock"
           @click="changeStock('increment')"

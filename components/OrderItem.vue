@@ -43,7 +43,7 @@
       <v-card-actions>
         <v-btn
           v-if="orderItem.status !== 'SUCCESS'"
-          color="teal"
+          color="primary"
           text
           @click="pay"
           ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay Now</v-btn

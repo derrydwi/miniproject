@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
         <div v-if="$apollo.loading">Loading...</div>
@@ -26,7 +26,7 @@
                 :disabled="!tujuan.province.length"
                 label="Provinsi"
                 outlined
-                color="teal"
+                color="primary"
               ></v-autocomplete>
               <v-autocomplete
                 v-model="kotaKabupaten"
@@ -37,7 +37,7 @@
                 :disabled="!tujuan.city.length"
                 label="Kota / Kabupaten"
                 outlined
-                color="teal"
+                color="primary"
               >
                 <template slot="selection" slot-scope="data">
                   {{ data.item.type }} {{ data.item.city_name }}
@@ -51,7 +51,7 @@
                 label="Alamat"
                 outlined
                 :disabled="!kotaKabupaten.city_name"
-                color="teal"
+                color="primary"
               ></v-textarea>
               <v-text-field
                 v-model="noHp"
@@ -61,7 +61,7 @@
                 outlined
                 :disabled="!alamat"
                 :counter="13"
-                color="teal"
+                color="primary"
               ></v-text-field>
               <v-radio-group v-model="courier" :disabled="noHp.length < 12">
                 <p>Pilih Kurir</p>
@@ -70,7 +70,7 @@
                   :key="item"
                   :label="item"
                   :value="item"
-                  color="teal"
+                  color="primary"
                   class="text-uppercase"
                 ></v-radio>
                 <v-radio-group
@@ -91,7 +91,7 @@
                       service: ongkirItem.service,
                       price: ongkirItem.cost[0].value,
                     }"
-                    color="teal"
+                    color="primary"
                   ></v-radio>
                 </v-radio-group>
               </v-radio-group>
@@ -102,7 +102,7 @@
               <pre>{{ totalWeight }}</pre>
               <div class="text-center">
                 <v-btn
-                  color="teal"
+                  color="primary"
                   text
                   :disabled="!courierService.service"
                   @click="makeOrder"
@@ -114,7 +114,7 @@
         </div>
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>
