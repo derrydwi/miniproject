@@ -21,25 +21,11 @@
               <div>No Hp: {{ orderItem.no_hp }}</div>
               <div>
                 Ongkos Kirim:
-                {{
-                  orderItem.shipping_price
-                    .toLocaleString('id-id', {
-                      style: 'currency',
-                      currency: 'IDR',
-                    })
-                    .slice(0, -3)
-                }}
+                {{ $formatMoney(orderItem.shipping_price) }}
               </div>
               <div>
                 Total:
-                {{
-                  orderItem.total_price
-                    .toLocaleString('id-id', {
-                      style: 'currency',
-                      currency: 'IDR',
-                    })
-                    .slice(0, -3)
-                }}
+                {{ $formatMoney(orderItem.total_price) }}
               </div>
               <div>Telah Dibayar: {{ orderItem.is_paid }}</div>
               <div
@@ -58,26 +44,12 @@
                     {{ item.product.name }}
                   </p>
                   <div>
-                    {{
-                      item.product.price
-                        .toLocaleString('id-id', {
-                          style: 'currency',
-                          currency: 'IDR',
-                        })
-                        .slice(0, -3)
-                    }}
+                    {{ $formatMoney(item.product.price) }}
                   </div>
                   <div>Quantity: {{ item.quantity }}</div>
                   <div>
                     Price:
-                    {{
-                      item.price
-                        .toLocaleString('id-id', {
-                          style: 'currency',
-                          currency: 'IDR',
-                        })
-                        .slice(0, -3)
-                    }}
+                    {{ $formatMoney(item.price) }}
                   </div>
                 </v-card-text>
               </div>
@@ -128,23 +100,14 @@ export default {
             is_paid: true,
           },
         })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('result pembayaran', result)
-          // alert('Berhasil dibayar')
-          this.$swal({
-            toast: true,
-            text: 'Pay Success',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            position: 'top-end',
-          })
+        .then(() => {
+          this.$showAlert({ text: 'Payment Success', icon: 'success' })
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error', error)
+          this.$showAlert({
+            text: `Payment Failed. ${error.message}`,
+            icon: 'error',
+          })
         })
     },
   },

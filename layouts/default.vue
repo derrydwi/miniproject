@@ -9,7 +9,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in $auth.loggedIn ? itemsLoggedIn : itemsNotLoggedIn"
           :key="i"
           :to="item.to"
           router
@@ -73,11 +73,38 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      items: [
+      itemsNotLoggedIn: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
+          icon: 'mdi-home',
+          title: 'Home',
           to: '/',
+        },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Inspire',
+          to: '/inspire',
+        },
+      ],
+      itemsLoggedIn: [
+        {
+          icon: 'mdi-home',
+          title: 'Home',
+          to: '/',
+        },
+        {
+          icon: 'mdi-cart',
+          title: 'Cart',
+          to: '/cart',
+        },
+        {
+          icon: 'mdi-shopping',
+          title: 'Order',
+          to: '/order',
+        },
+        {
+          icon: 'mdi-account',
+          title: 'Profile',
+          to: '/profile',
         },
         {
           icon: 'mdi-chart-bubble',

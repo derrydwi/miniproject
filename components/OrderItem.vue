@@ -15,27 +15,13 @@
         <div>
           <div class="d-flex justify-space-between">
             <div>
-              {{
-                orderItem.product.price
-                  .toLocaleString('id-id', {
-                    style: 'currency',
-                    currency: 'IDR',
-                  })
-                  .slice(0, -3)
-              }}
+              {{ $formatMoney(orderItem.product.price) }}
             </div>
             <div>x{{ orderItem.quantity }}</div>
           </div>
           <div>
             Price:
-            {{
-              (orderItem.product.price * orderItem.quantity)
-                .toLocaleString('id-id', {
-                  style: 'currency',
-                  currency: 'IDR',
-                })
-                .slice(0, -3)
-            }}
+            {{ $formatMoney(orderItem.product.price * orderItem.quantity) }}
           </div>
         </div>
       </v-card-text>

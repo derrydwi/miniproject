@@ -2,7 +2,6 @@
   <div>
     <div v-if="$apollo.loading">Loading...</div>
     <div v-else>
-      <pre>isLogin: {{ $auth.loggedIn }}</pre>
       <pre>cart: {{ cart }}</pre>
       <v-row justify="center">
         <v-col cols="11" md="7">
@@ -31,14 +30,7 @@
             </div>
           </div>
           <h5 class="text-center text-md-h5 font-weight-bold mb-4">
-            {{
-              productDetail.price
-                .toLocaleString('id-id', {
-                  style: 'currency',
-                  currency: 'IDR',
-                })
-                .slice(0, -3)
-            }}
+            {{ $formatMoney(productDetail.price) }}
           </h5>
           <v-img
             :src="productDetail.image_url"
@@ -101,36 +93,76 @@
               ><v-icon class="mr-2">mdi-cart</v-icon> Add To Cart</v-btn
             >
           </div>
-          <h5 class="text-md-h5 mb-4">Review</h5>
-          <div v-for="review in productDetail.reviews" :key="review.id">
-            <div class="d-flex justify-start align-center mb-4">
+          <div v-if="productDetail.reviews.length">
+            <h5 class="text-md-h5 mb-4">Review</h5>
+            <div v-for="review in productDetail.reviews" :key="review.id">
+              <div class="d-flex justify-start align-center mb-4">
+                <v-rating
+                  color="teal"
+                  background-color="grey lighten-1"
+                  class="mr-4"
+                  half-increments
+                  length="5"
+                  readonly
+                  dense
+                  size="20"
+                  :value="review.rating"
+                ></v-rating>
+                <span>
+                  {{ $relativeTime(review.created_at) }}
+                </span>
+              </div>
+              <div class="d-flex justify-start align-center mb-4">
+                <v-img
+                  :src="review.user.picture"
+                  max-width="30"
+                  class="rounded-circle mr-2"
+                />
+                <span>{{ review.user.username }}</span>
+              </div>
+              <p class="mb-8">{{ review.comment }}</p>
+            </div>
+          </div>
+          <div v-else>
+            <v-alert type="info" color="teal" text>No review yet</v-alert>
+          </div>
+          <div v-if="$auth.loggedIn && !isReviewed">
+            <h6 class="text-md-h6 mb-4">Write Review</h6>
+            <v-form
+              ref="form"
+              v-model="isValid"
+              @submit.prevent="isValid && submitReview"
+            >
               <v-rating
+                v-model="rating"
+                class="ml-n2 mb-4"
                 color="teal"
                 background-color="grey lighten-1"
-                class="mr-4"
-                half-increments
-                length="5"
-                readonly
-                dense
-                size="20"
-                :value="review.rating"
               ></v-rating>
-              <span>
-                {{ getRelativeTime(+new Date(review.created_at)) }}
-              </span>
-            </div>
-            <div class="d-flex justify-start align-center mb-4">
-              <!-- <v-avatar color="teal" size="35" class="mr-2">{{
-            review.user.username.substr(0, 2).toUpperCase()
-          }}</v-avatar> -->
-              <v-img
-                :src="review.user.picture"
-                max-width="30"
-                class="rounded-circle mr-2"
-              />
-              <span>{{ review.user.username }}</span>
-            </div>
-            <p class="mb-8">{{ review.comment }}</p>
+              <v-textarea
+                v-model="reviewDesc"
+                label="Review"
+                color="teal"
+                outlined
+              ></v-textarea>
+              <v-btn
+                color="teal"
+                text
+                :disabled="!reviewDesc || !rating"
+                @click="submitReview"
+                ><v-icon class="mr-2">mdi-send</v-icon>Submit</v-btn
+              >
+            </v-form>
+          </div>
+          <div v-else-if="$auth.loggedIn && isReviewed">
+            <v-alert type="info" color="teal" text
+              >You're already review this product</v-alert
+            >
+          </div>
+          <div v-else-if="!$auth.loggedIn">
+            <v-alert type="info" color="teal" text
+              >Login to review this product</v-alert
+            >
           </div>
         </v-col>
       </v-row>
@@ -145,6 +177,8 @@ import {
   insertToCart,
   updateToCart,
   subscriptionCart,
+  insertReview,
+  getOrder,
 } from '~/graphql/queries'
 
 export default {
@@ -158,6 +192,12 @@ export default {
     },
     cart: {
       query: getCart,
+      skip() {
+        return !this.$auth.loggedIn
+      },
+    },
+    order: {
+      query: getOrder,
       skip() {
         return !this.$auth.loggedIn
       },
@@ -177,6 +217,9 @@ export default {
   data() {
     return {
       quantity: 1,
+      isValid: false,
+      rating: 0,
+      reviewDesc: '',
       numberRule: (v) => {
         if (!isNaN(parseInt(v)) && v >= 1 && v <= this.productDetail.stock)
           return true
@@ -190,35 +233,19 @@ export default {
         (x) => x.product.id === parseInt(this.$route.params.id)
       )
     },
+    isReviewed() {
+      return this.productDetail.reviews.find(
+        (x) => x.user.id === this.$auth.user.sub
+      )
+    },
   },
   methods: {
-    getRelativeTime(d1, d2 = new Date()) {
-      const units = {
-        year: 24 * 60 * 60 * 1000 * 365,
-        month: (24 * 60 * 60 * 1000 * 365) / 12,
-        day: 24 * 60 * 60 * 1000,
-        hour: 60 * 60 * 1000,
-        minute: 60 * 1000,
-        second: 1000,
-      }
-      const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
-      const elapsed = d1 - d2
-      for (const u in units) {
-        if (Math.abs(elapsed) > units[u] || u === 'second') {
-          return rtf.format(Math.round(elapsed / units[u]), u)
-        }
-      }
-    },
     isLoginValidation() {
       if (!this.$auth.loggedIn) {
-        this.$swal({
-          toast: true,
+        this.$showAlert({
           text: "You're Not Logged In\nRedirecting...",
           icon: 'info',
           timer: 1000,
-          timerProgressBar: true,
-          showConfirmButton: false,
-          position: 'top-end',
         })
         this.$auth.loginWith('auth0', { params: { prompt: 'login' } })
       }
@@ -229,14 +256,9 @@ export default {
         this.sameItem &&
         this.quantity + this.sameItem.quantity > this.sameItem.product.stock
       ) {
-        this.$swal({
-          toast: true,
-          text: 'Kuantitas yang dipilih melebihi stok yang tersedia',
+        this.$showAlert({
+          text: 'Quantity should not exceed the stock',
           icon: 'error',
-          timer: 3000,
-          timerProgressBar: true,
-          showConfirmButton: false,
-          position: 'top-end',
         })
         return
       }
@@ -254,23 +276,35 @@ export default {
             }),
           },
         })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('result', result)
-          // alert('Berhasil ditambahkan ke cart')
-          this.$swal({
-            toast: true,
-            text: 'Cart Updated',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            position: 'top-end',
-          })
+        .then(() => {
+          this.$showAlert({ text: 'Cart Updated', icon: 'success' })
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error', error)
+          this.$showAlert({
+            text: `Can't add produt to cart. ${error.message}`,
+            icon: 'error',
+          })
+        })
+    },
+    submitReview() {
+      this.$apollo
+        .mutate({
+          mutation: insertReview,
+          variables: {
+            product_id: this.$route.params.id,
+            rating: this.rating,
+            comment: this.reviewDesc,
+          },
+        })
+        .then(() => {
+          this.$apollo.queries.productDetail.refetch()
+          this.$showAlert({ text: 'Review Submitted', icon: 'success' })
+        })
+        .catch((error) => {
+          this.$showAlert({
+            text: `Can't submit the review. ${error.message}`,
+            icon: 'error',
+          })
         })
     },
   },
