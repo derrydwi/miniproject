@@ -17,7 +17,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: ['~/assets/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -83,6 +83,7 @@ export default {
   auth: {
     redirect: {
       login: '/', // redirect user when not connected
+      home: '/product',
       callback: '/callback',
     },
     strategies: {
@@ -97,9 +98,19 @@ export default {
 
   apollo: {
     clientConfigs: {
+      // default: '~/plugins/apollo-config.js',
       default: {
         httpEndpoint: 'https://capital-airedale-21.hasura.app/v1/graphql',
+        wsEndpoint: 'ws://capital-airedale-21.hasura.app/v1/graphql',
+        tokenName: 'auth._token.auth0',
+        // httpLinkOptions: {
+        //   headers: {
+        //     'x-hasura-default-role': 'anonymous',
+        //   },
+        // },
       },
     },
+    authenticationType: '',
+    // },
   },
 }

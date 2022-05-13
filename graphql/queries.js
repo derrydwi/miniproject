@@ -26,6 +26,7 @@ export const getCart = gql`
   query {
     cart {
       id
+      quantity
       product {
         id
         name
@@ -58,6 +59,65 @@ export const getOrder = gql`
           image_url
           price
         }
+      }
+    }
+  }
+`
+
+export const getProductDetail = gql`
+  query ($_eq: Int!) {
+    productDetail: product(where: { id: { _eq: $_eq } }) {
+      id
+      name
+      description
+      image_url
+      price
+      stock
+      reviews_aggregate {
+        aggregate {
+          avg {
+            rating
+          }
+          count(columns: id)
+        }
+      }
+      reviews {
+        id
+        name
+        comment
+        rating
+        created_at
+      }
+    }
+  }
+`
+
+export const insertToCart = gql`
+  mutation ($product_id: Int!, $quantity: Int!) {
+    insert_cart_one(object: { product_id: $product_id, quantity: $quantity }) {
+      id
+    }
+  }
+`
+
+export const updateToCart = gql`
+  mutation ($id: Int!, $quantity: Int!) {
+    update_cart_by_pk(pk_columns: { id: $id }, _set: { quantity: $quantity }) {
+      id
+    }
+  }
+`
+
+export const subscriptionCart = gql`
+  subscription {
+    cart {
+      id
+      quantity
+      product {
+        id
+        name
+        image_url
+        price
       }
     }
   }
