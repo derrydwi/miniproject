@@ -139,7 +139,6 @@ export default {
         .then(() => {
           this.$showAlert({ text: 'Order Successful', icon: 'success' })
           this.$router.replace({ name: 'order' })
-          this.$store.dispatch('checkout/deleteShippingDetail')
         })
         .catch((error) => {
           this.$showAlert({

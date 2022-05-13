@@ -1,56 +1,210 @@
 <template>
-  <div>
-    <v-card class="mx-auto my-4" max-width="300">
-      <div>
-        {{ new Date(orderItem.created_at).toUTCString().substring(0, 22) }}
-      </div>
-      <div>Alamat: {{ orderItem.alamat }}</div>
-      <div>No Hp: {{ orderItem.no_hp }}</div>
-      <div>
-        Ongkos Kirim:
-        {{ $formatMoney(orderItem.shipping_price) }}
-      </div>
-      <div>
-        Total:
-        {{ $formatMoney(orderItem.total_price) }}
-      </div>
-      <div>Telah Dibayar: {{ orderItem.status }}</div>
-      <div
-        v-for="item in orderItem.order_items"
-        :key="item.id"
-        class="px-4 py-4"
+  <v-card class="mx-auto pa-4 mb-4" width="800" outlined>
+    <div class="d-flex justify-start align-center mb-4 text-md-body-2">
+      <span class="me-4">{{
+        new Date(orderItem.created_at).toLocaleDateString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      }}</span>
+      <span class="me-4">{{
+        new Date(orderItem.created_at).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      }}</span>
+      <span class="me-4"
+        >INV/{{
+          new Date()
+            .toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+            })
+            .replace('-', '/')
+            .split('T')[0]
+            .replace('-', '/')
+        }}/{{ orderItem.id }}</span
       >
-        <v-img
-          contain
-          max-width="800"
-          max-height="200"
-          :src="item.product.image_url"
-        />
-        <v-card-text class="text--primary">
-          <p class="text-h5 text--primary">
-            {{ item.product.name }}
-          </p>
-          <div>
-            {{ $formatMoney(item.product.price) }}
-          </div>
-          <div>Quantity: {{ item.quantity }}</div>
-          <div>
-            Price:
-            {{ $formatMoney(item.price) }}
-          </div>
-        </v-card-text>
-      </div>
-      <v-card-actions>
-        <v-btn
-          v-if="orderItem.status !== 'SUCCESS'"
-          color="primary"
-          text
-          @click="pay"
-          ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay Now</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-  </div>
+      <v-chip :color="statusColor" label small class="text-capitalize">{{
+        orderItem.status
+      }}</v-chip>
+    </div>
+    <v-list-item
+      v-for="item in orderItem.order_items"
+      :key="item.id"
+      class="mb-4"
+    >
+      <v-list-item-avatar tile size="150">
+        <v-img contain :src="item.product.image_url" />
+      </v-list-item-avatar>
+      <v-list-item-content class="ms-4">
+        <v-list-item-title class="text-h6 mb-4">
+          {{ item.product.name }}
+        </v-list-item-title>
+        <v-list-item-subtitle class="d-flex justify-space-between">
+          <span>
+            {{ item.quantity }} item x {{ $formatMoney(item.product.price) }}
+          </span>
+          <span class="font-weight-bold">
+            {{ $formatMoney(item.product.price * item.quantity) }}
+          </span>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+    <v-card-actions>
+      <v-spacer />
+      <span class="text-md-body-1 font-weight-bold me-4">Total Bill : </span>
+      <span class="text-md-body-1 font-weight-bold accent--text">{{
+        $formatMoney(orderItem.total_price)
+      }}</span>
+    </v-card-actions>
+    <v-card-actions class="justify-end">
+      <v-dialog v-model="dialog" width="600px">
+        <template #activator="{ on, attrs }">
+          <v-btn color="accent" dark v-bind="attrs" text v-on="on">
+            Detail
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5 mb-2">Order Detail</span>
+          </v-card-title>
+          <v-card-text>
+            <p class="text-md-body-1 font-weight-bold">Status</p>
+            <v-timeline class="mb-4">
+              <v-timeline-item small>
+                <template #opposite>
+                  <span class="text-start"
+                    >{{
+                      new Date(orderItem.created_at).toLocaleDateString(
+                        'en-US',
+                        {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }
+                      )
+                    }}
+                    {{
+                      new Date(orderItem.created_at).toLocaleTimeString(
+                        'en-US',
+                        {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }
+                      )
+                    }}</span
+                  >
+                </template>
+                <div class="py-4 font-weight-bold accent--text">
+                  Order Received
+                </div>
+              </v-timeline-item>
+              <v-timeline-item v-if="orderItem.status !== 'PENDING'" small>
+                <div class="py-4 font-weight-bold text-right accent--text">
+                  {{
+                    orderItem.status === 'SUCCESS'
+                      ? 'Payment Received'
+                      : 'Payment Canceled'
+                  }}
+                </div>
+                <template #opposite>
+                  <span
+                    >{{
+                      new Date(orderItem.updated_at).toLocaleDateString(
+                        'en-US',
+                        {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }
+                      )
+                    }}
+                    {{
+                      new Date(orderItem.updated_at).toLocaleTimeString(
+                        'en-US',
+                        {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }
+                      )
+                    }}</span
+                  >
+                </template>
+              </v-timeline-item>
+            </v-timeline>
+            <v-divider class="mb-4" />
+            <p class="text-md-body-1 font-weight-bold">Item Detail</p>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Total Item</span>
+              <span class="text-right"
+                >{{ orderItem.order_items.length }} item</span
+              >
+            </div>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Total Weight</span>
+              <span class="text-right">{{ totalWeight }} g</span>
+            </div>
+            <v-divider class="mb-4" />
+            <p class="text-md-body-1 font-weight-bold">Shipping Detail</p>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Name</span>
+              <span class="text-right">{{ $auth.user.nickname }}</span>
+            </div>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Address</span>
+              <span class="text-right">{{ orderItem.alamat }}</span>
+            </div>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Phone Number</span>
+              <span class="text-right">{{ orderItem.no_hp }}</span>
+            </div>
+            <v-divider class="mb-4" />
+            <p class="text-md-body-1 font-weight-bold">Summary</p>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Shipping Price</span>
+              <span class="text-right">{{
+                $formatMoney(orderItem.shipping_price)
+              }}</span>
+            </div>
+            <div class="d-flex justify-space-between mb-4">
+              <span>Total Price</span>
+              <span class="text-right">{{ $formatMoney(totalItemPrice) }}</span>
+            </div>
+            <v-divider class="mb-4" />
+            <div class="d-flex justify-space-between">
+              <span class="text-md-h6 font-weight-bold accent--text"
+                >Total Bill</span
+              >
+              <span
+                class="text-md-h6 font-weight-bold accent--text text-right"
+                >{{ $formatMoney(orderItem.total_price) }}</span
+              >
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="accent" text class="mb-4" @click="dialog = false">
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-btn
+        v-if="orderItem.status !== 'SUCCESS'"
+        class="ms-4"
+        color="accent"
+        depressed
+        @click="pay"
+        ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay Now</v-btn
+      >
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -63,10 +217,11 @@ export default {
         return {}
       },
     },
-    index: {
-      type: Number,
-      default: 0,
-    },
+  },
+  data() {
+    return {
+      dialog: false,
+    }
   },
   head: {
     script: [
@@ -75,6 +230,40 @@ export default {
         'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
       },
     ],
+  },
+  computed: {
+    statusColor() {
+      switch (this.orderItem.status) {
+        case 'PENDING':
+          return 'secondary'
+        case 'SUCCESS':
+          return 'success'
+        case 'CANCEL':
+          return 'error'
+        default:
+          return 'secondary'
+      }
+    },
+    totalItemPrice() {
+      const pricePerItem = this.orderItem.order_items.map(
+        (item) => item.product.price * item.quantity
+      )
+      const totalPrice = pricePerItem.reduce(
+        (prev, current) => prev + current,
+        0
+      )
+      return totalPrice
+    },
+    totalWeight() {
+      const weightPerItem = this.orderItem.order_items.map(
+        (item) => item.product.weight * item.quantity
+      )
+      const totalWeight = weightPerItem.reduce(
+        (prev, current) => prev + current,
+        0
+      )
+      return totalWeight
+    },
   },
   methods: {
     pay() {
@@ -93,19 +282,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.input-quantity >>> input[type='number'] {
-  -moz-appearance: textfield;
-}
-.input-quantity >>> input::-webkit-outer-spin-button,
-.input-quantity >>> input::-webkit-inner-spin-button {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.centered-input >>> input {
-  text-align: center;
-}
-</style>

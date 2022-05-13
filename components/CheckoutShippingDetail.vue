@@ -22,6 +22,9 @@
         item-text="province"
         return-object
         :rules="provinsiRules"
+        :disabled="
+          noHp.length < 12 || noHp.length > 13 || !tujuan.province.length
+        "
         label="Provinsi"
         outlined
         color="accent"
@@ -33,6 +36,7 @@
         item-text="city_name"
         return-object
         :rules="kotaKabupatenRules"
+        :disabled="!tujuan.city.length"
         label="Kota / Kabupaten"
         outlined
         color="accent"
@@ -49,9 +53,15 @@
         label="Alamat"
         outlined
         :rules="alamatRules"
+        :disabled="!kotaKabupaten.city_name"
         color="accent"
       ></v-textarea>
-      <v-radio-group v-model="courier" :rules="courierRules" class="mt-0">
+      <v-radio-group
+        v-model="courier"
+        :rules="courierRules"
+        :disabled="!alamat"
+        class="mt-0"
+      >
         <p>Pilih Kurir</p>
         <v-radio
           v-for="item in courierItems"
@@ -96,9 +106,13 @@ export default {
   },
   data() {
     return {
-      provinsiRules: [(v) => !!Object.keys(v).length || 'Provinsi is required'],
+      provinsiRules: [
+        (v) => !!Object.getOwnPropertyNames(v).length || 'Provinsi is required',
+      ],
       kotaKabupatenRules: [
-        (v) => !!Object.keys(v).length || 'Kota / Kabupaten is required',
+        (v) =>
+          !!Object.getOwnPropertyNames(v).length ||
+          'Kota / Kabupaten is required',
       ],
       alamatRules: [(v) => !!v || 'Alamat is required'],
       noHpRules: (v) => {
@@ -173,11 +187,13 @@ export default {
   },
   watch: {
     provinsi() {
-      this.$store.dispatch('checkout/fetchWilayah', {
-        type: 'city',
-        param: 'provincea',
-        id: this.provinsi.province_id,
-      })
+      if (this.provinsi.province_id) {
+        this.$store.dispatch('checkout/fetchWilayah', {
+          type: 'city',
+          param: 'province',
+          id: this.provinsi.province_id,
+        })
+      }
       this.$store.dispatch('checkout/saveKotaKabupaten', {})
       this.$store.dispatch('checkout/saveAlamat', '')
       this.$store.dispatch('checkout/saveCourier', '')
@@ -190,8 +206,11 @@ export default {
       this.fetchOngkir()
     },
   },
-  mounted() {
+  created() {
+    this.$store.dispatch('checkout/deleteShippingDetail')
     this.$store.dispatch('checkout/deleteTujuan')
+  },
+  mounted() {
     this.$store.dispatch('checkout/fetchWilayah', { type: 'province' })
   },
   methods: {

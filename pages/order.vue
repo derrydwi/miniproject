@@ -1,198 +1,98 @@
 <template>
-  <BaseLoading v-if="$apollo.loading" />
-  <v-container v-else>
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="6">
-        <p>Order</p>
-        <div>
-          <OrderItem
-            v-for="(orderItem, index) in order"
-            :key="orderItem.id"
-            :index="index"
-            :order-item="orderItem"
-          />
-          <!-- <v-card
-              v-for="orderItem in order"
-              :key="orderItem.id"
-              class="mx-auto my-4"
-              max-width="300"
-            >
-              <div>
-                {{
-                  new Date(orderItem.created_at).toUTCString().substring(0, 22)
-                }}
-              </div>
-              <div>Alamat: {{ orderItem.alamat }}</div>
-              <div>No Hp: {{ orderItem.no_hp }}</div>
-              <div>
-                Ongkos Kirim:
-                {{ $formatMoney(orderItem.shipping_price) }}
-              </div>
-              <div>
-                Total:
-                {{ $formatMoney(orderItem.total_price) }}
-              </div>
-              <div>Telah Dibayar: {{ orderItem.status }}</div>
-              <div
-                v-for="item in orderItem.order_items"
-                :key="item.id"
-                class="px-4 py-4"
-              >
-                <v-img
-                  contain
-                  max-width="800"
-                  max-height="200"
-                  :src="item.product.image_url"
-                />
-                <v-card-text class="text--primary">
-                  <p class="text-h5 text--primary">
-                    {{ item.product.name }}
-                  </p>
-                  <div>
-                    {{ $formatMoney(item.product.price) }}
-                  </div>
-                  <div>Quantity: {{ item.quantity }}</div>
-                  <div>
-                    Price:
-                    {{ $formatMoney(item.price) }}
-                  </div>
-                </v-card-text>
-              </div>
-              <v-card-actions>
-                <v-btn
-                  v-if="orderItem.status !== 'settlement'"
-                  color="primary"
-                  text
-                  @click="pay(orderItem.id)"
-                  ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay
-                  Now</v-btn
-                >
-              </v-card-actions>
-            </v-card> -->
-        </div>
+  <v-container style="min-height: 90vh">
+    <v-row dense>
+      <v-col cols="12" md="9" class="mx-auto">
+        <h2 class="mt-2 mb-7 text-center">Order</h2>
+        <v-row class="my-3">
+          <template v-for="orderItem in order">
+            <v-fade-transition :key="orderItem.id">
+              <OrderItem :order-item="orderItem" />
+            </v-fade-transition>
+          </template>
+        </v-row>
       </v-col>
     </v-row>
+    <BaseLoading v-if="$apollo.queries.order.loading" />
+    <v-card
+      v-intersect="onIntersect"
+      height="50"
+      color="transparent"
+      elevation="0"
+    />
   </v-container>
 </template>
 
 <script>
-import {
-  getOrder,
-  subscriptionOrder,
-  // updatePayOrder,
-} from '~/graphql/order/queries'
+import { getOrder, subscriptionOrder } from '~/graphql/order/queries'
+
+const pageSize = 5
 
 export default {
   name: 'OrderPage',
   middleware: 'auth',
-  // head: {
-  //   script: [
-  //     {
-  //       src: 'https://app.sandbox.midtrans.com/snap/snap.js',
-  //       'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
-  //     },
-  //   ],
-  // },
   apollo: {
     order: {
       query: getOrder,
+      variables() {
+        return {
+          limit: pageSize,
+          offset: 0,
+        }
+      },
       subscribeToMore: {
         document: subscriptionOrder,
+        variables() {
+          return {
+            limit: pageSize,
+            offset: 0,
+          }
+        },
         updateQuery: (_, { subscriptionData }) => {
           return { order: subscriptionData.data.order }
         },
       },
     },
   },
-  // methods: {
-  //   pay(orderId) {
-  //     const body = {
-  //       transaction_details: {
-  //         order_id: orderId,
-  //         gross_amount: 5000,
-  //       },
-  //       credit_card: {
-  //         secure: true,
-  //       },
-  //       item_details: [
-  //         {
-  //           id: 'ITEM1',
-  //           price: 5000,
-  //           quantity: 1,
-  //           name: 'Midtrans Bear',
-  //           brand: 'Midtrans',
-  //           category: 'Toys',
-  //           merchant_name: 'Midtrans',
-  //         },
-  //       ],
-  //       customer_details: {
-  //         first_name: 'Johnn',
-  //         last_name: 'Watsonn',
-  //         email: 'test@example.com',
-  //         phone: '+628123456',
-  //         billing_address: {
-  //           first_name: 'John',
-  //           last_name: 'Watson',
-  //           email: 'test@example.com',
-  //           phone: '081 2233 44-55',
-  //           address: 'Sudirman',
-  //           city: 'Jakarta',
-  //           postal_code: '12190',
-  //           country_code: 'IDN',
-  //         },
-  //         shipping_address: {
-  //           first_name: 'John',
-  //           last_name: 'Watson',
-  //           email: 'test@example.com',
-  //           phone: '0 8128-75 7-9338',
-  //           address: 'Sudirman',
-  //           city: 'Jakarta',
-  //           postal_code: '12190',
-  //           country_code: 'IDN',
-  //         },
-  //       },
-  //     }
-  //     this.$axios
-  //       .post('/api/pay', body)
-  //       .then((result) => {
-  //         // eslint-disable-next-line no-console
-  //         console.log(result.data)
-  //         window.snap.pay(result.data.transactionToken, {
-  //           onSuccess(result) {
-  //             // this.$showAlert({ text: 'Payment Success', icon: 'success' })
-  //             alert('Payment Success')
-  //             // eslint-disable-next-line no-console
-  //             console.log(result)
-  //           },
-  //           onPending(result) {
-  //             // this.$showAlert({ text: 'Wating your payment', icon: 'info' })
-  //             alert('Wating your payment')
-  //             // eslint-disable-next-line no-console
-  //             console.log(result)
-  //           },
-  //           onError(result) {
-  //             // this.$showAlert({ text: 'Payment Failed', icon: 'error' })
-  //             alert('Payment Failed')
-  //             // eslint-disable-next-line no-console
-  //             console.log(result)
-  //           },
-  //           onClose() {
-  //             // this.$showAlert({
-  //             //   text: 'You closed the popup without finishing the payment',
-  //             //   icon: 'info',
-  //             // })
-  //             alert('You closed the popup without finishing the payment')
-  //           },
-  //         })
-  //       })
-  //       .catch((error) => {
-  //         // this.$showAlert({
-  //         //   text: `Can't make payment. ${error.message}`,
-  //         //   icon: 'error',
-  //         // })
-  //         alert(`Can't make payment. ${error.message}`)
-  //       })
-  //   },
-  // },
+  computed: {
+    page: {
+      get() {
+        return this.$store.getters['product/getPage']
+      },
+      set(value) {
+        this.$store.dispatch('product/savePage', value)
+      },
+    },
+    hasMore: {
+      get() {
+        return this.$store.getters['product/getHasMore']
+      },
+      set(value) {
+        this.$store.dispatch('product/saveHasMore', value)
+      },
+    },
+  },
+  methods: {
+    fetchMore() {
+      this.page++
+      this.$apollo.queries.order.fetchMore({
+        variables: {
+          limit: pageSize,
+          offset: this.page * pageSize,
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          if (fetchMoreResult.order.length < pageSize) this.hasMore = false
+          return {
+            order: [...previousResult.order, ...fetchMoreResult.order],
+          }
+        },
+        error() {
+          this.$apollo.queries.order.refetch()
+        },
+      })
+    },
+    onIntersect(entries, observer, isIntersecting) {
+      if (isIntersecting && this.hasMore) this.fetchMore()
+    },
+  },
 }
 </script>
