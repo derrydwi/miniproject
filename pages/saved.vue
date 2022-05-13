@@ -1,18 +1,14 @@
 <template>
-  <v-container>
+  <BaseLoading v-if="$apollo.loading" />
+  <v-container v-else>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <BaseLoading v-if="$apollo.loading" />
-        <div v-else>
-          <div>
-            <p>Saved</p>
-            <SavedItem
-              v-for="savedItem in saved"
-              :key="savedItem.id"
-              :saved-item="savedItem"
-            />
-          </div>
-        </div>
+        <p>Saved</p>
+        <SavedItem
+          v-for="savedItem in saved"
+          :key="savedItem.id"
+          :saved-item="savedItem"
+        />
       </v-col>
     </v-row>
   </v-container>

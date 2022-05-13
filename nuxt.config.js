@@ -1,5 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
-
 export default {
   ssr: false,
 
@@ -68,34 +66,12 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
+    optionsPath: '~/plugins/vuetify.options.js',
     customVariables: ['~/assets/variables.scss'],
     treeShake: true,
     defaultAssets: {
       font: {
         family: 'Open Sans',
-      },
-    },
-    theme: {
-      light: true,
-      themes: {
-        light: {
-          primary: colors.deepPurple.darken2,
-          accent: colors.deepPurple.lighten1,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
-        },
-        dark: {
-          primary: colors.deepPurple.darken2,
-          accent: colors.deepPurple.lighten1,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
-        },
       },
     },
   },
