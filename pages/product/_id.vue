@@ -3,9 +3,10 @@
   <v-container v-else>
     <v-row justify="space-around">
       <v-col cols="12" md="11">
-        <h4 class="text-center text-md-h4 text-h5 font-weight-bold my-4">
-          {{ productDetail.name }}
-        </h4>
+        <h4
+          class="text-center text-md-h4 text-h5 font-weight-bold my-4"
+          v-text="productDetail.name"
+        />
         <div class="text-center mb-4">
           <div class="d-flex justify-center align-center mt-2">
             <v-rating
@@ -27,9 +28,10 @@
             >
           </div>
         </div>
-        <h5 class="text-center text-md-h5 text-h6 font-weight-bold mb-4">
-          {{ $currency(productDetail.price) }}
-        </h5>
+        <h5
+          class="text-center text-md-h5 text-h6 font-weight-bold mb-4"
+          v-text="$currency(productDetail.price)"
+        />
       </v-col>
       <v-col cols="11" md="7">
         <div>
@@ -47,9 +49,11 @@
               ></v-skeleton-loader>
             </template>
           </v-img>
-          <p class="mt-5 mb-4" style="line-height: 1.8">
-            {{ productDetail.description }}
-          </p>
+          <p
+            class="mt-5 mb-4"
+            style="line-height: 1.8"
+            v-text="productDetail.description"
+          />
           <v-chip
             outlined
             label
@@ -58,9 +62,8 @@
               name: 'category-name',
               params: { name: productDetail.category.toLowerCase() },
             }"
-          >
-            {{ productDetail.category }}
-          </v-chip>
+            v-text="productDetail.category"
+          />
           <p class="mt-5 mb-4">
             {{
               !productDetail.stock
@@ -90,9 +93,7 @@
                   size="20"
                   :value="review.rating"
                 ></v-rating>
-                <span>
-                  {{ $relativeTime(review.created_at) }}
-                </span>
+                <span v-text="$relativeTime(review.created_at)" />
               </div>
               <div class="d-flex justify-start align-center mb-4">
                 <v-img
@@ -100,9 +101,9 @@
                   max-width="30"
                   class="rounded-circle mr-2"
                 />
-                <span>{{ review.user.username }}</span>
+                <span v-text="review.user.username" />
               </div>
-              <p class="mb-0">{{ review.comment }}</p>
+              <p class="mb-0" v-text="review.comment" />
             </v-card>
           </div>
           <div v-else>
@@ -122,7 +123,7 @@
                 background-color="grey lighten-1"
               ></v-rating>
               <v-textarea
-                v-model="reviewDesc"
+                v-model="reviewDescription"
                 label="Review"
                 color="primary"
                 outlined
@@ -130,7 +131,7 @@
               <v-btn
                 color="primary"
                 text
-                :disabled="!reviewDesc || !rating"
+                :disabled="!reviewDescription || !rating"
                 @click="submitReview"
                 ><v-icon class="mr-2">mdi-send</v-icon>Submit</v-btn
               >
@@ -181,8 +182,11 @@
             </div>
             <div class="text-center">
               <div class="ma-6">
-                Subtotal :
-                <strong>{{ $currency(productDetail.price * quantity) }}</strong>
+                <span>Subtotal:</span>
+                <span
+                  class="font-weight-bold"
+                  v-text="$currency(productDetail.price * quantity)"
+                />
               </div>
               <v-btn
                 class="mb-4"
@@ -259,7 +263,7 @@ export default {
       quantity: 1,
       isValid: false,
       rating: 0,
-      reviewDesc: '',
+      reviewDescription: '',
       numberRule: (v) => {
         if (!isNaN(parseInt(v)) && v >= 1 && v <= this.productDetail.stock)
           return true
@@ -339,7 +343,7 @@ export default {
           variables: {
             product_id: this.$route.params.id,
             rating: this.rating,
-            comment: this.reviewDesc,
+            comment: this.reviewDescription,
           },
         })
         .then(() => {

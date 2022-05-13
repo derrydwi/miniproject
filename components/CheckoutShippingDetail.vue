@@ -13,7 +13,7 @@
               v-model="nama"
               label="Nama"
               outlined
-              :rules="namaRules"
+              :rules="rules.namaRules"
               color="accent"
             ></v-text-field>
           </v-col>
@@ -24,7 +24,7 @@
               label="No. Hp"
               outlined
               :counter="13"
-              :rules="[noHpRules]"
+              :rules="[rules.noHpRules]"
               :disabled="!nama"
               color="accent"
             ></v-text-field>
@@ -37,7 +37,7 @@
         item-value="province_id"
         item-text="province"
         return-object
-        :rules="provinsiRules"
+        :rules="rules.provinsiRules"
         :disabled="
           noHp.length < 12 || noHp.length > 13 || !tujuan.province.length
         "
@@ -51,7 +51,7 @@
         item-value="city_id"
         item-text="city_name"
         return-object
-        :rules="kotaKabupatenRules"
+        :rules="rules.kotaKabupatenRules"
         :disabled="!tujuan.city.length"
         label="Kota / Kabupaten"
         outlined
@@ -68,13 +68,13 @@
         v-model="alamat"
         label="Alamat"
         outlined
-        :rules="alamatRules"
+        :rules="rules.alamatRules"
         :disabled="!kotaKabupaten.city_name"
         color="accent"
       ></v-textarea>
       <v-radio-group
         v-model="courier"
-        :rules="courierRules"
+        :rules="rules.courierRules"
         :disabled="!alamat"
         class="mt-0"
       >
@@ -90,7 +90,7 @@
         <v-radio-group
           v-if="courier"
           v-model="courierService"
-          :rules="courierServiceRules"
+          :rules="rules.courierServiceRules"
         >
           <p>Pilih Layanan</p>
           <v-radio
@@ -112,8 +112,11 @@
 </template>
 
 <script>
+import FormMixins from '~/mixins/FormMixins'
+
 export default {
   name: 'CheckoutShippingDetail',
+  mixins: [FormMixins],
   props: {
     totalWeight: {
       type: Number,
@@ -122,22 +125,6 @@ export default {
   },
   data() {
     return {
-      provinsiRules: [
-        (v) => !!Object.getOwnPropertyNames(v).length || 'Provinsi is required',
-      ],
-      kotaKabupatenRules: [
-        (v) =>
-          !!Object.getOwnPropertyNames(v).length ||
-          'Kota / Kabupaten is required',
-      ],
-      namaRules: [(v) => !!v || 'Nama is required'],
-      alamatRules: [(v) => !!v || 'Alamat is required'],
-      noHpRules: (v) => {
-        if (!isNaN(parseInt(v)) && v.length > 11 && v.length < 14) return true
-        return `Phone number must consist of 12 - 13 digits`
-      },
-      courierRules: [(v) => !!v || 'Courier is required'],
-      courierServiceRules: [(v) => !!v.price || 'Courier Service is required'],
       courierItems: ['jne', 'tiki', 'pos'],
     }
   },

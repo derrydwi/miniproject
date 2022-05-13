@@ -3,17 +3,17 @@
     <v-container>
       <v-row>
         <v-col cols="6" align="left" class="px-md-0">
-          <span class="me-4">{{ $dateTime(orderItem.created_at) }}</span>
+          <span class="me-4" v-text="$dateTime(orderItem.created_at)" />
         </v-col>
         <v-col cols="6" align="right" class="px-md-0">
-          <span>{{ getInv }}</span>
+          <span v-text="$inv(orderItem.created_at, orderItem.id)" />
           <v-chip
             :color="statusColor"
             label
             small
             class="ms-4 text-capitalize"
-            >{{ orderItem.status }}</v-chip
-          >
+            v-text="orderItem.status"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -23,7 +23,14 @@
       class="mb-4"
     >
       <v-list-item-avatar tile size="150">
-        <v-img contain :src="item.product.image_url" />
+        <v-img :src="item.product.image_url" contain>
+          <template #placeholder>
+            <v-skeleton-loader
+              class="mx-auto"
+              type="image@2"
+            ></v-skeleton-loader>
+          </template>
+        </v-img>
       </v-list-item-avatar>
       <v-list-item-content class="ms-4">
         <v-list-item-title
@@ -34,25 +41,26 @@
               params: { id: item.product.id },
             })
           "
-        >
-          {{ item.product.name }}
-        </v-list-item-title>
+          v-text="item.product.name"
+        />
         <v-list-item-subtitle class="d-flex justify-space-between">
           <span>
             {{ item.quantity }} item x {{ $currency(item.product.price) }}
           </span>
-          <span class="font-weight-bold">
-            {{ $currency(item.product.price * item.quantity) }}
-          </span>
+          <span
+            class="font-weight-bold"
+            v-text="$currency(item.product.price * item.quantity)"
+          />
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-card-actions>
       <v-spacer />
       <span class="text-md-body-1 font-weight-bold me-4">Total Bill : </span>
-      <span class="text-md-body-1 font-weight-bold accent--text">{{
-        $currency(orderItem.total_price)
-      }}</span>
+      <span
+        class="text-md-body-1 font-weight-bold accent--text"
+        v-text="$currency(orderItem.total_price)"
+      />
     </v-card-actions>
     <v-card-actions class="justify-end">
       <v-dialog v-model="dialog" width="600px">
@@ -70,9 +78,10 @@
             <v-timeline class="mb-4">
               <v-timeline-item small>
                 <template #opposite>
-                  <span class="text-start">{{
-                    $dateTime(orderItem.created_at)
-                  }}</span>
+                  <span
+                    class="text-start"
+                    v-text="$dateTime(orderItem.created_at)"
+                  />
                 </template>
                 <div class="py-4 font-weight-bold accent--text">
                   Order Received
@@ -87,7 +96,7 @@
                   }}
                 </div>
                 <template #opposite>
-                  <span>{{ $dateTime(orderItem.updated_at) }}</span>
+                  <span v-text="$dateTime(orderItem.updated_at)" />
                 </template>
               </v-timeline-item>
             </v-timeline>
@@ -105,27 +114,28 @@
             <p class="text-md-body-1 font-weight-bold">Shipping Detail</p>
             <div class="d-flex justify-space-between mb-4">
               <span>Name</span>
-              <span class="text-right">{{ orderItem.nama }}</span>
+              <span class="text-right" v-text="orderItem.nama" />
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Address</span>
-              <span class="text-right ps-8">{{ orderItem.alamat }}</span>
+              <span class="text-right ps-8" v-text="orderItem.alamat" />
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Phone Number</span>
-              <span class="text-right">{{ orderItem.no_hp }}</span>
+              <span class="text-right" v-text="orderItem.no_hp" />
             </div>
             <v-divider class="mb-4" />
             <p class="text-md-body-1 font-weight-bold">Summary</p>
             <div class="d-flex justify-space-between mb-4">
               <span>Shipping Price</span>
-              <span class="text-right">{{
-                $currency(orderItem.shipping_price)
-              }}</span>
+              <span
+                class="text-right"
+                v-text="$currency(orderItem.shipping_price)"
+              />
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Total Price</span>
-              <span class="text-right">{{ $currency(totalItemPrice) }}</span>
+              <span class="text-right" v-text="$currency(totalItemPrice)" />
             </div>
             <v-divider class="mb-4" />
             <div class="d-flex justify-space-between">
@@ -134,15 +144,15 @@
               >
               <span
                 class="text-md-h6 font-weight-bold accent--text text-right"
-                >{{ $currency(orderItem.total_price) }}</span
-              >
+                v-text="$currency(orderItem.total_price)"
+              />
             </div>
           </v-card-text>
           <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="accent" text class="mb-4" @click="dialog = false">
-              Close
-            </v-btn>
+            <v-spacer />
+            <v-btn color="accent" text class="mb-4" @click="dialog = false"
+              >Close</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -152,24 +162,15 @@
         color="accent"
         depressed
         @click="pay"
-        ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay Now</v-btn
+        ><v-icon class="mr-2">mdi-credit-card-outline</v-icon>Pay Now</v-btn
       >
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { getUser } from '~/graphql/user/queries'
 export default {
   name: 'OrderItem',
-  apollo: {
-    user: {
-      query: getUser,
-      variables() {
-        return { id: this.$auth.user.sub }
-      },
-    },
-  },
   props: {
     orderItem: {
       type: Object,
@@ -183,26 +184,17 @@ export default {
       dialog: false,
     }
   },
-  head: {
-    script: [
-      {
-        src: 'https://app.sandbox.midtrans.com/snap/snap.js',
-        'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
-      },
-    ],
+  head() {
+    return {
+      script: [
+        {
+          src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+          'data-client-key': this.$config.midtransClientKey,
+        },
+      ],
+    }
   },
   computed: {
-    getInv() {
-      return `INV/${new Date()
-        .toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        })
-        .replace('-', '/')
-        .split('T')[0]
-        .replace('-', '/')}/${this.orderItem.id}`
-    },
     statusColor() {
       switch (this.orderItem.status) {
         case 'PENDING':

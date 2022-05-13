@@ -38,6 +38,18 @@ export default function ({ app }, inject) {
     return new Date(date).toLocaleDateString('en-US', dateOption)
   })
 
+  inject('inv', (orderDate, orderId) => {
+    return `INV/${new Date(orderDate)
+      .toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      })
+      .replace('-', '/')
+      .split('T')[0]
+      .replace('-', '/')}/${orderId}`
+  })
+
   inject('relativeTime', (d1, d2 = new Date()) => {
     const units = {
       year: 24 * 60 * 60 * 1000 * 365,

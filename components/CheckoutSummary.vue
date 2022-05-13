@@ -4,7 +4,7 @@
       <p class="text-md-body-1 font-weight-bold">Detail</p>
       <div class="d-flex justify-space-between mb-4">
         <span>Total Item</span>
-        <span>{{ totalItem }}</span>
+        <span v-text="totalItem" />
       </div>
       <div class="d-flex justify-space-between mb-4">
         <span>Total Weight</span>
@@ -14,18 +14,19 @@
       <p class="text-md-body-1 font-weight-bold">Summary</p>
       <div class="d-flex justify-space-between mb-4">
         <span>Shipping Price</span>
-        <span>{{ $currency(courierService.price) }}</span>
+        <span v-text="$currency(courierService.price)" />
       </div>
       <div class="d-flex justify-space-between mb-4">
         <span>Total Price</span>
-        <span>{{ $currency(totalPrice) }}</span>
+        <span v-text="$currency(totalPrice)" />
       </div>
       <v-divider class="mb-4" />
       <div class="d-flex justify-space-between mb-5">
         <span class="text-md-h6 font-weight-bold accent--text">Total Bill</span>
-        <span class="text-md-h6 font-weight-bold accent--text">{{
-          $currency(totalPrice + courierService.price)
-        }}</span>
+        <span
+          class="text-md-h6 font-weight-bold accent--text"
+          v-text="$currency(totalPrice + courierService.price)"
+        />
       </div>
       <v-btn
         color="primary"

@@ -65,8 +65,8 @@
         </v-dialog>
       </div>
       <div class="mx-6">
-        <p class="text-h6 mb-2 font-weight-bold">{{ user.username }}</p>
-        <p class="">{{ user.email }}</p>
+        <p class="text-h6 mb-2 font-weight-bold" v-text="user.username" />
+        <p v-text="user.email" />
       </div>
       <v-card-subtitle class="my-0 pt-2 mx-2">
         <v-icon small class="me-2">mdi-calendar-blank</v-icon>

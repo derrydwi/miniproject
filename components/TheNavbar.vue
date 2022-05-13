@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app clipped-left height="70" class="el">
-    <v-app-bar-nav-icon @click="$emit('drawer-toggle')"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon @click="$emit('drawer-toggle')" />
     <svg
       width="44"
       height="51"
@@ -23,12 +23,12 @@
     >
     <v-spacer />
     <v-btn icon @click="isDark = !isDark">
-      <v-icon>{{ darkModeIcon }}</v-icon>
+      <v-icon v-text="darkModeIcon" />
     </v-btn>
     <v-badge
       v-if="$auth.loggedIn && cart && cart.length > 0"
-      overlap
       :content="cart.length"
+      overlap
     >
       <v-btn icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
     </v-badge>
@@ -65,6 +65,7 @@
 
 <script>
 import { getCart, subscriptionCart } from '~/graphql/cart/queries'
+
 export default {
   name: 'TheNavbar',
   apollo: {
@@ -79,12 +80,6 @@ export default {
       skip() {
         return !this.$auth.loggedIn
       },
-    },
-  },
-  props: {
-    isDrawer: {
-      type: Boolean,
-      default: false,
     },
   },
   data() {

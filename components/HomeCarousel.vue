@@ -16,40 +16,20 @@
         <v-icon size="20">mdi-arrow-right</v-icon>
       </v-btn>
     </template>
-    <!-- <template #placeholder>
-      <v-row class="fill-height" justify="center" align="center">
-        <v-progress-circular
-          :size="150"
-          color="primary"
-          indeterminate
-        ></v-progress-circular>
-      </v-row>
-    </template> -->
     <v-carousel-item v-for="productItem in latestProduct" :key="productItem.id">
-      <!-- <v-img height="100vh" :src="productItem.image_url" contain> -->
       <v-container :class="$vuetify.breakpoint.mdAndUp && 'fill-height'">
         <v-row dense align="center">
           <v-col cols="12" md="7" class="order-1 order-md-0">
-            <!-- <div
-              class="
-                pa-md-10 pa-5
-                rounded-lg
-                black--text
-                text-center text-md-left
-              "
-              style="background-color: rgba(255, 255, 255, 0.8)"
-            > -->
             <v-card
               class="pa-md-10 pa-5 rounded-lg"
               elevation="0"
               color="transparent"
             >
-              <h2 class="text-md-h3 text-h5">
-                {{ productItem.name }}
-              </h2>
-              <p class="text-md-h5 text-subtitle-1 accent--text mt-5">
-                {{ $currency(productItem.price) }}
-              </p>
+              <h2 class="text-md-h3 text-h5" v-text="productItem.name" />
+              <p
+                class="text-md-h5 text-subtitle-1 accent--text mt-5"
+                v-text="$currency(productItem.price)"
+              />
               <p class="text-md-body-2 mb-7" style="line-height: 1.8">
                 {{ productItem.description.substring(0, 140) + '...' }}
               </p>
@@ -82,12 +62,15 @@
 
 <script>
 import { getLatestProduct } from '~/graphql/product/queries'
+
+const limit = 5
+
 export default {
   apollo: {
     latestProduct: {
       query: getLatestProduct,
       variables() {
-        return { limit: 5 }
+        return { limit }
       },
       error() {
         this.$apollo.queries.latestProduct.refetch()
