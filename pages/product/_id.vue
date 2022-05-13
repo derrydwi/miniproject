@@ -53,42 +53,29 @@ export default {
       const isSameItem = this.cart.find(
         (x) => x.product.id === parseInt(this.$route.params.id)
       )
-      if (isSameItem) {
-        this.$apollo
-          .mutate({
-            mutation: updateToCart,
-            variables: {
-              id: isSameItem.id,
-              quantity: isSameItem.quantity + 1,
-            },
-          })
-          .then((result) => {
-            // eslint-disable-next-line no-console
-            console.log('resulta updatea', result)
-            // this.$apollo.queries.cart.refetch()
-          })
-          .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.log('errora updatea', error)
-          })
-      } else {
-        this.$apollo
-          .mutate({
-            mutation: insertToCart,
-            variables: {
-              product_id: this.$route.params.id,
-              quantity: 1,
-            },
-          })
-          .then((result) => {
-            // eslint-disable-next-line no-console
-            console.log('resulta inserta', result)
-          })
-          .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.log('errora inserta', error)
-          })
-      }
+      this.$apollo
+        .mutate({
+          mutation: isSameItem ? updateToCart : insertToCart,
+          variables: {
+            ...(isSameItem
+              ? {
+                  id: isSameItem.id,
+                  quantity: isSameItem.quantity + 1,
+                }
+              : {
+                  product_id: this.$route.params.id,
+                  quantity: 1,
+                }),
+          },
+        })
+        .then((result) => {
+          // eslint-disable-next-line no-console
+          console.log('result', result)
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('error', error)
+        })
     },
     subs() {
       if (this.tagsSub) {

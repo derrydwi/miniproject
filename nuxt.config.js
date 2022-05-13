@@ -101,7 +101,7 @@ export default {
       // default: '~/plugins/apollo-config.js',
       default: {
         httpEndpoint: 'https://capital-airedale-21.hasura.app/v1/graphql',
-        wsEndpoint: 'ws://capital-airedale-21.hasura.app/v1/graphql',
+        wsEndpoint: 'wss://capital-airedale-21.hasura.app/v1/graphql',
         tokenName: 'auth._token.auth0',
         // httpLinkOptions: {
         //   headers: {
