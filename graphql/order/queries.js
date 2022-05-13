@@ -9,7 +9,7 @@ export const getOrder = gql`
       no_hp
       shipping_price
       total_price
-      is_paid
+      status
       created_at
       order_items {
         id
@@ -33,6 +33,8 @@ export const insertOrder = gql`
     $no_hp: String!
     $shipping_price: bigint!
     $total_price: bigint!
+    $status: String!
+    $response_midtrans: String!
   ) {
     insert_order_one(
       object: {
@@ -40,6 +42,8 @@ export const insertOrder = gql`
         no_hp: $no_hp
         shipping_price: $shipping_price
         total_price: $total_price
+        status: $status
+        response_midtrans: $response_midtrans
       }
     ) {
       id
@@ -48,8 +52,8 @@ export const insertOrder = gql`
 `
 
 export const updatePayOrder = gql`
-  mutation updatePayOrder($id: Int!, $is_paid: Boolean!) {
-    update_order_by_pk(pk_columns: { id: $id }, _set: { is_paid: $is_paid }) {
+  mutation updatePayOrder($id: Int!, $status: Boolean!) {
+    update_order_by_pk(pk_columns: { id: $id }, _set: { status: $status }) {
       id
     }
   }
@@ -63,7 +67,7 @@ export const subscriptionOrder = gql`
       no_hp
       shipping_price
       total_price
-      is_paid
+      status
       created_at
       order_items {
         id

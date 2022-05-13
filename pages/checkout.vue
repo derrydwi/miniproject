@@ -6,7 +6,7 @@
         <div v-else>
           <div>
             <p>Checkout</p>
-            <OrderItem
+            <CheckoutItem
               v-for="(orderItem, index) in cart"
               :key="orderItem.id"
               :index="index"
@@ -219,6 +219,8 @@ export default {
             no_hp: this.noHp,
             shipping_price: this.courierService.price,
             total_price: this.totalPrice,
+            status: 'NOT PAID',
+            response_midtrans: null,
           },
         })
         .then((result) => {
