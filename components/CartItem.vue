@@ -1,6 +1,11 @@
 <template>
   <div>
     <v-card class="mx-auto my-4" max-width="300">
+      <div class="text-right">
+        <v-btn color="teal" icon class="text-right" @click="deleteItem"
+          ><v-icon>mdi-delete-outline</v-icon></v-btn
+        >
+      </div>
       <div class="px-4 py-4">
         <v-img
           contain
@@ -37,14 +42,13 @@
       </v-card-text>
       <v-card-actions>
         <v-btn
-          class="text-h4"
           color="teal"
           icon
           @click="
             quantity--
             test()
           "
-          >-</v-btn
+          ><v-icon>mdi-minus</v-icon></v-btn
         >
         <v-text-field
           v-model.number="quantity"
@@ -56,14 +60,13 @@
           @keyup.enter="test"
         ></v-text-field>
         <v-btn
-          class="text-h5"
           color="teal"
           icon
           @click="
             quantity++
             test()
           "
-          >+</v-btn
+          ><v-icon>mdi-plus</v-icon></v-btn
         >
       </v-card-actions>
     </v-card>
@@ -71,7 +74,7 @@
 </template>
 
 <script>
-import { updateToCart } from '~/graphql/queries'
+import { updateToCart, deleteFromCart } from '~/graphql/queries'
 
 export default {
   name: 'CartItem',
@@ -112,6 +115,23 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log('errore', error)
+        })
+    },
+    deleteItem() {
+      this.$apollo
+        .mutate({
+          mutation: deleteFromCart,
+          variables: {
+            id: this.cartItem.id,
+          },
+        })
+        .then((result) => {
+          // eslint-disable-next-line no-console
+          console.log('result delete', result)
+        })
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log('error delete', error)
         })
     },
   },

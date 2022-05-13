@@ -12,6 +12,103 @@
               :index="index"
               :order-item="orderItem"
             />
+            <v-select
+              v-model="provinsi"
+              :items="tujuan.province"
+              item-value="province_id"
+              item-text="province"
+              return-object
+              label="Provinsi"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-select
+              v-model="kotaKabupaten"
+              :items="tujuan.city"
+              item-value="city_id"
+              item-text="city_name"
+              return-object
+              :disabled="!tujuan.city.length"
+              label="Kota / Kabupaten"
+              outlined
+              color="teal"
+            >
+              <template slot="selection" slot-scope="data">
+                {{ data.item.type }} {{ data.item.city_name }}
+              </template>
+              <template slot="item" slot-scope="data">
+                {{ data.item.type }} {{ data.item.city_name }}
+              </template></v-select
+            >
+            <!-- <v-select
+              v-model="kecamatan"
+              :items="tujuan.kecamatan"
+              item-value="id"
+              item-text="nama"
+              return-object
+              label="Kecamatan"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-select
+              v-model="kelurahan"
+              :items="tujuan.kelurahan"
+              item-value="id"
+              item-text="nama"
+              return-object
+              label="Kelurahan"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-text-field
+              v-model="alamat"
+              label="Alamat"
+              outlined
+              color="teal"
+            ></v-text-field> -->
+            <v-textarea
+              v-model="alamat"
+              label="Alamat"
+              outlined
+              color="teal"
+            ></v-textarea>
+            <v-text-field
+              v-model="noHp"
+              class="input-no-hp"
+              type="number"
+              label="No. Hp"
+              outlined
+              color="teal"
+            ></v-text-field>
+            <v-radio-group v-model="courier">
+              <v-radio
+                v-for="item in courierItems"
+                :key="item"
+                :label="item"
+                :value="item"
+                color="teal"
+                class="text-uppercase"
+              ></v-radio>
+              <v-radio-group v-if="courier" v-model="courierService">
+                <v-radio
+                  v-for="(ongkirItem, index) in tujuan.ongkir"
+                  :key="index"
+                  :label="`${ongkirItem.service} | ${ongkirItem.cost[0].value
+                    .toLocaleString('id-id', {
+                      style: 'currency',
+                      currency: 'IDR',
+                    })
+                    .slice(0, -3)} | ${ongkirItem.cost[0].etd} ${
+                    courier !== 'pos' ? 'Day' : ''
+                  }`"
+                  :value="{
+                    service: ongkirItem.service,
+                    price: ongkirItem.cost[0].value,
+                  }"
+                  color="teal"
+                ></v-radio>
+              </v-radio-group>
+            </v-radio-group>
             <div>
               Total Price:
               {{
@@ -23,50 +120,7 @@
                   .slice(0, -3)
               }}
             </div>
-            <v-btn color="teal" text @click="checkout">Order</v-btn>
-            <!-- <v-card
-              v-for="cartItem in cart"
-              :key="cartItem.id"
-              class="mx-auto my-4"
-              max-width="300"
-            >
-              <div class="px-4 py-4">
-                <v-img
-                  contain
-                  max-width="800"
-                  max-height="200"
-                  :src="cartItem.product.image_url"
-                />
-              </div>
-              <v-card-text class="text--primary">
-                <p class="text-h5 text--primary">{{ cartItem.product.name }}</p>
-                <div>
-                  {{
-                    cartItem.product.price
-                      .toLocaleString('id-id', {
-                        style: 'currency',
-                        currency: 'IDR',
-                      })
-                      .slice(0, -3)
-                  }}
-                  <div>Quantity: {{ cartItem.quantity }}</div>
-                  <div>
-                    Price:
-                    {{
-                      (cartItem.product.price * cartItem.quantity)
-                        .toLocaleString('id-id', {
-                          style: 'currency',
-                          currency: 'IDR',
-                        })
-                        .slice(0, -3)
-                    }}
-                  </div>
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="teal" text>Add To Cart</v-btn>
-              </v-card-actions>
-            </v-card> -->
+            <v-btn color="teal" text @click="checkout">Checkout</v-btn>
           </div>
         </div>
       </v-col>
@@ -90,6 +144,19 @@ export default {
       query: getCart,
     },
   },
+  data() {
+    return {
+      provinsi: {},
+      kotaKabupaten: {},
+      kecamatan: {},
+      kelurahan: {},
+      alamat: '',
+      courier: '',
+      courierItems: ['jne', 'tiki', 'pos'],
+      courierService: '',
+      noHp: '',
+    }
+  },
   computed: {
     totalPrice() {
       const pricePerItem = this.cart.map(
@@ -99,11 +166,53 @@ export default {
         (previousValue, currentValue) => previousValue + currentValue,
         0
       )
-      return total
+      return total + this.courierService.price
     },
+    tujuan() {
+      return this.$store.getters['order/getTujuan']
+    },
+  },
+  watch: {
+    provinsi() {
+      this.$store.dispatch('order/fetchWilayah', {
+        type: 'city',
+        param: 'province',
+        id: this.provinsi.province_id,
+      })
+    },
+    courier() {
+      if (this.kotaKabupaten.city_id && this.courier) {
+        this.$store.dispatch('order/fetchOngkir', {
+          origin: 152,
+          destination: this.kotaKabupaten.city_id,
+          weight: 500,
+          courier: this.courier,
+        })
+        this.courierService = ''
+      }
+    },
+    kotaKabupaten() {
+      if (this.kotaKabupaten.city_id && this.courier) {
+        this.$store.dispatch('order/fetchOngkir', {
+          origin: 152,
+          destination: this.kotaKabupaten.city_id,
+          weight: 500,
+          courier: this.courier,
+        })
+      }
+    },
+    // kecamatan(value) {
+    //   this.$store.dispatch('order/fetchWilayah', {
+    //     type: 'kelurahan',
+    //     param: 'id_kecamatan',
+    //     id: value.id,
+    //   })
+    // },
   },
   mounted() {
     this.subs()
+    this.$store.dispatch('order/deleteTujuan')
+    this.$store.dispatch('order/fetchWilayah', { type: 'province' })
   },
   methods: {
     checkout() {
@@ -111,12 +220,10 @@ export default {
         .mutate({
           mutation: insertOrder,
           variables: {
-            provinsi: 'Jawa Tengah',
-            kota: 'Semarang',
-            alamat: 'Jl. Soeta',
-            no_hp: '081354787997',
-            shipping_price: 20000,
-            total_price: this.totalPrice + 20000,
+            alamat: `${this.alamat}, ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
+            no_hp: this.noHp,
+            shipping_price: this.courierService.price,
+            total_price: this.totalPrice,
           },
         })
         .then((result) => {
@@ -164,5 +271,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.input-no-hp >>> input[type='number'] {
+  -moz-appearance: textfield;
+}
+.input-no-hp >>> input::-webkit-outer-spin-button,
+.input-no-hp >>> input::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.centered-input >>> input {
+  text-align: center;
+}
 </style>

@@ -12,10 +12,7 @@
               class="mx-auto my-4"
               max-width="300"
             >
-              <div>
-                Alamat: {{ orderItem.alamat }}, {{ orderItem.kota }},
-                {{ orderItem.provinsi }}
-              </div>
+              <div>Alamat: {{ orderItem.alamat }}</div>
               <div>No Hp: {{ orderItem.no_hp }}</div>
               <div>
                 Ongkos Kirim:
@@ -78,9 +75,6 @@
                     }}
                   </div>
                 </v-card-text>
-                <v-card-actions>
-                  <v-btn color="teal" text>Add To Cart</v-btn>
-                </v-card-actions>
               </div>
             </v-card>
           </div>
