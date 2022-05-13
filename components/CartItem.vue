@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { updateToCart, deleteFromCart } from '~/graphql/queries'
+import { updateToCart, deleteItemFromCart } from '~/graphql/queries'
 
 export default {
   name: 'CartItem',
@@ -120,7 +120,7 @@ export default {
     deleteItem() {
       this.$apollo
         .mutate({
-          mutation: deleteFromCart,
+          mutation: deleteItemFromCart,
           variables: {
             id: this.cartItem.id,
           },

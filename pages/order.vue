@@ -12,6 +12,11 @@
               class="mx-auto my-4"
               max-width="300"
             >
+              <div>
+                {{
+                  new Date(orderItem.created_at).toUTCString().substring(0, 22)
+                }}
+              </div>
               <div>Alamat: {{ orderItem.alamat }}</div>
               <div>No Hp: {{ orderItem.no_hp }}</div>
               <div>
@@ -94,21 +99,13 @@ export default {
     order: {
       query: getOrder,
     },
-  },
-  mounted() {
-    this.subs()
-  },
-  methods: {
-    subs() {
-      if (this.tagsSub) {
-        this.tagsSub.unsubscribe()
-      }
-      this.tagsSub = this.$apollo.queries.order.subscribeToMore({
-        document: subscriptionOrder,
-        updateQuery: (previousResult, { subscriptionData }) => {
-          return { order: subscriptionData.data.order }
+    $subscribe: {
+      order: {
+        query: subscriptionOrder,
+        result({ data }) {
+          this.order = data.order
         },
-      })
+      },
     },
   },
 }

@@ -18,6 +18,7 @@
               item-value="province_id"
               item-text="province"
               return-object
+              :disabled="!tujuan.province.length"
               label="Provinsi"
               outlined
               color="teal"
@@ -70,6 +71,7 @@
               v-model="alamat"
               label="Alamat"
               outlined
+              :disabled="!kotaKabupaten.city_name"
               color="teal"
             ></v-textarea>
             <v-text-field
@@ -78,6 +80,7 @@
               type="number"
               label="No. Hp"
               outlined
+              :disabled="!alamat"
               color="teal"
             ></v-text-field>
             <v-radio-group v-model="courier">
@@ -134,6 +137,7 @@ import {
   subscriptionCart,
   insertOrder,
   insertOrderItem,
+  deleteCart,
 } from '~/graphql/queries'
 
 export default {
@@ -142,6 +146,14 @@ export default {
   apollo: {
     cart: {
       query: getCart,
+    },
+    $subscribe: {
+      cart: {
+        query: subscriptionCart,
+        result({ data }) {
+          this.cart = data.cart
+        },
+      },
     },
   },
   data() {
@@ -181,36 +193,13 @@ export default {
       })
     },
     courier() {
-      if (this.kotaKabupaten.city_id && this.courier) {
-        this.$store.dispatch('order/fetchOngkir', {
-          origin: 152,
-          destination: this.kotaKabupaten.city_id,
-          weight: 500,
-          courier: this.courier,
-        })
-        this.courierService = ''
-      }
+      this.fetchOngkir()
     },
     kotaKabupaten() {
-      if (this.kotaKabupaten.city_id && this.courier) {
-        this.$store.dispatch('order/fetchOngkir', {
-          origin: 152,
-          destination: this.kotaKabupaten.city_id,
-          weight: 500,
-          courier: this.courier,
-        })
-      }
+      this.fetchOngkir()
     },
-    // kecamatan(value) {
-    //   this.$store.dispatch('order/fetchWilayah', {
-    //     type: 'kelurahan',
-    //     param: 'id_kecamatan',
-    //     id: value.id,
-    //   })
-    // },
   },
   mounted() {
-    this.subs()
     this.$store.dispatch('order/deleteTujuan')
     this.$store.dispatch('order/fetchWilayah', { type: 'province' })
   },
@@ -245,6 +234,23 @@ export default {
             .then((result) => {
               // eslint-disable-next-line no-console
               console.log('result insert order item', result)
+              const cartItems = this.cart.map((item) => item.id)
+              this.$apollo
+                .mutate({
+                  mutation: deleteCart,
+                  variables: {
+                    _in: cartItems,
+                  },
+                })
+                .then((result) => {
+                  // eslint-disable-next-line no-console
+                  console.log('delete cart', result)
+                  this.$router.replace({ name: 'order' })
+                })
+                .catch((error) => {
+                  // eslint-disable-next-line no-console
+                  console.log('error', error)
+                })
             })
             .catch((error) => {
               // eslint-disable-next-line no-console
@@ -256,16 +262,16 @@ export default {
           console.log('error', error)
         })
     },
-    subs() {
-      if (this.tagsSub) {
-        this.tagsSub.unsubscribe()
+    fetchOngkir() {
+      if (this.kotaKabupaten.city_id && this.courier) {
+        this.$store.dispatch('order/fetchOngkir', {
+          origin: 152,
+          destination: this.kotaKabupaten.city_id,
+          weight: 500,
+          courier: this.courier,
+        })
+        this.courierService = ''
       }
-      this.tagsSub = this.$apollo.queries.cart.subscribeToMore({
-        document: subscriptionCart,
-        updateQuery: (previousResult, { subscriptionData }) => {
-          return { cart: subscriptionData.data.cart }
-        },
-      })
     },
   },
 }
