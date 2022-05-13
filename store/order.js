@@ -23,8 +23,6 @@ const mutations = {
 
 const actions = {
   fetchWilayah({ commit }, param) {
-    // eslint-disable-next-line no-console
-    console.log('param', param)
     this.$axios
       .$get(`/${param.type}`, {
         params: {
@@ -38,29 +36,27 @@ const actions = {
             city: [],
           }),
         })
-        // eslint-disable-next-line no-console
-        console.log('result', result)
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.log(error)
+        this.$showAlert({
+          text: `Failed when fetch province. ${error.message}`,
+          icon: 'error',
+        })
       })
   },
   fetchOngkir({ commit }, param) {
-    // eslint-disable-next-line no-console
-    console.log('param ongkir', param)
     this.$axios
       .$post('/cost', {
         ...param,
       })
       .then((result) => {
         commit('SET_TUJUAN', { ongkir: result })
-        // eslint-disable-next-line no-console
-        console.log('result', result)
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.log(error)
+        this.$showAlert({
+          text: `Failed when fetch shipping service. ${error.message}`,
+          icon: 'error',
+        })
       })
   },
   deleteTujuan({ commit }) {

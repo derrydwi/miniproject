@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-named-as-default
 import gql from 'graphql-tag'
 
 export const getProduct = gql`
@@ -89,6 +88,7 @@ export const getProductDetail = gql`
         rating
         created_at
         user {
+          id
           username
           picture
         }
@@ -151,8 +151,21 @@ export const insertOrder = gql`
 `
 
 export const insertOrderItem = gql`
-  mutation ($objects: [order_item_insert_input!]!) {
-    insert_order_item(objects: $objects) {
+  mutation (
+    $objectsOrder: [order_item_insert_input!] = {}
+    $objectsProduct: [product_insert_input!] = {}
+    $_in: [Int!]
+  ) {
+    insert_order_item(objects: $objectsOrder) {
+      affected_rows
+    }
+    insert_product(
+      objects: $objectsProduct
+      on_conflict: { constraint: product_pkey, update_columns: stock }
+    ) {
+      affected_rows
+    }
+    delete_cart(where: {}) {
       affected_rows
     }
   }
@@ -192,19 +205,8 @@ export const deleteItemFromCart = gql`
 `
 
 export const deleteCart = gql`
-  mutation ($_in: [Int!]) {
-    delete_cart(where: { id: { _in: $_in } }) {
-      affected_rows
-    }
-  }
-`
-
-export const updateStock = gql`
-  mutation ($objects: [product_insert_input!]!) {
-    insert_product(
-      objects: $objects
-      on_conflict: { constraint: product_pkey, update_columns: stock }
-    ) {
+  mutation {
+    delete_cart(where: {}) {
       affected_rows
     }
   }
@@ -246,6 +248,16 @@ export const getUser = gql`
 export const updatePayOrder = gql`
   mutation ($id: Int!, $is_paid: Boolean!) {
     update_order_by_pk(pk_columns: { id: $id }, _set: { is_paid: $is_paid }) {
+      id
+    }
+  }
+`
+
+export const insertReview = gql`
+  mutation ($rating: Int!, $product_id: Int!, $comment: String!) {
+    insert_review_one(
+      object: { product_id: $product_id, rating: $rating, comment: $comment }
+    ) {
       id
     }
   }

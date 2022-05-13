@@ -20,7 +20,7 @@ export default {
   css: ['@sweetalert2/theme-material-ui', '~/assets/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  // plugins: [{ src: '~/plugins/apollo-ws-client.js', mode: 'client' }],
+  plugins: ['~/plugins/formatter.js', '~/plugins/swal.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -45,7 +45,7 @@ export default {
     '@nuxtjs/auth',
     // https://www.npmjs.com/package/@nuxtjs/apollo
     '@nuxtjs/apollo',
-    // https://www.npmjs.com/package/@sweetalert2/theme-material-ui
+    // https://www.npmjs.com/package/vue-sweetalert2
     'vue-sweetalert2/nuxt/no-css',
   ],
 
@@ -92,9 +92,9 @@ export default {
 
   auth: {
     redirect: {
-      // login: '/',
-      // logout: '/',
-      // home: '/',
+      login: '/',
+      logout: '/',
+      home: '/',
       callback: '/callback',
     },
     strategies: {

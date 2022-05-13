@@ -56,14 +56,7 @@
             <p class="text-h5 text--primary">{{ productItem.name }}</p>
             <div>{{ productItem.description.substring(0, 35) + '...' }}</div>
             <div>
-              {{
-                productItem.price
-                  .toLocaleString('id-id', {
-                    style: 'currency',
-                    currency: 'IDR',
-                  })
-                  .slice(0, -3)
-              }}
+              {{ $formatMoney(productItem.price) }}
             </div>
             <div>Stock: {{ productItem.stock }}</div>
             <div>
@@ -87,6 +80,8 @@ import {
   getCart,
   subscriptionProduct,
   subscriptionCart,
+  getOrder,
+  subscriptionOrder,
 } from '~/graphql/queries'
 
 export default {
@@ -102,17 +97,35 @@ export default {
         return !this.$auth.loggedIn
       },
     },
+    order: {
+      query: getOrder,
+      skip() {
+        return !this.$auth.loggedIn
+      },
+    },
     $subscribe: {
       product: {
         query: subscriptionProduct,
         result({ data }) {
           this.product = data.product
         },
+        skip() {
+          return !this.$auth.loggedIn
+        },
       },
       cart: {
         query: subscriptionCart,
         result({ data }) {
           this.cart = data.cart
+        },
+        skip() {
+          return !this.$auth.loggedIn
+        },
+      },
+      order: {
+        query: subscriptionOrder,
+        result({ data }) {
+          this.order = data.order
         },
         skip() {
           return !this.$auth.loggedIn

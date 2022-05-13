@@ -12,36 +12,41 @@
               :index="index"
               :order-item="orderItem"
             />
-            <v-autocomplete
-              v-model="provinsi"
-              :items="tujuan.province"
-              item-value="province_id"
-              item-text="province"
-              return-object
-              :disabled="!tujuan.province.length"
-              label="Provinsi"
-              outlined
-              color="teal"
-            ></v-autocomplete>
-            <v-autocomplete
-              v-model="kotaKabupaten"
-              :items="tujuan.city"
-              item-value="city_id"
-              item-text="city_name"
-              return-object
-              :disabled="!tujuan.city.length"
-              label="Kota / Kabupaten"
-              outlined
-              color="teal"
+            <v-form
+              ref="form"
+              v-model="isValid"
+              @submit.prevent="isValid && $router.push({ name: 'checkout' })"
             >
-              <template slot="selection" slot-scope="data">
-                {{ data.item.type }} {{ data.item.city_name }}
-              </template>
-              <template slot="item" slot-scope="data">
-                {{ data.item.type }} {{ data.item.city_name }}
-              </template></v-autocomplete
-            >
-            <!-- <v-select
+              <v-autocomplete
+                v-model="provinsi"
+                :items="tujuan.province"
+                item-value="province_id"
+                item-text="province"
+                return-object
+                :disabled="!tujuan.province.length"
+                label="Provinsi"
+                outlined
+                color="teal"
+              ></v-autocomplete>
+              <v-autocomplete
+                v-model="kotaKabupaten"
+                :items="tujuan.city"
+                item-value="city_id"
+                item-text="city_name"
+                return-object
+                :disabled="!tujuan.city.length"
+                label="Kota / Kabupaten"
+                outlined
+                color="teal"
+              >
+                <template slot="selection" slot-scope="data">
+                  {{ data.item.type }} {{ data.item.city_name }}
+                </template>
+                <template slot="item" slot-scope="data">
+                  {{ data.item.type }} {{ data.item.city_name }}
+                </template></v-autocomplete
+              >
+              <!-- <v-select
               v-model="kecamatan"
               :items="tujuan.kecamatan"
               item-value="id"
@@ -67,77 +72,69 @@
               outlined
               color="teal"
             ></v-text-field> -->
-            <v-textarea
-              v-model="alamat"
-              label="Alamat"
-              outlined
-              :disabled="!kotaKabupaten.city_name"
-              color="teal"
-            ></v-textarea>
-            <v-text-field
-              v-model="noHp"
-              class="input-no-hp"
-              type="number"
-              label="No. Hp"
-              outlined
-              :disabled="!alamat"
-              color="teal"
-            ></v-text-field>
-            <v-radio-group v-model="courier" :disabled="noHp.length < 12">
-              <p>Pilih Kurir</p>
-              <v-radio
-                v-for="item in courierItems"
-                :key="item"
-                :label="item"
-                :value="item"
+              <v-textarea
+                v-model="alamat"
+                label="Alamat"
+                outlined
+                :disabled="!kotaKabupaten.city_name"
                 color="teal"
-                class="text-uppercase"
-              ></v-radio>
-              <v-radio-group
-                v-if="courier"
-                v-model="courierService"
-                :disabled="!courierItems"
-              >
-                <p>Pilih Layanan</p>
+              ></v-textarea>
+              <v-text-field
+                v-model="noHp"
+                class="input-no-hp"
+                type="number"
+                label="No. Hp"
+                outlined
+                :disabled="!alamat"
+                :counter="13"
+                color="teal"
+              ></v-text-field>
+              <v-radio-group v-model="courier" :disabled="noHp.length < 12">
+                <p>Pilih Kurir</p>
                 <v-radio
-                  v-for="(ongkirItem, index) in tujuan.ongkir"
-                  :key="index"
-                  :label="`${ongkirItem.service} | ${ongkirItem.cost[0].value
-                    .toLocaleString('id-id', {
-                      style: 'currency',
-                      currency: 'IDR',
-                    })
-                    .slice(0, -3)} | ${ongkirItem.cost[0].etd} ${
-                    courier !== 'pos' ? 'Day' : ''
-                  }`"
-                  :value="{
-                    service: ongkirItem.service,
-                    price: ongkirItem.cost[0].value,
-                  }"
+                  v-for="item in courierItems"
+                  :key="item"
+                  :label="item"
+                  :value="item"
                   color="teal"
+                  class="text-uppercase"
                 ></v-radio>
+                <v-radio-group
+                  v-if="courier"
+                  v-model="courierService"
+                  :disabled="!courierItems"
+                >
+                  <p>Pilih Layanan</p>
+                  <v-radio
+                    v-for="(ongkirItem, index) in tujuan.ongkir"
+                    :key="index"
+                    :label="`${ongkirItem.service} | ${$formatMoney(
+                      ongkirItem.cost[0].value
+                    )} | ${ongkirItem.cost[0].etd} ${
+                      courier !== 'pos' ? 'Day' : ''
+                    }`"
+                    :value="{
+                      service: ongkirItem.service,
+                      price: ongkirItem.cost[0].value,
+                    }"
+                    color="teal"
+                  ></v-radio>
+                </v-radio-group>
               </v-radio-group>
-            </v-radio-group>
-            <div>
-              Total Price:
-              {{
-                totalPrice
-                  .toLocaleString('id-id', {
-                    style: 'currency',
-                    currency: 'IDR',
-                  })
-                  .slice(0, -3)
-              }}
-            </div>
-            <div class="text-center">
-              <v-btn
-                color="teal"
-                text
-                :disabled="!courierService.service"
-                @click="makeOrder"
-                >Checkout</v-btn
-              >
-            </div>
+              <div>
+                Total Price:
+                {{ $formatMoney(totalPrice) }}
+              </div>
+              <div class="text-center">
+                <v-btn
+                  color="teal"
+                  text
+                  :disabled="!courierService.service"
+                  @click="makeOrder"
+                  >Checkout</v-btn
+                >
+              </div>
+            </v-form>
           </div>
         </div>
       </v-col>
@@ -151,8 +148,6 @@ import {
   subscriptionCart,
   insertOrder,
   insertOrderItem,
-  deleteCart,
-  updateStock,
 } from '~/graphql/queries'
 
 export default {
@@ -173,6 +168,7 @@ export default {
   },
   data() {
     return {
+      isValid: false,
       provinsi: {},
       kotaKabupaten: {},
       kecamatan: {},
@@ -223,10 +219,7 @@ export default {
   },
   methods: {
     validateStock() {
-      // eslint-disable-next-line no-console
-      console.log(this.cart)
       for (let index = 0; index < this.cart.length; index++) {
-        // const element = this.cart[index]
         if (this.cart[index].quantity > this.cart[index].product.stock) {
           alert(
             `Kuantitas tidak sesuai, silahkan ubah kuantitas produk ${this.cart[index].product.name} terlebih dahulu`
@@ -249,13 +242,13 @@ export default {
           },
         })
         .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('result insert order', result)
           this.makeOrderItem(result.data.insert_order_one.id)
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error', error)
+          this.$showAlert({
+            text: `Order Failed. ${error.message}`,
+            icon: 'error',
+          })
         })
     },
     makeOrderItem(orderId) {
@@ -265,72 +258,27 @@ export default {
         product_id: item.product.id,
         price: item.product.price * item.quantity,
       }))
-      this.$apollo
-        .mutate({
-          mutation: insertOrderItem,
-          variables: {
-            objects: orderItem,
-          },
-        })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('result insert order item', result)
-          this.updateStock()
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error', error)
-        })
-    },
-    updateStock() {
       const newStock = this.cart.map((item) => ({
         id: item.product.id,
         stock: item.product.stock - item.quantity,
       }))
       this.$apollo
         .mutate({
-          mutation: updateStock,
+          mutation: insertOrderItem,
           variables: {
-            objects: newStock,
+            objectsOrder: orderItem,
+            objectsProduct: newStock,
           },
         })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('result update stock', result)
-          this.clearCart()
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error', error)
-        })
-    },
-    clearCart() {
-      const cartItems = this.cart.map((item) => item.id)
-      this.$apollo
-        .mutate({
-          mutation: deleteCart,
-          variables: {
-            _in: cartItems,
-          },
-        })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('delete cart', result)
-          // alert('Berhasil Order')
-          this.$swal({
-            toast: true,
-            text: 'Order Successful',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            position: 'top-end',
-          })
+        .then(() => {
+          this.$showAlert({ text: 'Order Successful', icon: 'success' })
           this.$router.replace({ name: 'order' })
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error', error)
+          this.$showAlert({
+            text: `Order Failed. ${error.message}`,
+            icon: 'error',
+          })
         })
     },
     fetchOngkir() {

@@ -5,6 +5,11 @@
       <div v-else>
         <div>
           <p>Cart</p>
+          <div class="text-right">
+            <v-btn v-if="cart.length" color="teal" text @click="deleteCart"
+              ><v-icon class="mr-2">mdi-close</v-icon>Clear All</v-btn
+            >
+          </div>
           <v-form
             ref="form"
             v-model="isValid"
@@ -16,6 +21,9 @@
               :index="index"
               :cart-item="cartItem"
             />
+            <div v-if="cart.length">
+              Total Price: {{ $formatMoney(totalPrice) }}
+            </div>
             <v-btn
               v-if="cart.length"
               :disabled="!isValid"
@@ -32,7 +40,7 @@
 </template>
 
 <script>
-import { getCart, subscriptionCart } from '~/graphql/queries'
+import { getCart, subscriptionCart, deleteCart } from '~/graphql/queries'
 
 export default {
   name: 'CartPage',
@@ -52,8 +60,37 @@ export default {
   },
   data() {
     return {
-      isValid: true,
+      isValid: false,
     }
+  },
+  computed: {
+    totalPrice() {
+      const pricePerItem = this.cart.map(
+        (item) => item.product.price * item.quantity
+      )
+      const total = pricePerItem.reduce(
+        (previousValue, currentValue) => previousValue + currentValue,
+        0
+      )
+      return total
+    },
+  },
+  methods: {
+    deleteCart() {
+      this.$apollo
+        .mutate({
+          mutation: deleteCart,
+        })
+        .then(() => {
+          this.$showAlert({ text: 'Cart Deleted', icon: 'success' })
+        })
+        .catch((error) => {
+          this.$showAlert({
+            text: `Can't delete cart. ${error.message}`,
+            icon: 'error',
+          })
+        })
+    },
   },
 }
 </script>

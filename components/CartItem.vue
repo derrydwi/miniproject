@@ -18,26 +18,12 @@
         <p>{{ index + 1 }}.</p>
         <p class="text-h5 text--primary">{{ cartItem.product.name }}</p>
         <div>
-          {{
-            cartItem.product.price
-              .toLocaleString('id-id', {
-                style: 'currency',
-                currency: 'IDR',
-              })
-              .slice(0, -3)
-          }}
+          {{ $formatMoney(cartItem.product.price) }}
           <div>Stock: {{ cartItem.product.stock }}</div>
           <div>Quantity: {{ cartItem.quantity }}</div>
           <div>
             Price:
-            {{
-              (cartItem.product.price * cartItem.quantity)
-                .toLocaleString('id-id', {
-                  style: 'currency',
-                  currency: 'IDR',
-                })
-                .slice(0, -3)
-            }}
+            {{ $formatMoney(cartItem.product.price * cartItem.quantity) }}
           </div>
         </div>
       </v-card-text>
@@ -104,7 +90,6 @@ export default {
       if (this.cartItem.product.stock === 0) {
         this.deleteItem()
       }
-      // this.changeStock('input')
     },
   },
   mounted() {
@@ -113,15 +98,9 @@ export default {
   methods: {
     validateStock() {
       if (this.quantity < 1) {
-        // alert(`Minimum pembelian produk 1 item`)
         this.quantity = 1
-        // alert('Quantity setted to min')
       } else if (this.quantity > this.cartItem.product.stock) {
-        // alert(
-        //   `Maksimal pembelian produk ${this.cartItem.product.name} ${this.cartItem.product.stock} item`
-        // )
         this.quantity = this.cartItem.product.stock
-        // alert('Quantity setted to max')
       }
     },
     changeStock(type) {
@@ -136,22 +115,14 @@ export default {
             ...(type === 'input' && { quantity: this.quantity }),
           },
         })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('resulte', result)
-          this.$swal({
-            toast: true,
-            text: 'Quantity Updated',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            position: 'top-end',
-          })
+        .then(() => {
+          this.$showAlert({ text: 'Quantity Updated', icon: 'success' })
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('errore', error)
+          this.$showAlert({
+            text: `Can't update quantity. ${error.message}`,
+            icon: 'error',
+          })
         })
     },
     deleteItem() {
@@ -162,22 +133,14 @@ export default {
             id: this.cartItem.id,
           },
         })
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log('result delete', result)
-          this.$swal({
-            toast: true,
-            text: 'Item Deleted',
-            icon: 'success',
-            timer: 3000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            position: 'top-end',
-          })
+        .then(() => {
+          this.$showAlert({ text: 'Item Deleted', icon: 'success' })
         })
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log('error delete', error)
+          this.$showAlert({
+            text: `Can't delete item. ${error.message}`,
+            icon: 'error',
+          })
         })
     },
   },
