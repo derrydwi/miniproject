@@ -1,31 +1,5 @@
 <template>
   <div>
-    <!-- <v-card class="mx-auto my-4 el" max-width="300">
-      <div class="px-4 py-4">
-        <v-img
-          contain
-          max-width="800"
-          max-height="200"
-          :src="orderItem.product.image_url"
-        />
-      </div>
-      <v-card-text class="text--primary">
-        <p>{{ index + 1 }}.</p>
-        <p class="text-h5 text--primary">{{ orderItem.product.name }}</p>
-        <div>
-          <div class="d-flex justify-space-between">
-            <div>
-              {{ $formatMoney(orderItem.product.price) }}
-            </div>
-            <div>x{{ orderItem.quantity }}</div>
-          </div>
-          <div>
-            Price:
-            {{ $formatMoney(orderItem.product.price * orderItem.quantity) }}
-          </div>
-        </div>
-      </v-card-text>
-    </v-card> -->
     <v-card class="mx-auto my-4" max-width="300">
       <div>
         {{ new Date(orderItem.created_at).toUTCString().substring(0, 22) }}
@@ -94,62 +68,27 @@ export default {
       default: 0,
     },
   },
+  head: {
+    script: [
+      {
+        src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+        'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
+      },
+    ],
+  },
   methods: {
     pay() {
-      if (this.orderItem.transaction_token) {
-        window.snap.pay(this.orderItem.transaction_token, {
-          onSuccess() {
-            history.back()
-          },
-          onPending() {
-            history.back()
-          },
-          onError() {
-            history.back()
-          },
-        })
-        return
-      }
-      const body = {
-        transaction_details: {
-          order_id: this.orderItem.id,
-          gross_amount: this.orderItem.total_price,
+      window.snap.pay(this.orderItem.transaction_token, {
+        onSuccess() {
+          history.back()
         },
-        credit_card: {
-          secure: true,
+        onPending() {
+          history.back()
         },
-        customer_details: {
-          first_name: this.$auth.user.nickname,
-          email: this.$auth.user.email,
-          phone: this.orderItem.no_hp,
-          shipping_address: {
-            first_name: this.$auth.user.nickname,
-            email: this.$auth.user.email,
-            phone: this.orderItem.no_hp,
-            address: this.orderItem.alamat,
-          },
+        onError() {
+          history.back()
         },
-      }
-      this.$axios
-        .post('/api/pay', body)
-        .then((result) => {
-          // eslint-disable-next-line no-console
-          console.log(result.data)
-          window.snap.pay(result.data.transactionToken, {
-            onSuccess() {
-              history.back()
-            },
-            onPending() {
-              history.back()
-            },
-            onError() {
-              history.back()
-            },
-          })
-        })
-        .catch((error) => {
-          alert(`Can't make payment. ${error.message}`)
-        })
+      })
     },
   },
 }

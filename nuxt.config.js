@@ -110,19 +110,8 @@ export default {
   apollo: {
     clientConfigs: {
       default: '~/plugins/apollo-config.js',
-      // default: {
-      //   httpEndpoint: 'https://capital-airedale-21.hasura.app/v1/graphql',
-      //   wsEndpoint: 'wss://capital-airedale-21.hasura.app/v1/graphql',
-      //   tokenName: 'auth._token.auth0',
-      // httpLinkOptions: {
-      //   headers: {
-      //     'x-hasura-default-role': 'anonymous',
-      //   },
-      // },
-      // },
-      // },
-      // authenticationType: '',
     },
+    errorHandler: '~/plugins/apollo-error-handler.js',
   },
 
   googleFonts: {

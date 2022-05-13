@@ -219,12 +219,13 @@ export default {
             no_hp: this.noHp,
             shipping_price: this.courierService.price,
             total_price: this.totalPrice,
-            status: 'NOT PAID',
+            status: 'PENDING',
             response_midtrans: null,
           },
         })
         .then((result) => {
           this.makeOrderItem(result.data.insert_order_one.id)
+          this.makePaymentToken(result.data.insert_order_one.id)
         })
         .catch((error) => {
           this.$showAlert({
@@ -262,6 +263,44 @@ export default {
             icon: 'error',
           })
         })
+    },
+    makePaymentToken(orderId) {
+      const item = this.cart.map((item) => ({
+        id: item.product.id,
+        price: item.product.price,
+        quantity: item.quantity,
+        name: item.product.name,
+      }))
+      const ongkir = {
+        id: 1,
+        price: this.courierService.price,
+        quantity: 1,
+        name: 'Shipping Service',
+      }
+      const body = {
+        transaction_details: {
+          order_id: orderId,
+          gross_amount: this.totalPrice,
+        },
+        item_details: [...item, ongkir],
+        credit_card: {
+          secure: true,
+        },
+        customer_details: {
+          first_name: this.$auth.user.nickname,
+          email: this.$auth.user.email,
+          phone: this.noHp,
+          shipping_address: {
+            first_name: this.$auth.user.nickname,
+            email: this.$auth.user.email,
+            phone: this.noHp,
+            address: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
+          },
+        },
+      }
+      this.$axios.post('/api/pay', body).catch((error) => {
+        alert(`Can't make payment. ${error.message}`)
+      })
     },
     fetchOngkir() {
       if (this.kotaKabupaten.city_id && this.courier) {

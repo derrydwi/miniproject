@@ -21,6 +21,7 @@ export const getOrder = gql`
           name
           image_url
           price
+          stock
           weight
         }
       }
@@ -80,6 +81,7 @@ export const subscriptionOrder = gql`
           name
           image_url
           price
+          stock
           weight
         }
       }

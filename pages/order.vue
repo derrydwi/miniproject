@@ -87,14 +87,14 @@ import {
 export default {
   name: 'OrderPage',
   middleware: 'auth',
-  head: {
-    script: [
-      {
-        src: 'https://app.sandbox.midtrans.com/snap/snap.js',
-        'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
-      },
-    ],
-  },
+  // head: {
+  //   script: [
+  //     {
+  //       src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+  //       'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
+  //     },
+  //   ],
+  // },
   apollo: {
     order: {
       query: getOrder,
