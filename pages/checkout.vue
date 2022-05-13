@@ -6,12 +6,67 @@
         <div v-else>
           <div>
             <p>Checkout</p>
+            {{ provinsi }}
             <OrderItem
               v-for="(orderItem, index) in cart"
               :key="orderItem.id"
               :index="index"
               :order-item="orderItem"
             />
+            <v-select
+              v-model="provinsi"
+              :items="tujuan.provinsi"
+              item-value="id"
+              item-text="nama"
+              return-object
+              label="Provinsi"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-select
+              v-model="kotaKabupaten"
+              :items="tujuan.kota"
+              item-value="id"
+              item-text="nama"
+              return-object
+              label="Kota / Kabupaten"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-select
+              v-model="kecamatan"
+              :items="tujuan.kecamatan"
+              item-value="id"
+              item-text="nama"
+              return-object
+              label="Kecamatan"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-select
+              v-model="kelurahan"
+              :items="tujuan.kelurahan"
+              item-value="id"
+              item-text="nama"
+              return-object
+              label="Kelurahan"
+              outlined
+              color="teal"
+            ></v-select>
+            <v-text-field
+              v-model="alamat"
+              label="Alamat"
+              outlined
+              color="teal"
+            ></v-text-field>
+            <v-text-field
+              v-model="noHp"
+              class="input-no-hp"
+              type="number"
+              label="No. Hp"
+              outlined
+              color="teal"
+            ></v-text-field>
             <div>
               Total Price:
               {{
@@ -23,50 +78,7 @@
                   .slice(0, -3)
               }}
             </div>
-            <v-btn color="teal" text @click="checkout">Order</v-btn>
-            <!-- <v-card
-              v-for="cartItem in cart"
-              :key="cartItem.id"
-              class="mx-auto my-4"
-              max-width="300"
-            >
-              <div class="px-4 py-4">
-                <v-img
-                  contain
-                  max-width="800"
-                  max-height="200"
-                  :src="cartItem.product.image_url"
-                />
-              </div>
-              <v-card-text class="text--primary">
-                <p class="text-h5 text--primary">{{ cartItem.product.name }}</p>
-                <div>
-                  {{
-                    cartItem.product.price
-                      .toLocaleString('id-id', {
-                        style: 'currency',
-                        currency: 'IDR',
-                      })
-                      .slice(0, -3)
-                  }}
-                  <div>Quantity: {{ cartItem.quantity }}</div>
-                  <div>
-                    Price:
-                    {{
-                      (cartItem.product.price * cartItem.quantity)
-                        .toLocaleString('id-id', {
-                          style: 'currency',
-                          currency: 'IDR',
-                        })
-                        .slice(0, -3)
-                    }}
-                  </div>
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="teal" text>Add To Cart</v-btn>
-              </v-card-actions>
-            </v-card> -->
+            <v-btn color="teal" text @click="checkout">Checkout</v-btn>
           </div>
         </div>
       </v-col>
@@ -90,6 +102,16 @@ export default {
       query: getCart,
     },
   },
+  data() {
+    return {
+      provinsi: {},
+      kotaKabupaten: {},
+      kecamatan: {},
+      kelurahan: {},
+      alamat: '',
+      noHp: '',
+    }
+  },
   computed: {
     totalPrice() {
       const pricePerItem = this.cart.map(
@@ -101,9 +123,38 @@ export default {
       )
       return total
     },
+    tujuan() {
+      return this.$store.getters['order/getTujuan']
+    },
+  },
+  watch: {
+    provinsi(value) {
+      this.$store.dispatch('order/fetchWilayah', {
+        type: 'kota',
+        response: 'kota_kabupaten',
+        param: 'id_provinsi',
+        id: value.id,
+      })
+    },
+    kotaKabupaten(value) {
+      this.$store.dispatch('order/fetchWilayah', {
+        type: 'kecamatan',
+        param: 'id_kota',
+        id: value.id,
+      })
+    },
+    kecamatan(value) {
+      this.$store.dispatch('order/fetchWilayah', {
+        type: 'kelurahan',
+        param: 'id_kecamatan',
+        id: value.id,
+      })
+    },
   },
   mounted() {
     this.subs()
+    this.$store.dispatch('order/deleteTujuan')
+    this.$store.dispatch('order/fetchWilayah', { type: 'provinsi' })
   },
   methods: {
     checkout() {
@@ -111,12 +162,10 @@ export default {
         .mutate({
           mutation: insertOrder,
           variables: {
-            provinsi: 'Jawa Tengah',
-            kota: 'Semarang',
-            alamat: 'Jl. Soeta',
-            no_hp: '081354787997',
-            shipping_price: 20000,
-            total_price: this.totalPrice + 20000,
+            alamat: `${this.alamat}, ${this.kelurahan.nama}, ${this.kecamatan.nama}, ${this.kotaKabupaten.nama}, ${this.provinsi.nama}`,
+            no_hp: this.noHp,
+            shipping_price: 35000,
+            total_price: this.totalPrice + 35000,
           },
         })
         .then((result) => {
@@ -164,5 +213,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.input-no-hp >>> input[type='number'] {
+  -moz-appearance: textfield;
+}
+.input-no-hp >>> input::-webkit-outer-spin-button,
+.input-no-hp >>> input::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.centered-input >>> input {
+  text-align: center;
+}
 </style>

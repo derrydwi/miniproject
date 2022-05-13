@@ -24,7 +24,7 @@ export const getProduct = gql`
 
 export const getCart = gql`
   query {
-    cart {
+    cart(order_by: { id: desc }) {
       id
       quantity
       product {
@@ -32,6 +32,7 @@ export const getCart = gql`
         name
         image_url
         price
+        stock
       }
     }
   }
@@ -39,10 +40,8 @@ export const getCart = gql`
 
 export const getOrder = gql`
   query {
-    order {
+    order(order_by: { id: desc }) {
       id
-      provinsi
-      kota
       alamat
       no_hp
       shipping_price
@@ -110,7 +109,7 @@ export const updateToCart = gql`
 
 export const subscriptionCart = gql`
   subscription {
-    cart {
+    cart(order_by: { id: desc }) {
       id
       quantity
       product {
@@ -118,6 +117,60 @@ export const subscriptionCart = gql`
         name
         image_url
         price
+        stock
+      }
+    }
+  }
+`
+
+export const insertOrder = gql`
+  mutation (
+    $alamat: String!
+    $no_hp: String!
+    $shipping_price: bigint!
+    $total_price: bigint!
+  ) {
+    insert_order_one(
+      object: {
+        alamat: $alamat
+        no_hp: $no_hp
+        shipping_price: $shipping_price
+        total_price: $total_price
+      }
+    ) {
+      id
+    }
+  }
+`
+
+export const insertOrderItem = gql`
+  mutation ($objects: [order_item_insert_input!]!) {
+    insert_order_item(objects: $objects) {
+      affected_rows
+    }
+  }
+`
+
+export const subscriptionOrder = gql`
+  subscription {
+    order(order_by: { id: desc }) {
+      id
+      alamat
+      no_hp
+      shipping_price
+      total_price
+      is_paid
+      created_at
+      order_items {
+        id
+        quantity
+        price
+        product {
+          id
+          name
+          image_url
+          price
+        }
       }
     }
   }
