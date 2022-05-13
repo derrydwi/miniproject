@@ -1,19 +1,17 @@
 <template>
-  <v-container>
+  <BaseLoading v-if="$apollo.loading" />
+  <v-container v-else>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <BaseLoading v-if="$apollo.loading" />
-        <div v-else>
-          <div>
-            <p>Order</p>
-            <div>
-              <OrderItem
-                v-for="(orderItem, index) in order"
-                :key="orderItem.id"
-                :index="index"
-                :order-item="orderItem"
-              />
-              <!-- <v-card
+        <p>Order</p>
+        <div>
+          <OrderItem
+            v-for="(orderItem, index) in order"
+            :key="orderItem.id"
+            :index="index"
+            :order-item="orderItem"
+          />
+          <!-- <v-card
               v-for="orderItem in order"
               :key="orderItem.id"
               class="mx-auto my-4"
@@ -71,8 +69,6 @@
                 >
               </v-card-actions>
             </v-card> -->
-            </div>
-          </div>
         </div>
       </v-col>
     </v-row>

@@ -47,14 +47,7 @@
               <h2 class="text-md-h3 text-h5">
                 {{ productItem.name }}
               </h2>
-              <p
-                class="
-                  text-md-h5 text-subtitle-1
-                  deep-purple--text
-                  text--lighten-1
-                  mt-5
-                "
-              >
+              <p class="text-md-h5 text-subtitle-1 accent--text mt-5">
                 {{ $formatMoney(productItem.price) }}
               </p>
               <p class="text-md-body-2 mb-7" style="line-height: 1.8">
@@ -97,7 +90,7 @@ export default {
         return { limit: 5 }
       },
       error() {
-        this.$apollo.queries.product.refetch()
+        this.$apollo.queries.latestProduct.refetch()
       },
     },
   },

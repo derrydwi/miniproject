@@ -1,14 +1,11 @@
 <template>
-  <v-card height="70vh" elevation="0" outlined color="transparent">
-    <v-layout align-center fill-height>
-      <v-progress-circular
-        indeterminate
-        color="primary"
-        class="mx-auto"
-        :size="50"
-      ></v-progress-circular>
-    </v-layout>
-  </v-card>
+  <v-row class="fill-height" justify="center" align="center">
+    <v-progress-circular
+      :size="50"
+      color="primary"
+      indeterminate
+    ></v-progress-circular>
+  </v-row>
 </template>
 
 <script>

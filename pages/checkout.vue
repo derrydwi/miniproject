@@ -1,117 +1,113 @@
 <template>
-  <v-container>
+  <BaseLoading v-if="$apollo.loading" />
+  <v-container v-else>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <BaseLoading v-if="$apollo.loading" />
-        <div v-else>
-          <div>
-            <p>Checkout</p>
-            <CheckoutItem
-              v-for="(orderItem, index) in cart"
-              :key="orderItem.id"
-              :index="index"
-              :order-item="orderItem"
-            />
-            <v-form
-              ref="form"
-              v-model="isValid"
-              @submit.prevent="isValid && $router.push({ name: 'checkout' })"
+        <p>Checkout</p>
+        <CheckoutItem
+          v-for="(orderItem, index) in cart"
+          :key="orderItem.id"
+          :index="index"
+          :order-item="orderItem"
+        />
+        <v-form
+          ref="form"
+          v-model="isValid"
+          @submit.prevent="isValid && $router.push({ name: 'checkout' })"
+        >
+          <v-autocomplete
+            v-model="provinsi"
+            :items="tujuan.province"
+            item-value="province_id"
+            item-text="province"
+            return-object
+            :disabled="!tujuan.province.length"
+            label="Provinsi"
+            outlined
+            color="primary"
+          ></v-autocomplete>
+          <v-autocomplete
+            v-model="kotaKabupaten"
+            :items="tujuan.city"
+            item-value="city_id"
+            item-text="city_name"
+            return-object
+            :disabled="!tujuan.city.length"
+            label="Kota / Kabupaten"
+            outlined
+            color="primary"
+          >
+            <template slot="selection" slot-scope="data">
+              {{ data.item.type }} {{ data.item.city_name }}
+            </template>
+            <template slot="item" slot-scope="data">
+              {{ data.item.type }} {{ data.item.city_name }}
+            </template></v-autocomplete
+          >
+          <v-textarea
+            v-model="alamat"
+            label="Alamat"
+            outlined
+            :disabled="!kotaKabupaten.city_name"
+            color="primary"
+          ></v-textarea>
+          <v-text-field
+            v-model="noHp"
+            class="input-no-hp"
+            type="number"
+            label="No. Hp"
+            outlined
+            :disabled="!alamat"
+            :counter="13"
+            color="primary"
+          ></v-text-field>
+          <v-radio-group v-model="courier" :disabled="noHp.length < 12">
+            <p>Pilih Kurir</p>
+            <v-radio
+              v-for="item in courierItems"
+              :key="item"
+              :label="item"
+              :value="item"
+              color="primary"
+              class="text-uppercase"
+            ></v-radio>
+            <v-radio-group
+              v-if="courier"
+              v-model="courierService"
+              :disabled="!courierItems"
             >
-              <v-autocomplete
-                v-model="provinsi"
-                :items="tujuan.province"
-                item-value="province_id"
-                item-text="province"
-                return-object
-                :disabled="!tujuan.province.length"
-                label="Provinsi"
-                outlined
+              <p>Pilih Layanan</p>
+              <v-radio
+                v-for="(ongkirItem, index) in tujuan.ongkir"
+                :key="index"
+                :label="`${ongkirItem.service} | ${$formatMoney(
+                  ongkirItem.cost[0].value
+                )} | ${ongkirItem.cost[0].etd} ${
+                  courier !== 'pos' ? 'Day' : ''
+                }`"
+                :value="{
+                  service: ongkirItem.service,
+                  price: ongkirItem.cost[0].value,
+                }"
                 color="primary"
-              ></v-autocomplete>
-              <v-autocomplete
-                v-model="kotaKabupaten"
-                :items="tujuan.city"
-                item-value="city_id"
-                item-text="city_name"
-                return-object
-                :disabled="!tujuan.city.length"
-                label="Kota / Kabupaten"
-                outlined
-                color="primary"
-              >
-                <template slot="selection" slot-scope="data">
-                  {{ data.item.type }} {{ data.item.city_name }}
-                </template>
-                <template slot="item" slot-scope="data">
-                  {{ data.item.type }} {{ data.item.city_name }}
-                </template></v-autocomplete
-              >
-              <v-textarea
-                v-model="alamat"
-                label="Alamat"
-                outlined
-                :disabled="!kotaKabupaten.city_name"
-                color="primary"
-              ></v-textarea>
-              <v-text-field
-                v-model="noHp"
-                class="input-no-hp"
-                type="number"
-                label="No. Hp"
-                outlined
-                :disabled="!alamat"
-                :counter="13"
-                color="primary"
-              ></v-text-field>
-              <v-radio-group v-model="courier" :disabled="noHp.length < 12">
-                <p>Pilih Kurir</p>
-                <v-radio
-                  v-for="item in courierItems"
-                  :key="item"
-                  :label="item"
-                  :value="item"
-                  color="primary"
-                  class="text-uppercase"
-                ></v-radio>
-                <v-radio-group
-                  v-if="courier"
-                  v-model="courierService"
-                  :disabled="!courierItems"
-                >
-                  <p>Pilih Layanan</p>
-                  <v-radio
-                    v-for="(ongkirItem, index) in tujuan.ongkir"
-                    :key="index"
-                    :label="`${ongkirItem.service} | ${$formatMoney(
-                      ongkirItem.cost[0].value
-                    )} | ${ongkirItem.cost[0].etd} ${
-                      courier !== 'pos' ? 'Day' : ''
-                    }`"
-                    :value="{
-                      service: ongkirItem.service,
-                      price: ongkirItem.cost[0].value,
-                    }"
-                    color="primary"
-                  ></v-radio>
-                </v-radio-group>
-              </v-radio-group>
-              <div>
-                Total Price:
-                {{ $formatMoney(totalPrice) }}
-              </div>
-              <pre>{{ totalWeight }}</pre>
-              <div class="text-center">
-                <v-btn
-                  color="primary"
-                  text
-                  :disabled="!courierService.service"
-                  @click="makeOrder"
-                  >Checkout</v-btn
-                >
-              </div>
-            </v-form>
+              ></v-radio>
+            </v-radio-group>
+          </v-radio-group>
+          <div>
+            Total Price:
+            {{ $formatMoney(totalPrice) }}
           </div>
-        </div>
+          <pre>{{ totalWeight }}</pre>
+          <div class="text-center">
+            <v-btn
+              color="primary"
+              text
+              :disabled="!courierService.service"
+              @click="makeOrder"
+              >Checkout</v-btn
+            >
+          </div>
+        </v-form>
       </v-col>
     </v-row>
   </v-container>

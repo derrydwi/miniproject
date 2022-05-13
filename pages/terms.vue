@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="mb-4">Terms & Conditions</h1>
+    <h1 class="mt-2 mb-4">Terms & Conditions</h1>
     <ol>
       <li>
         <p>CONDITIONS OF USE</p>

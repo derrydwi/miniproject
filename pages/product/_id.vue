@@ -1,8 +1,8 @@
 <template>
-  <v-container>
-    <BaseLoading v-if="$apollo.loading" />
-    <v-row v-else justify="center">
-      <v-col cols="11" md="7">
+  <BaseLoading v-if="$apollo.loading" />
+  <v-container v-else>
+    <v-row justify="space-around">
+      <v-col cols="12" md="11">
         <h4 class="text-center text-md-h4 text-h5 font-weight-bold my-4">
           {{ productDetail.name }}
         </h4>
@@ -30,17 +30,8 @@
         <h5 class="text-center text-md-h5 text-h6 font-weight-bold mb-4">
           {{ $formatMoney(productDetail.price) }}
         </h5>
-        <div class="text-right">
-          <v-btn
-            v-if="$auth.loggedIn"
-            color="accent"
-            icon
-            @click="savedItemHandler"
-            ><v-icon>{{
-              isSaved ? 'mdi-bookmark' : 'mdi-bookmark-outline'
-            }}</v-icon></v-btn
-          >
-        </div>
+      </v-col>
+      <v-col cols="11" md="7">
         <v-img
           :src="productDetail.image_url"
           width="100%"
@@ -58,7 +49,17 @@
         <p class="mt-5 mb-4" style="line-height: 1.8">
           {{ productDetail.description }}
         </p>
-        <p class="mt-5 mb-4">Category: {{ productDetail.category }}</p>
+        <v-chip
+          outlined
+          label
+          link
+          :to="{
+            name: 'category-name',
+            params: { name: productDetail.category.toLowerCase() },
+          }"
+        >
+          {{ productDetail.category }}
+        </v-chip>
         <p class="mt-5 mb-4">
           {{
             !productDetail.stock
@@ -67,45 +68,81 @@
           }}
         </p>
         <p class="mt-5 mb-4">Weight: {{ productDetail.weight }}</p>
-        <div class="d-flex justify-center align-center">
-          <v-btn
-            color="accent"
-            icon
-            :disabled="quantity === 1"
-            @click="quantity--"
-            ><v-icon>mdi-minus</v-icon></v-btn
-          >
-          <v-text-field
-            v-model.number="quantity"
-            type="number"
-            color="accent"
-            class="input-quantity centered-input mt-n2"
-            dense
-            hide-details="auto"
-            :rules="[numberRule]"
-          ></v-text-field>
-          <v-btn
-            color="accent"
-            icon
-            :disabled="quantity >= productDetail.stock"
-            @click="quantity++"
-            ><v-icon>mdi-plus</v-icon></v-btn
-          >
+      </v-col>
+      <v-col cols="11" md="3">
+        <div
+          :style="$vuetify.breakpoint.mdAndUp && 'position: sticky; top: 25vh'"
+        >
+          <v-card outlined width="260" class="mb-8 mx-auto">
+            <div class="d-flex justify-center align-center ma-6">
+              <v-btn
+                color="accent"
+                icon
+                :disabled="quantity === 1"
+                @click="quantity--"
+                ><v-icon>mdi-minus</v-icon></v-btn
+              >
+              <v-text-field
+                v-model.number="quantity"
+                type="number"
+                color="accent"
+                class="input-quantity centered-input mt-n2"
+                style="max-width: 120px"
+                dense
+                hide-details="auto"
+                :rules="[numberRule]"
+              ></v-text-field>
+              <v-btn
+                color="accent"
+                icon
+                :disabled="quantity >= productDetail.stock"
+                @click="quantity++"
+                ><v-icon>mdi-plus</v-icon></v-btn
+              >
+            </div>
+            <div class="text-center">
+              <div class="ma-6">
+                Subtotal :
+                <strong>{{
+                  $formatMoney(productDetail.price * quantity)
+                }}</strong>
+              </div>
+              <v-btn
+                class="mb-4"
+                color="accent"
+                min-width="180"
+                depressed
+                :disabled="
+                  productDetail.stock === 0 || quantity > productDetail.stock
+                "
+                min-height="40"
+                @click="addToCart"
+                ><v-icon class="mr-2">mdi-cart</v-icon> Add To Cart</v-btn
+              >
+              <v-btn
+                v-if="$auth.loggedIn"
+                class="mb-8"
+                color="accent"
+                min-width="180"
+                outlined
+                @click="savedItemHandler"
+                ><v-icon>{{
+                  isSaved ? 'mdi-bookmark' : 'mdi-bookmark-outline'
+                }}</v-icon
+                >{{ isSaved ? 'Unsave' : 'Save' }}</v-btn
+              >
+            </div>
+          </v-card>
         </div>
-        <div class="text-center mb-8">
-          <v-btn
-            color="accent"
-            text
-            :disabled="
-              productDetail.stock === 0 || quantity > productDetail.stock
-            "
-            @click="addToCart"
-            ><v-icon class="mr-2">mdi-cart</v-icon> Add To Cart</v-btn
-          >
-        </div>
+      </v-col>
+      <v-col cols="11" md="7">
         <div v-if="productDetail.reviews.length">
           <h5 class="text-md-h5 mb-4">Review</h5>
-          <div v-for="review in productDetail.reviews" :key="review.id">
+          <v-card
+            v-for="review in productDetail.reviews"
+            :key="review.id"
+            class="rounded-lg el pa-6 mb-4"
+          >
             <div class="d-flex justify-start align-center mb-4">
               <v-rating
                 color="warning"
@@ -130,8 +167,8 @@
               />
               <span>{{ review.user.username }}</span>
             </div>
-            <p class="mb-8">{{ review.comment }}</p>
-          </div>
+            <p class="mb-0">{{ review.comment }}</p>
+          </v-card>
         </div>
         <div v-else>
           <v-alert type="info" color="accent" text>No review yet</v-alert>
@@ -164,11 +201,6 @@
             >
           </v-form>
         </div>
-        <!-- <div v-else-if="$auth.loggedIn && isBought && isReviewed">
-            <v-alert type="info" color="primary" text
-              >You're already review this product</v-alert
-            >
-          </div> -->
         <div v-else-if="$auth.loggedIn && !isBought && !isReviewed">
           <v-alert type="info" color="accent" text
             >You can write a review after buying the product

@@ -9,13 +9,12 @@
         ></v-progress-circular>
       </v-row>
     </div>
-    <h4 class="text-md-h4 text-h5 mb-md-12 mb-4 ms-8 text-capitalize">
+    <h1 class="ms-8 mb-md-12 mb-4 text-capitalize font-weight-regular">
       {{ category }}
-    </h4>
+    </h1>
     <v-slide-group :show-arrows="$vuetify.breakpoint.mdAndUp" class="mb-16">
       <v-slide-item v-for="productItem in product" :key="productItem.id">
         <v-card
-          nuxt
           :to="{ name: 'product-id', params: { id: productItem.id } }"
           width="300"
           class="el ma-2 mb-md-5 mr-5"
@@ -33,9 +32,7 @@
               ? productItem.name.substring(0, 30) + '...'
               : productItem.name
           }}</v-card-title>
-          <v-card-subtitle
-            class="deep-purple--text text--lighten-1 pb-3 font-weight-bold"
-          >
+          <v-card-subtitle class="accent--text pb-3 font-weight-bold">
             {{ $formatMoney(productItem.price) }}
           </v-card-subtitle>
           <v-card-text>

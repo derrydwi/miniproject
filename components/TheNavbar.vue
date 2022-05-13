@@ -25,15 +25,25 @@
     <v-btn icon @click="isDark = !isDark">
       <v-icon>{{ darkModeIcon }}</v-icon>
     </v-btn>
+    <v-badge
+      v-if="$auth.loggedIn && cart && cart.length > 0"
+      overlap
+      :content="cart.length"
+    >
+      <v-btn icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
+    </v-badge>
+    <v-btn v-else-if="$auth.loggedIn" icon :to="{ name: 'cart' }"
+      ><v-icon>mdi-cart</v-icon></v-btn
+    >
     <v-text-field
       v-if="isSearch"
       v-model="query"
       label="Search"
       prepend-inner-icon="mdi-magnify"
       hide-details="auto"
-      class="me-4"
+      class="ms-2 me-4"
       style="max-width: 200px"
-      color="primary"
+      color="accent"
       autofocus
       single-line
       clearable
@@ -43,23 +53,12 @@
     <v-btn v-else icon @click="searchToggle"
       ><v-icon>mdi-magnify</v-icon></v-btn
     >
-    <v-badge
-      v-if="$auth.loggedIn && cart && cart.length > 0"
-      overlap
-      :content="cart.length"
-    >
-      <v-btn icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
-    </v-badge>
-    <v-btn v-else icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
     <v-btn
+      v-if="!$auth.loggedIn"
       color="primary"
       class="ms-4"
-      @click="
-        $auth.loggedIn
-          ? $auth.logout()
-          : $auth.loginWith('auth0', { params: { prompt: 'login' } })
-      "
-      >{{ $auth.loggedIn ? 'Logout' : 'Login' }}</v-btn
+      @click="$auth.loginWith('auth0', { params: { prompt: 'login' } })"
+      >Login</v-btn
     >
   </v-app-bar>
 </template>
@@ -76,6 +75,9 @@ export default {
         updateQuery: (_, { subscriptionData }) => {
           return { cart: subscriptionData.data.cart }
         },
+      },
+      skip() {
+        return !this.$auth.loggedIn
       },
     },
   },
@@ -101,16 +103,8 @@ export default {
       },
       set(value) {
         this.$store.dispatch('theme/saveIsDark', value)
+        this.$vuetify.theme.dark = !this.$vuetify.theme.dark
       },
-    },
-  },
-  watch: {
-    isDark: {
-      handler(value) {
-        this.$vuetify.theme.dark = value
-      },
-      immediate: true,
-      deep: true,
     },
   },
   methods: {
