@@ -14,7 +14,7 @@
           <span class="text-h5 text--primary">{{
             savedItem.product.name
           }}</span>
-          <v-btn color="teal" icon @click="deleteItem"
+          <v-btn color="primary" icon @click="deleteItem"
             ><v-icon>mdi-bookmark</v-icon></v-btn
           >
         </div>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <p>Profile Page</p>
     <div v-if="$apollo.loading">Loading...</div>
     <div v-else>
@@ -7,7 +7,7 @@
       <p>Hi, {{ user.username }}!</p>
       <p>Email: {{ user.fullname }}</p>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

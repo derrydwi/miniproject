@@ -20,6 +20,11 @@ export const getProduct = gql`
           count(columns: id)
         }
       }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
+      }
     }
   }
 `
@@ -40,6 +45,11 @@ export const getAllProduct = gql`
           avg {
             rating
           }
+          count(columns: id)
+        }
+      }
+      order_items_aggregate {
+        aggregate {
           count(columns: id)
         }
       }
@@ -66,6 +76,11 @@ export const getProductByCategory = gql`
           count(columns: id)
         }
       }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
+      }
     }
   }
 `
@@ -89,6 +104,23 @@ export const getProductByName = gql`
           count(columns: id)
         }
       }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
+      }
+    }
+  }
+`
+
+export const getLatestProduct = gql`
+  query getLatestProduct($limit: Int!) {
+    latestProduct: product(order_by: { id: desc }, limit: $limit) {
+      id
+      name
+      description
+      image_url
+      price
     }
   }
 `
@@ -112,6 +144,11 @@ export const subscriptionProduct = gql`
           count(columns: id)
         }
       }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
+      }
     }
   }
 `
@@ -132,6 +169,11 @@ export const subscriptionProductByCategory = gql`
           avg {
             rating
           }
+          count(columns: id)
+        }
+      }
+      order_items_aggregate {
+        aggregate {
           count(columns: id)
         }
       }

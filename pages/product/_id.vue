@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <div v-if="$apollo.loading">Loading...</div>
     <div v-else>
       <div v-if="$auth.loggedIn"></div>
@@ -12,7 +12,7 @@
             <div class="d-flex justify-center align-center mt-2">
               <v-rating
                 class="mr-2"
-                color="teal"
+                color="primary"
                 background-color="grey lighten-1"
                 half-increments
                 length="5"
@@ -36,7 +36,7 @@
             :src="productDetail.image_url"
             width="100%"
             height="50vh"
-            class="el rounded-lg mb-8"
+            class="rounded-lg mb-8"
             contain
           >
             <template #placeholder>
@@ -48,7 +48,7 @@
           </v-img>
           <v-btn
             v-if="$auth.loggedIn"
-            color="teal"
+            color="primary"
             icon
             @click="savedItemHandler"
             ><v-icon>{{
@@ -69,7 +69,7 @@
           <p class="mt-5 mb-4">Weight: {{ productDetail.weight }}</p>
           <div class="d-flex justify-center align-center">
             <v-btn
-              color="teal"
+              color="primary"
               icon
               :disabled="quantity === 1"
               @click="quantity--"
@@ -78,14 +78,14 @@
             <v-text-field
               v-model.number="quantity"
               type="number"
-              color="teal"
+              color="primary"
               class="input-quantity centered-input mt-n2"
               dense
               hide-details="auto"
               :rules="[numberRule]"
             ></v-text-field>
             <v-btn
-              color="teal"
+              color="primary"
               icon
               :disabled="quantity >= productDetail.stock"
               @click="quantity++"
@@ -94,7 +94,7 @@
           </div>
           <div class="text-center mb-8">
             <v-btn
-              color="teal"
+              color="primary"
               text
               :disabled="
                 productDetail.stock === 0 || quantity > productDetail.stock
@@ -108,7 +108,7 @@
             <div v-for="review in productDetail.reviews" :key="review.id">
               <div class="d-flex justify-start align-center mb-4">
                 <v-rating
-                  color="teal"
+                  color="primary"
                   background-color="grey lighten-1"
                   class="mr-4"
                   half-increments
@@ -134,7 +134,7 @@
             </div>
           </div>
           <div v-else>
-            <v-alert type="info" color="teal" text>No review yet</v-alert>
+            <v-alert type="info" color="primary" text>No review yet</v-alert>
           </div>
           <div v-if="$auth.loggedIn && isBought && !isReviewed">
             <h6 class="text-md-h6 mb-4">Write Review</h6>
@@ -146,17 +146,17 @@
               <v-rating
                 v-model="rating"
                 class="ml-n2 mb-4"
-                color="teal"
+                color="primary"
                 background-color="grey lighten-1"
               ></v-rating>
               <v-textarea
                 v-model="reviewDesc"
                 label="Review"
-                color="teal"
+                color="primary"
                 outlined
               ></v-textarea>
               <v-btn
-                color="teal"
+                color="primary"
                 text
                 :disabled="!reviewDesc || !rating"
                 @click="submitReview"
@@ -165,24 +165,24 @@
             </v-form>
           </div>
           <!-- <div v-else-if="$auth.loggedIn && isBought && isReviewed">
-            <v-alert type="info" color="teal" text
+            <v-alert type="info" color="primary" text
               >You're already review this product</v-alert
             >
           </div> -->
           <div v-else-if="$auth.loggedIn && !isBought && !isReviewed">
-            <v-alert type="info" color="teal" text
+            <v-alert type="info" color="primary" text
               >You can write a review after buying the product
             </v-alert>
           </div>
           <div v-else-if="!$auth.loggedIn">
-            <v-alert type="info" color="teal" text
+            <v-alert type="info" color="primary" text
               >Login to review this product</v-alert
             >
           </div>
         </v-col>
       </v-row>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

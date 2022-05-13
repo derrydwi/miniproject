@@ -1,18 +1,19 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div v-if="$apollo.loading">Loading...</div>
-      <div v-else>
-        <div>
-          <p>Order</p>
+  <v-container>
+    <v-row justify="center" align="center">
+      <v-col cols="12" sm="8" md="6">
+        <div v-if="$apollo.loading">Loading...</div>
+        <div v-else>
           <div>
-            <OrderItem
-              v-for="(orderItem, index) in order"
-              :key="orderItem.id"
-              :index="index"
-              :order-item="orderItem"
-            />
-            <!-- <v-card
+            <p>Order</p>
+            <div>
+              <OrderItem
+                v-for="(orderItem, index) in order"
+                :key="orderItem.id"
+                :index="index"
+                :order-item="orderItem"
+              />
+              <!-- <v-card
               v-for="orderItem in order"
               :key="orderItem.id"
               class="mx-auto my-4"
@@ -62,7 +63,7 @@
               <v-card-actions>
                 <v-btn
                   v-if="orderItem.status !== 'settlement'"
-                  color="teal"
+                  color="primary"
                   text
                   @click="pay(orderItem.id)"
                   ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay
@@ -70,11 +71,12 @@
                 >
               </v-card-actions>
             </v-card> -->
+            </div>
           </div>
         </div>
-      </div>
-    </v-col>
-  </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

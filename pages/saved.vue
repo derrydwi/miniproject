@@ -1,19 +1,21 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div v-if="$apollo.loading">Loading...</div>
-      <div v-else>
-        <div>
-          <p>Saved</p>
-          <SavedItem
-            v-for="savedItem in saved"
-            :key="savedItem.id"
-            :saved-item="savedItem"
-          />
+  <v-container>
+    <v-row justify="center" align="center">
+      <v-col cols="12" sm="8" md="6">
+        <div v-if="$apollo.loading">Loading...</div>
+        <div v-else>
+          <div>
+            <p>Saved</p>
+            <SavedItem
+              v-for="savedItem in saved"
+              :key="savedItem.id"
+              :saved-item="savedItem"
+            />
+          </div>
         </div>
-      </div>
-    </v-col>
-  </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

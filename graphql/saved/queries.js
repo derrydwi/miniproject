@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 
 export const getSaved = gql`
   query getSaved {
-    saved {
+    saved(order_by: { id: desc }) {
       id
       product {
         id
@@ -44,7 +44,7 @@ export const deleteSaved = gql`
 
 export const subscriptionSaved = gql`
   subscription subscriptionSaved {
-    saved {
+    saved(order_by: { id: desc }) {
       id
       product {
         id
