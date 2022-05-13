@@ -13,5 +13,8 @@
 <script>
 export default {
   name: 'CallbackPage',
+  head: {
+    title: 'Signing in',
+  },
 }
 </script>

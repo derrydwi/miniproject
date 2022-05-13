@@ -109,6 +109,9 @@ export default {
       newName: '',
     }
   },
+  head: {
+    title: 'Profile',
+  },
   computed: {
     name: {
       get() {

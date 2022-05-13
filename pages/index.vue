@@ -18,5 +18,8 @@ export default {
       categoryName: ['electronic', 'fashion', 'hobby', 'jewelry'],
     }
   },
+  head: {
+    title: 'Home',
+  },
 }
 </script>

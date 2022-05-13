@@ -53,6 +53,9 @@ export default {
       },
     },
   },
+  head: {
+    title: 'Order',
+  },
   computed: {
     page: {
       get() {

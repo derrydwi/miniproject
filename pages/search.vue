@@ -90,5 +90,8 @@ export default {
       },
     },
   },
+  head() {
+    return { title: this.$route.query.q }
+  },
 }
 </script>

@@ -65,5 +65,8 @@ export default {
       ],
     }
   },
+  head: {
+    title: 'About Us',
+  },
 }
 </script>
