@@ -83,7 +83,7 @@ const mutations = {
 const actions = {
   fetchWilayah({ commit }, param) {
     this.$axios
-      .$get(`/api/${param.type}`, {
+      .$get(`/api/shipping/${param.type}`, {
         params: {
           [param.param]: param.id,
         },
@@ -106,7 +106,7 @@ const actions = {
   fetchOngkir({ commit }, param) {
     commit('SET_TUJUAN', { ongkir: [] })
     this.$axios
-      .$post('/api/cost', {
+      .$post('/api/shipping/cost', {
         ...param,
       })
       .then((result) => {

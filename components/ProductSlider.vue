@@ -1,17 +1,10 @@
 <template>
   <div>
-    <div v-if="$apollo.loading">
-      <v-row class="fill-height" justify="center" align="center">
-        <v-progress-circular
-          :size="50"
-          color="primary"
-          indeterminate
-        ></v-progress-circular>
-      </v-row>
-    </div>
-    <h2 class="ms-8 mb-md-12 mb-4 text-capitalize font-weight-regular">
-      {{ category }}
-    </h2>
+    <BaseLoading v-if="$apollo.loading" />
+    <h2
+      class="ms-8 mb-md-12 mb-4 text-capitalize font-weight-regular"
+      v-text="category"
+    />
     <v-slide-group :show-arrows="$vuetify.breakpoint.mdAndUp" class="mb-16">
       <v-slide-item v-for="productItem in product" :key="productItem.id">
         <v-card
@@ -32,9 +25,10 @@
               ? productItem.name.substring(0, 30) + '...'
               : productItem.name
           }}</v-card-title>
-          <v-card-subtitle class="accent--text pb-3 font-weight-bold">
-            {{ $currency(productItem.price) }}
-          </v-card-subtitle>
+          <v-card-subtitle
+            class="accent--text pb-3 font-weight-bold"
+            v-text="$currency(productItem.price)"
+          />
           <v-card-text>
             <div class="d-flex">
               <v-rating
@@ -64,6 +58,7 @@
 
 <script>
 import { getProductByCategory } from '~/graphql/product/queries'
+
 export default {
   props: {
     category: {

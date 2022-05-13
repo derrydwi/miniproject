@@ -4,9 +4,9 @@
     <h2 class="mt-2 mb-7 text-center">Checkout</h2>
     <v-row v-if="cart.length" dense>
       <v-col cols="12" sm="8" md="6" class="mx-auto mb-2">
-        <template v-for="(orderItem, index) in cart">
+        <template v-for="orderItem in cart">
           <v-fade-transition :key="orderItem.id">
-            <CheckoutItem :index="index" :order-item="orderItem" />
+            <CheckoutItem :order-item="orderItem" />
           </v-fade-transition>
         </template>
         <CheckoutShippingDetail :total-weight="totalWeight" />
@@ -183,7 +183,7 @@ export default {
           },
         },
       }
-      this.$axios.post('/api/pay', body).catch((error) => {
+      this.$axios.post('/api/payment/pay', body).catch((error) => {
         alert(`Can't make payment. ${error.message}`)
       })
     },

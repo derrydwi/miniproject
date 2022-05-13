@@ -12,17 +12,18 @@
       <v-card-title class="text-md-body-1 justify-space-between">
         <span
           :to="{ name: 'product-id', params: { id: savedItem.product.id } }"
-          >{{ savedItem.product.name }}</span
-        >
+          v-text="savedItem.product.name"
+        />
         <v-card-actions class="me-n3">
           <v-btn color="primary" icon @click.prevent="deleteItem"
             ><v-icon>mdi-bookmark</v-icon></v-btn
           >
         </v-card-actions>
       </v-card-title>
-      <v-card-subtitle class="accent--text pb-3 font-weight-bold">
-        {{ $currency(savedItem.product.price) }}
-      </v-card-subtitle>
+      <v-card-subtitle
+        class="accent--text pb-3 font-weight-bold"
+        v-text="$currency(savedItem.product.price)"
+      />
       <v-card-text>
         <div class="d-flex mb-3">
           <v-rating
@@ -45,10 +46,10 @@
             Review)</span
           >
         </div>
-        <div>
+        <p class="mb-0">
           Sold
           {{ savedItem.product.order_items_aggregate.aggregate.count }}
-        </div>
+        </p>
       </v-card-text>
     </v-card>
   </v-col>

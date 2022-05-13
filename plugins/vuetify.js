@@ -1,6 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
 
-export default function () {
+export default function ({ app }) {
   let dark
   if (localStorage.getItem('vuex')) {
     try {

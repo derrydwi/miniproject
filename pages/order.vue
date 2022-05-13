@@ -25,7 +25,7 @@
 <script>
 import { getOrder, subscriptionOrder } from '~/graphql/order/queries'
 
-const pageSize = 5
+const limit = 5
 
 export default {
   name: 'OrderPage',
@@ -35,7 +35,7 @@ export default {
       query: getOrder,
       variables() {
         return {
-          limit: pageSize,
+          limit,
           offset: 0,
         }
       },
@@ -43,7 +43,7 @@ export default {
         document: subscriptionOrder,
         variables() {
           return {
-            limit: pageSize,
+            limit,
             offset: 0,
           }
         },
@@ -76,11 +76,11 @@ export default {
       this.page++
       this.$apollo.queries.order.fetchMore({
         variables: {
-          limit: pageSize,
-          offset: this.page * pageSize,
+          limit,
+          offset: this.page * limit,
         },
         updateQuery: (previousResult, { fetchMoreResult }) => {
-          if (fetchMoreResult.order.length < pageSize) this.hasMore = false
+          if (fetchMoreResult.order.length < limit) this.hasMore = false
           return {
             order: [...previousResult.order, ...fetchMoreResult.order],
           }

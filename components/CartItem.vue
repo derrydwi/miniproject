@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto pa-4" width="600" outlined>
     <v-list-item>
-      <v-list-item-avatar tile size="150">
+      <v-list-item-avatar size="150" tile>
         <v-img contain :src="cartItem.product.image_url" />
       </v-list-item-avatar>
       <v-list-item-content>
@@ -13,12 +13,12 @@
               params: { id: cartItem.product.id },
             })
           "
-        >
-          {{ cartItem.product.name }}
-        </v-list-item-title>
-        <v-list-item-subtitle class="accent--text font-weight-bold">{{
-          $currency(cartItem.product.price)
-        }}</v-list-item-subtitle>
+          v-text="cartItem.product.name"
+        />
+        <v-list-item-subtitle
+          class="accent--text font-weight-bold"
+          v-text="$currency(cartItem.product.price)"
+        />
       </v-list-item-content>
     </v-list-item>
     <v-card-actions>
@@ -54,69 +54,6 @@
       >
     </v-card-actions>
   </v-card>
-
-  <!-- <v-card
-      class="mx-auto my-4 el"
-      max-width="300"
-      :to="{ name: 'product-id', params: { id: cartItem.product.id } }"
-    >
-      <div class="text-right">
-        <v-btn
-          color="primary"
-          icon
-          class="text-right"
-          @click.prevent="deleteItem"
-          ><v-icon>mdi-delete-outline</v-icon></v-btn
-        >
-      </div>
-      <div class="px-4 py-4">
-        <v-img
-          contain
-          max-width="800"
-          max-height="200"
-          :src="cartItem.product.image_url"
-        />
-      </div>
-      <v-card-text class="text--primary">
-        <p>{{ index + 1 }}.</p>
-        <p class="text-h5 text--primary">{{ cartItem.product.name }}</p>
-        <div>
-          {{ $currency(cartItem.product.price) }}
-          <div>Stock: {{ cartItem.product.stock }}</div>
-          <div>Quantity: {{ cartItem.quantity }}</div>
-          <div>
-            Price:
-            {{ $currency(cartItem.product.price * cartItem.quantity) }}
-          </div>
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          color="primary"
-          icon
-          :disabled="quantity === 1 || quantity > cartItem.product.stock"
-          @click.prevent="changeStock('decrement')"
-          ><v-icon>mdi-minus</v-icon></v-btn
-        >
-        <v-text-field
-          v-model.number="quantity"
-          type="number"
-          color="primary"
-          class="input-quantity centered-input mt-n2"
-          dense
-          hide-details="auto"
-          :rules="[numberRule]"
-          @change="changeStock('input')"
-        ></v-text-field>
-        <v-btn
-          color="primary"
-          icon
-          :disabled="quantity >= cartItem.product.stock"
-          @click.prevent="changeStock('increment')"
-          ><v-icon>mdi-plus</v-icon></v-btn
-        >
-      </v-card-actions>
-    </v-card> -->
 </template>
 
 <script>
@@ -130,10 +67,6 @@ export default {
       default() {
         return {}
       },
-    },
-    index: {
-      type: Number,
-      default: 0,
     },
   },
   data() {

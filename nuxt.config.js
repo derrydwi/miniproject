@@ -3,12 +3,16 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - Good Desire',
+    titleTemplate: '%s | Good Desire',
     title: 'good-desire',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'Good Desire e-commerce built with NuxtJS',
+      },
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
@@ -51,6 +55,16 @@ export default {
     'vue-sweetalert2/nuxt/no-css',
   ],
 
+  serverMiddleware: {
+    '/api': '~/api',
+  },
+
+  publicRuntimeConfig: {
+    hasuraBaseUrl: process.env.HASURA_BASE_URL,
+    hasuraWsBaseUrl: process.env.HASURA_WS_BASE_URL,
+    midtransClientKey: process.env.MIDTRANS_CLIENT_KEY,
+  },
+
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
@@ -66,7 +80,7 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    optionsPath: '~/plugins/vuetify.options.js',
+    optionsPath: '~/plugins/vuetify.js',
     customVariables: ['~/assets/variables.scss'],
     treeShake: true,
     defaultAssets: {
@@ -89,27 +103,23 @@ export default {
     strategies: {
       local: false,
       auth0: {
-        domain: 'dev-rlo2p8gf.us.auth0.com',
-        client_id: 'kmEQpIWwM9mzQRgK6OW5fuM6CsnlRwb9',
-        audience: 'https://dev-rlo2p8gf.us.auth0.com/api/v2/',
+        domain: process.env.AUTH0_DOMAIN,
+        client_id: process.env.AUTH0_CLIENT_ID,
+        audience: process.env.AUTH0_AUDIENCE,
       },
     },
   },
 
   apollo: {
     clientConfigs: {
-      default: '~/plugins/apollo-config.js',
+      default: '~/plugins/apolloConfig.js',
     },
-    errorHandler: '~/plugins/apollo-error-handler.js',
+    errorHandler: '~/plugins/apolloErrorHandler.js',
   },
 
   googleFonts: {
     families: {
       'Open+Sans': true,
     },
-  },
-
-  serverMiddleware: {
-    '/api': '~/api',
   },
 }

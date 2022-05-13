@@ -3,16 +3,14 @@
     <v-list v-if="$auth.loggedIn && !$apollo.loading">
       <v-list-item>
         <v-list-item-avatar>
-          <v-img :src="user.picture"></v-img>
+          <v-img :src="user.picture" />
         </v-list-item-avatar>
       </v-list-item>
       <v-list-group color="undefined">
         <template #activator>
           <v-list-item-content>
-            <v-list-item-title class="text-h6">{{
-              user.username
-            }}</v-list-item-title>
-            <v-list-item-subtitle>{{ user.email }}</v-list-item-subtitle>
+            <v-list-item-title class="text-h6" v-text="user.username" />
+            <v-list-item-subtitle v-text="user.email" />
           </v-list-item-content>
         </template>
         <v-list-item :to="{ name: 'profile' }">
@@ -33,7 +31,7 @@
         </v-list-item>
       </v-list-group>
     </v-list>
-    <v-divider></v-divider>
+    <v-divider />
     <v-list>
       <div
         v-for="(item, index) in $auth.loggedIn
@@ -58,15 +56,13 @@
             :to="{ name: 'category-name', params: { name: category } }"
           >
             <v-list-item-content>
-              <v-list-item-title class="text-capitalize">
-                {{ category }}
-              </v-list-item-title>
+              <v-list-item-title class="text-capitalize" v-text="category" />
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
         <v-list-item v-else :to="item.to" router exact>
           <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon v-text="item.icon" />
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="item.title" />

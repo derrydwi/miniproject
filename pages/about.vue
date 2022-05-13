@@ -34,9 +34,9 @@
     <p class="text-h6 mt-7">Contact</p>
     <div v-for="(contact, index) in contacts" :key="index">
       <v-btn :href="contact.to" target="_blank" icon class="pa-8">
-        <v-icon color="accent" large>{{ contact.icon }}</v-icon>
+        <v-icon color="accent" large v-text="contact.icon" />
       </v-btn>
-      <span class="ms-2">{{ contact.text }}</span>
+      <span class="ms-2" v-text="contact.text" />
     </div>
   </v-container>
 </template>
