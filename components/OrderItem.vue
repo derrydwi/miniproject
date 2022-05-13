@@ -1,30 +1,54 @@
 <template>
   <div>
-    <v-card class="mx-auto my-4 el" max-width="300">
-      <div class="px-4 py-4">
+    <v-card class="mx-auto my-4" max-width="300">
+      <div>
+        {{ new Date(orderItem.created_at).toUTCString().substring(0, 22) }}
+      </div>
+      <div>Alamat: {{ orderItem.alamat }}</div>
+      <div>No Hp: {{ orderItem.no_hp }}</div>
+      <div>
+        Ongkos Kirim:
+        {{ $formatMoney(orderItem.shipping_price) }}
+      </div>
+      <div>
+        Total:
+        {{ $formatMoney(orderItem.total_price) }}
+      </div>
+      <div>Telah Dibayar: {{ orderItem.status }}</div>
+      <div
+        v-for="item in orderItem.order_items"
+        :key="item.id"
+        class="px-4 py-4"
+      >
         <v-img
           contain
           max-width="800"
           max-height="200"
-          :src="orderItem.product.image_url"
+          :src="item.product.image_url"
         />
-      </div>
-      <v-card-text class="text--primary">
-        <p>{{ index + 1 }}.</p>
-        <p class="text-h5 text--primary">{{ orderItem.product.name }}</p>
-        <div>
-          <div class="d-flex justify-space-between">
-            <div>
-              {{ $formatMoney(orderItem.product.price) }}
-            </div>
-            <div>x{{ orderItem.quantity }}</div>
+        <v-card-text class="text--primary">
+          <p class="text-h5 text--primary">
+            {{ item.product.name }}
+          </p>
+          <div>
+            {{ $formatMoney(item.product.price) }}
           </div>
+          <div>Quantity: {{ item.quantity }}</div>
           <div>
             Price:
-            {{ $formatMoney(orderItem.product.price * orderItem.quantity) }}
+            {{ $formatMoney(item.price) }}
           </div>
-        </div>
-      </v-card-text>
+        </v-card-text>
+      </div>
+      <v-card-actions>
+        <v-btn
+          v-if="orderItem.status !== 'SUCCESS'"
+          color="teal"
+          text
+          @click="pay"
+          ><v-icon class="mr-2">mdi-credit-card-outline</v-icon> Pay Now</v-btn
+        >
+      </v-card-actions>
     </v-card>
   </div>
 </template>
@@ -44,13 +68,28 @@ export default {
       default: 0,
     },
   },
-  data() {
-    return {
-      quantity: 1,
-    }
+  head: {
+    script: [
+      {
+        src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+        'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
+      },
+    ],
   },
-  mounted() {
-    this.quantity = this.orderItem.quantity
+  methods: {
+    pay() {
+      window.snap.pay(this.orderItem.transaction_token, {
+        onSuccess() {
+          history.back()
+        },
+        onPending() {
+          history.back()
+        },
+        onError() {
+          history.back()
+        },
+      })
+    },
   },
 }
 </script>

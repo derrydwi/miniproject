@@ -6,7 +6,13 @@
         <div>
           <p>Order</p>
           <div>
-            <v-card
+            <OrderItem
+              v-for="(orderItem, index) in order"
+              :key="orderItem.id"
+              :index="index"
+              :order-item="orderItem"
+            />
+            <!-- <v-card
               v-for="orderItem in order"
               :key="orderItem.id"
               class="mx-auto my-4"
@@ -27,7 +33,7 @@
                 Total:
                 {{ $formatMoney(orderItem.total_price) }}
               </div>
-              <div>Telah Dibayar: {{ orderItem.is_paid }}</div>
+              <div>Telah Dibayar: {{ orderItem.status }}</div>
               <div
                 v-for="item in orderItem.order_items"
                 :key="item.id"
@@ -55,7 +61,7 @@
               </div>
               <v-card-actions>
                 <v-btn
-                  v-if="!orderItem.is_paid"
+                  v-if="orderItem.status !== 'settlement'"
                   color="teal"
                   text
                   @click="pay(orderItem.id)"
@@ -63,7 +69,7 @@
                   Now</v-btn
                 >
               </v-card-actions>
-            </v-card>
+            </v-card> -->
           </div>
         </div>
       </div>
@@ -75,12 +81,20 @@
 import {
   getOrder,
   subscriptionOrder,
-  updatePayOrder,
+  // updatePayOrder,
 } from '~/graphql/order/queries'
 
 export default {
   name: 'OrderPage',
   middleware: 'auth',
+  // head: {
+  //   script: [
+  //     {
+  //       src: 'https://app.sandbox.midtrans.com/snap/snap.js',
+  //       'data-client-key': 'SB-Mid-client-JLNwUU1q9S-ilzd2',
+  //     },
+  //   ],
+  // },
   apollo: {
     order: {
       query: getOrder,
@@ -92,26 +106,95 @@ export default {
       },
     },
   },
-  methods: {
-    pay(orderId) {
-      this.$apollo
-        .mutate({
-          mutation: updatePayOrder,
-          variables: {
-            id: orderId,
-            is_paid: true,
-          },
-        })
-        .then(() => {
-          this.$showAlert({ text: 'Payment Success', icon: 'success' })
-        })
-        .catch((error) => {
-          this.$showAlert({
-            text: `Payment Failed. ${error.message}`,
-            icon: 'error',
-          })
-        })
-    },
-  },
+  // methods: {
+  //   pay(orderId) {
+  //     const body = {
+  //       transaction_details: {
+  //         order_id: orderId,
+  //         gross_amount: 5000,
+  //       },
+  //       credit_card: {
+  //         secure: true,
+  //       },
+  //       item_details: [
+  //         {
+  //           id: 'ITEM1',
+  //           price: 5000,
+  //           quantity: 1,
+  //           name: 'Midtrans Bear',
+  //           brand: 'Midtrans',
+  //           category: 'Toys',
+  //           merchant_name: 'Midtrans',
+  //         },
+  //       ],
+  //       customer_details: {
+  //         first_name: 'Johnn',
+  //         last_name: 'Watsonn',
+  //         email: 'test@example.com',
+  //         phone: '+628123456',
+  //         billing_address: {
+  //           first_name: 'John',
+  //           last_name: 'Watson',
+  //           email: 'test@example.com',
+  //           phone: '081 2233 44-55',
+  //           address: 'Sudirman',
+  //           city: 'Jakarta',
+  //           postal_code: '12190',
+  //           country_code: 'IDN',
+  //         },
+  //         shipping_address: {
+  //           first_name: 'John',
+  //           last_name: 'Watson',
+  //           email: 'test@example.com',
+  //           phone: '0 8128-75 7-9338',
+  //           address: 'Sudirman',
+  //           city: 'Jakarta',
+  //           postal_code: '12190',
+  //           country_code: 'IDN',
+  //         },
+  //       },
+  //     }
+  //     this.$axios
+  //       .post('/api/pay', body)
+  //       .then((result) => {
+  //         // eslint-disable-next-line no-console
+  //         console.log(result.data)
+  //         window.snap.pay(result.data.transactionToken, {
+  //           onSuccess(result) {
+  //             // this.$showAlert({ text: 'Payment Success', icon: 'success' })
+  //             alert('Payment Success')
+  //             // eslint-disable-next-line no-console
+  //             console.log(result)
+  //           },
+  //           onPending(result) {
+  //             // this.$showAlert({ text: 'Wating your payment', icon: 'info' })
+  //             alert('Wating your payment')
+  //             // eslint-disable-next-line no-console
+  //             console.log(result)
+  //           },
+  //           onError(result) {
+  //             // this.$showAlert({ text: 'Payment Failed', icon: 'error' })
+  //             alert('Payment Failed')
+  //             // eslint-disable-next-line no-console
+  //             console.log(result)
+  //           },
+  //           onClose() {
+  //             // this.$showAlert({
+  //             //   text: 'You closed the popup without finishing the payment',
+  //             //   icon: 'info',
+  //             // })
+  //             alert('You closed the popup without finishing the payment')
+  //           },
+  //         })
+  //       })
+  //       .catch((error) => {
+  //         // this.$showAlert({
+  //         //   text: `Can't make payment. ${error.message}`,
+  //         //   icon: 'error',
+  //         // })
+  //         alert(`Can't make payment. ${error.message}`)
+  //       })
+  //   },
+  // },
 }
 </script>

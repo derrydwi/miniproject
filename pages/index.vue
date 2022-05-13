@@ -84,6 +84,9 @@ export default {
           offset: 0,
         }
       },
+      error() {
+        this.$apollo.queries.product.refetch()
+      },
     },
   },
   computed: {
@@ -117,6 +120,9 @@ export default {
           return {
             product: [...previousResult.product, ...fetchMoreResult.product],
           }
+        },
+        error() {
+          this.$apollo.queries.product.refetch()
         },
       })
     },
