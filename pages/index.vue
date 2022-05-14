@@ -1,6 +1,5 @@
 <template>
-  <BaseLoading v-if="$apollo.loading" />
-  <div v-else>
+  <div>
     <HomeCarousel />
     <v-container :class="$vuetify.breakpoint.mdAndDown && 'pa-0'">
       <div v-for="category in categoryName" :key="category">

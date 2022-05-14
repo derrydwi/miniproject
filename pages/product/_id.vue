@@ -1,7 +1,7 @@
 <template>
-  <BaseLoading v-if="$apollo.loading" />
-  <v-container v-else>
-    <v-row justify="space-around">
+  <v-container>
+    <DetailLoading v-if="$apollo.loading" />
+    <v-row v-else justify="space-around">
       <v-col cols="12" md="11">
         <h4
           class="text-center text-md-h4 text-h5 font-weight-bold my-4"
@@ -75,7 +75,7 @@
         </div>
         <div class="mt-14">
           <div v-if="productDetail.reviews.length">
-            <h5 class="text-md-h5 mb-4">Review</h5>
+            <h5 class="text-h5 mb-4">Review</h5>
             <v-card
               v-for="review in productDetail.reviews"
               :key="review.id"

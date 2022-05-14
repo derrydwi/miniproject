@@ -1,6 +1,5 @@
 <template>
   <div>
-    <BaseLoading v-if="$apollo.loading" />
     <h2
       class="ms-8 mb-md-12 mb-4 text-capitalize font-weight-regular"
       v-text="category"
