@@ -31,7 +31,7 @@
         color="primary"
         icon
         :disabled="quantity === 1 || quantity > cartItem.product.stock"
-        @click.prevent="changeStock('decrement')"
+        @click.prevent="changeStockHandler('decrement')"
         ><v-icon>mdi-minus</v-icon></v-btn
       >
       <v-text-field
@@ -43,13 +43,13 @@
         dense
         hide-details="auto"
         :rules="[numberRule]"
-        @change="changeStock('input')"
+        @change="changeStockHandler"
       ></v-text-field>
       <v-btn
         color="primary"
         icon
         :disabled="quantity >= cartItem.product.stock"
-        @click.prevent="changeStock('increment')"
+        @click.prevent="changeStockHandler('increment')"
         ><v-icon>mdi-plus</v-icon></v-btn
       >
     </v-card-actions>
@@ -72,6 +72,7 @@ export default {
   data() {
     return {
       quantity: 1,
+      timeout: 0,
       numberRule: (v) => {
         if (!isNaN(parseInt(v)) && v >= 1 && v <= this.cartItem.product.stock)
           return true
@@ -98,27 +99,36 @@ export default {
         this.quantity = this.cartItem.product.stock
       }
     },
-    changeStock(type) {
+    changeStockHandler(type) {
+      if (type === 'decrement') {
+        this.quantity--
+      } else if (type === 'increment') {
+        this.quantity++
+      }
       this.validateStock()
-      this.$apollo
-        .mutate({
-          mutation: updateToCart,
-          variables: {
-            id: this.cartItem.id,
-            ...(type === 'decrement' && { quantity: this.quantity - 1 }),
-            ...(type === 'increment' && { quantity: this.quantity + 1 }),
-            ...(type === 'input' && { quantity: this.quantity }),
-          },
-        })
-        .then(() => {
-          this.$showAlert({ text: 'Quantity Updated', icon: 'success' })
-        })
-        .catch((error) => {
-          this.$showAlert({
-            text: `Can't update quantity. ${error.message}`,
-            icon: 'error',
+      this.changeStock()
+    },
+    changeStock() {
+      if (this.timeout) clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => {
+        this.$apollo
+          .mutate({
+            mutation: updateToCart,
+            variables: {
+              id: this.cartItem.id,
+              quantity: this.quantity,
+            },
           })
-        })
+          .then(() => {
+            this.$showAlert({ text: 'Quantity Updated', icon: 'success' })
+          })
+          .catch((error) => {
+            this.$showAlert({
+              text: `Can't update quantity. ${error.message}`,
+              icon: 'error',
+            })
+          })
+      }, 300)
     },
     deleteItem() {
       this.$apollo
