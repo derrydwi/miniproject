@@ -15,7 +15,7 @@
           v-text="savedItem.product.name"
         />
         <v-card-actions class="me-n3">
-          <v-btn color="primary" icon @click.prevent="deleteItem"
+          <v-btn color="accent" icon @click.prevent="deleteItem"
             ><v-icon>mdi-bookmark</v-icon></v-btn
           >
         </v-card-actions>
@@ -25,7 +25,7 @@
         v-text="$currency(savedItem.product.price)"
       />
       <v-card-text>
-        <div class="d-flex mb-3">
+        <div v-if="ratingProduct.value" class="d-flex mb-3">
           <v-rating
             color="warning"
             background-color="grey lighten-1"
@@ -37,19 +37,15 @@
             :value="1"
           ></v-rating>
           <span
-            >{{
-              $rating(savedItem.product.reviews_aggregate.aggregate.avg.rating)
-            }}
-            ({{
-              savedItem.product.reviews_aggregate.aggregate.count
+            >{{ $rating(ratingProduct.value) }} ({{
+              ratingProduct.count
             }}
             Review)</span
           >
         </div>
-        <p class="mb-0">
-          Sold
-          {{ savedItem.product.order_items_aggregate.aggregate.count }}
-        </p>
+        <p v-else class="mb-3">No review yet</p>
+        <p v-if="sold" class="mb-0">Sold {{ sold }}</p>
+        <p v-else class="mb-0">Not sold yet</p>
       </v-card-text>
     </v-card>
   </v-col>
@@ -66,6 +62,17 @@ export default {
       default() {
         return {}
       },
+    },
+  },
+  computed: {
+    ratingProduct() {
+      return {
+        value: this.savedItem.product.reviews_aggregate.aggregate.avg.rating,
+        count: this.savedItem.product.reviews_aggregate.aggregate.count,
+      }
+    },
+    sold() {
+      return this.savedItem.product.order_items_aggregate.aggregate.count
     },
   },
   methods: {

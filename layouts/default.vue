@@ -1,13 +1,13 @@
 <template>
   <v-app dark>
     <v-navigation-drawer v-model="isDrawer" app clipped>
-      <BaseList />
+      <SideBar />
     </v-navigation-drawer>
     <TheNavbar @drawer-toggle="drawerToggle" />
     <v-main>
       <Nuxt />
+      <TheFooter />
     </v-main>
-    <TheFooter />
   </v-app>
 </template>
 

@@ -31,12 +31,16 @@
       Good Desire is a e-commerce application that is able to connect sellers
       and buyers efficiently and easily.
     </p>
-    <p class="text-h6 mt-7">Contact</p>
-    <div v-for="(contact, index) in contacts" :key="index">
-      <v-btn :href="contact.to" target="_blank" icon class="pa-8">
-        <v-icon color="accent" large v-text="contact.icon" />
-      </v-btn>
-      <span class="ms-2" v-text="contact.text" />
+    <p class="text-h6 mt-7">Location</p>
+    <div id="map-wrap">
+      <client-only>
+        <l-map :zoom="zoom" :center="centerLatLng">
+          <l-tile-layer :url="tileUrl"></l-tile-layer>
+          <l-marker :lat-lng="centerLatLng">
+            <l-popup>{{ address }}</l-popup>
+          </l-marker>
+        </l-map>
+      </client-only>
     </div>
   </v-container>
 </template>
@@ -46,23 +50,10 @@ export default {
   name: 'AboutPage',
   data() {
     return {
-      contacts: [
-        {
-          to: 'mailto:gooddesire@gmail.com',
-          icon: 'mdi-email-outline',
-          text: 'gooddesire@gmail.com',
-        },
-        {
-          to: 'https://wa.me/+6281396521265',
-          icon: 'mdi-whatsapp',
-          text: '+6281396521265',
-        },
-        {
-          to: 'https://instagram.com/gooddesire',
-          icon: 'mdi-instagram',
-          text: '@gooddesire',
-        },
-      ],
+      address: 'Address: Jl. Ir. H. Juanda No. 2, Gambir, DKI Jakarta',
+      zoom: 13,
+      centerLatLng: [-6.167061, 106.82451],
+      tileUrl: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     }
   },
   head: {
@@ -70,3 +61,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+#map-wrap {
+  height: 350px;
+  width: 350px;
+}
+</style>

@@ -1,31 +1,30 @@
 <template>
-  <BaseLoading v-if="$apollo.loading" />
-  <v-container v-else>
-    <v-row justify="space-around">
+  <v-container>
+    <DetailLoading v-if="$apollo.loading" />
+    <v-row v-else justify="space-around">
       <v-col cols="12" md="11">
         <h4
           class="text-center text-md-h4 text-h5 font-weight-bold my-4"
           v-text="productDetail.name"
         />
         <div class="text-center mb-4">
-          <div class="d-flex justify-center align-center mt-2">
-            <v-rating
-              class="mr-2"
-              color="warning"
-              background-color="grey lighten-1"
-              half-increments
-              length="5"
-              readonly
-              dense
-              size="20"
-              :value="productDetail.reviews_aggregate.aggregate.avg.rating"
-            ></v-rating>
-            <span
-              >({{
-                productDetail.reviews_aggregate.aggregate.count
-              }}
-              Review)</span
-            >
+          <div v-if="sold" class="d-flex justify-center align-center mt-2">
+            <div v-if="ratingProduct.value" class="d-flex">
+              <v-rating
+                class="mr-2"
+                color="warning"
+                background-color="grey lighten-1"
+                half-increments
+                length="5"
+                readonly
+                dense
+                size="20"
+                :value="ratingProduct.value"
+              ></v-rating>
+              <span>({{ ratingProduct.count }} Review)</span>
+              <v-divider vertical class="mx-2" />
+            </div>
+            <span>Sold {{ sold }}</span>
           </div>
         </div>
         <h5
@@ -71,11 +70,11 @@
                 : `Stock: ${productDetail.stock}`
             }}
           </p>
-          <p class="mt-5 mb-4">Weight: {{ productDetail.weight }}</p>
+          <p class="mt-5 mb-4">Weight: {{ productDetail.weight }} g</p>
         </div>
         <div class="mt-14">
           <div v-if="productDetail.reviews.length">
-            <h5 class="text-md-h5 mb-4">Review</h5>
+            <h5 class="text-h5 mb-4">Review</h5>
             <v-card
               v-for="review in productDetail.reviews"
               :key="review.id"
@@ -125,11 +124,11 @@
               <v-textarea
                 v-model="reviewDescription"
                 label="Review"
-                color="primary"
+                color="accent"
                 outlined
               ></v-textarea>
               <v-btn
-                color="primary"
+                color="accent"
                 text
                 :disabled="!reviewDescription || !rating"
                 @click="submitReview"
@@ -292,6 +291,15 @@ export default {
     title() {
       if (!this.productDetail) return 'Product Detail'
       return this.productDetail.name
+    },
+    ratingProduct() {
+      return {
+        value: this.productDetail.reviews_aggregate.aggregate.avg.rating,
+        count: this.productDetail.reviews_aggregate.aggregate.count,
+      }
+    },
+    sold() {
+      return this.productDetail.order_items_aggregate.aggregate.count
     },
   },
   methods: {

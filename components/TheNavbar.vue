@@ -76,6 +76,9 @@ export default {
         updateQuery: (_, { subscriptionData }) => {
           return { cart: subscriptionData.data.cart }
         },
+        skip() {
+          return this.$route.name === 'checkout'
+        },
       },
       skip() {
         return !this.$auth.loggedIn

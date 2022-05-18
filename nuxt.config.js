@@ -23,7 +23,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/persistedstate.js',
-    '~/plugins/formatter.js',
+    '~/plugins/helpers.js',
     '~/plugins/swal.js',
   ],
 
@@ -52,6 +52,8 @@ export default {
     '@nuxtjs/apollo',
     // https://www.npmjs.com/package/vue-sweetalert2
     'vue-sweetalert2/nuxt/no-css',
+    // https://www.npmjs.com/package/nuxt-leaflet
+    'nuxt-leaflet',
   ],
 
   serverMiddleware: {

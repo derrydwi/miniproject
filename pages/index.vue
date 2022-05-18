@@ -1,9 +1,8 @@
 <template>
-  <BaseLoading v-if="$apollo.loading" />
-  <div v-else>
+  <div>
     <HomeCarousel />
     <v-container :class="$vuetify.breakpoint.mdAndDown && 'pa-0'">
-      <div v-for="category in categoryName" :key="category">
+      <div v-for="category in categories" :key="category">
         <ProductSlider :category="category" />
       </div>
     </v-container>
@@ -13,13 +12,13 @@
 <script>
 export default {
   name: 'ProductPage',
-  data() {
-    return {
-      categoryName: ['electronic', 'fashion', 'hobby', 'jewelry'],
-    }
-  },
   head: {
     title: 'Home',
+  },
+  computed: {
+    categories() {
+      return this.$store.getters['category/getCategories']
+    },
   },
 }
 </script>
