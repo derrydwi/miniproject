@@ -1,7 +1,6 @@
 const { Router } = require('express')
 const router = Router()
 const axios = require('axios')
-require('dotenv').config()
 
 const key = process.env.RAJA_ONGKIR_API_KEY
 

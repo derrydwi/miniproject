@@ -59,18 +59,18 @@ export default {
   computed: {
     page: {
       get() {
-        return this.$store.getters['product/getPage']
+        return this.$store.getters['order/getPage']
       },
       set(value) {
-        this.$store.dispatch('product/savePage', value)
+        this.$store.dispatch('order/savePage', value)
       },
     },
     hasMore: {
       get() {
-        return this.$store.getters['product/getHasMore']
+        return this.$store.getters['order/getHasMore']
       },
       set(value) {
-        this.$store.dispatch('product/saveHasMore', value)
+        this.$store.dispatch('order/saveHasMore', value)
       },
     },
   },

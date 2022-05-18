@@ -16,7 +16,7 @@ export const insertOrderItem = gql`
     ) {
       affected_rows
     }
-    delete_cart(where: {}) {
+    delete_cart(where: { id: { _in: $_in } }) {
       affected_rows
     }
   }

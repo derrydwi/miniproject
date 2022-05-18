@@ -28,7 +28,7 @@
         ><v-icon>mdi-delete-outline</v-icon></v-btn
       >
       <v-btn
-        color="primary"
+        color="accent"
         icon
         :disabled="quantity === 1 || quantity > cartItem.product.stock"
         @click.prevent="changeStockHandler('decrement')"
@@ -37,7 +37,7 @@
       <v-text-field
         v-model.number="quantity"
         type="number"
-        color="primary"
+        color="accent"
         class="input-quantity centered-input mt-n2"
         style="max-width: 120px"
         dense
@@ -46,7 +46,7 @@
         @change="changeStockHandler"
       ></v-text-field>
       <v-btn
-        color="primary"
+        color="accent"
         icon
         :disabled="quantity >= cartItem.product.stock"
         @click.prevent="changeStockHandler('increment')"

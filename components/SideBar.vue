@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-list v-if="$auth.loggedIn && !$apollo.loading">
+  <v-list>
+    <div v-if="$auth.loggedIn && !$apollo.loading">
       <v-list-item>
         <v-list-item-avatar>
           <v-img :src="user.picture" />
@@ -30,54 +30,50 @@
           </v-list-item-content>
         </v-list-item>
       </v-list-group>
-    </v-list>
-    <v-divider />
-    <v-list>
-      <div
-        v-for="(item, index) in $auth.loggedIn
-          ? itemsLoggedIn
-          : itemsNotLoggedIn"
-        :key="index"
+      <v-divider class="my-2" />
+    </div>
+    <div
+      v-for="(item, index) in $auth.loggedIn ? itemsLoggedIn : itemsNotLoggedIn"
+      :key="index"
+    >
+      <v-list-group
+        v-if="index === 1"
+        prepend-icon="mdi-view-dashboard"
+        color="undefined"
+        no-action
       >
-        <v-list-group
-          v-if="index === 1"
-          prepend-icon="mdi-view-dashboard"
-          color="undefined"
-          no-action
-        >
-          <template #activator>
-            <v-list-item-title class="text-capitalize"
-              >Category</v-list-item-title
-            >
-          </template>
-          <v-list-item
-            v-for="category in categoryName"
-            :key="category"
-            :to="{ name: 'category-name', params: { name: category } }"
+        <template #activator>
+          <v-list-item-title class="text-capitalize"
+            >Category</v-list-item-title
           >
-            <v-list-item-content>
-              <v-list-item-title class="text-capitalize" v-text="category" />
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-        <v-list-item v-else :to="item.to" router exact>
-          <v-list-item-action>
-            <v-icon v-text="item.icon" />
-          </v-list-item-action>
+        </template>
+        <v-list-item
+          v-for="category in categories"
+          :key="category"
+          :to="{ name: 'category-name', params: { name: category } }"
+        >
           <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
+            <v-list-item-title class="text-capitalize" v-text="category" />
           </v-list-item-content>
         </v-list-item>
-      </div>
-    </v-list>
-  </div>
+      </v-list-group>
+      <v-list-item v-else :to="item.to" router exact>
+        <v-list-item-action>
+          <v-icon v-text="item.icon" />
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title v-text="item.title" />
+        </v-list-item-content>
+      </v-list-item>
+    </div>
+  </v-list>
 </template>
 
 <script>
 import { getUser } from '~/graphql/user/queries'
 
 export default {
-  name: 'BaseList',
+  name: 'SideBar',
   apollo: {
     user: {
       query: getUser,
@@ -150,8 +146,12 @@ export default {
           to: '/about',
         },
       ],
-      categoryName: ['electronic', 'fashion', 'hobby', 'jewelry'],
     }
+  },
+  computed: {
+    categories() {
+      return this.$store.getters['category/getCategories']
+    },
   },
 }
 </script>

@@ -23,7 +23,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/persistedstate.js',
-    '~/plugins/formatter.js',
+    '~/plugins/helpers.js',
     '~/plugins/swal.js',
   ],
 

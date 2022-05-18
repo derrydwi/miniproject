@@ -4,11 +4,11 @@ const state = () => ({
     city: [],
     ongkir: [],
   },
-  provinsi: {},
-  kotaKabupaten: {},
-  alamat: '',
-  nama: '',
-  noHp: '',
+  province: {},
+  city: {},
+  address: '',
+  name: '',
+  phoneNumber: '',
   courier: '',
   courierService: {
     service: '',
@@ -21,20 +21,20 @@ const getters = {
   getTujuan: (state) => {
     return state.tujuan
   },
-  getProvinsi: (state) => {
-    return state.provinsi
+  getProvince: (state) => {
+    return state.province
   },
-  getKotaKabupaten: (state) => {
-    return state.kotaKabupaten
+  getCity: (state) => {
+    return state.city
   },
-  getAlamat: (state) => {
-    return state.alamat
+  getAddress: (state) => {
+    return state.address
   },
-  getNama: (state) => {
-    return state.nama
+  getName: (state) => {
+    return state.name
   },
-  getNoHp: (state) => {
-    return state.noHp
+  getPhoneNumber: (state) => {
+    return state.phoneNumber
   },
   getCourier: (state) => {
     return state.courier
@@ -54,20 +54,20 @@ const mutations = {
   DELETE_TUJUAN(state, param) {
     state.tujuan = param
   },
-  SET_PROVINSI(state, param) {
-    state.provinsi = param
+  SET_PROVINCE(state, param) {
+    state.province = param
   },
-  SET_KOTA_KABUPATEN(state, param) {
-    state.kotaKabupaten = param
+  SET_CITY(state, param) {
+    state.city = param
   },
-  SET_ALAMAT(state, param) {
-    state.alamat = param
+  SET_ADDRESS(state, param) {
+    state.address = param
   },
-  SET_NAMA(state, param) {
-    state.nama = param
+  SET_NAME(state, param) {
+    state.name = param
   },
-  SET_NO_HP(state, param) {
-    state.noHp = param
+  SET_PHONE_NUMBER(state, param) {
+    state.phoneNumber = param
   },
   SET_COURIER(state, param) {
     state.courier = param
@@ -81,7 +81,8 @@ const mutations = {
 }
 
 const actions = {
-  fetchWilayah({ commit }, param) {
+  fetchWilayah({ commit, dispatch }, param) {
+    if (param.type === 'city') dispatch('deleteShippingDetail')
     this.$axios
       .$get(`/api/shipping/${param.type}`, {
         params: {
@@ -105,6 +106,7 @@ const actions = {
   },
   fetchOngkir({ commit }, param) {
     commit('SET_TUJUAN', { ongkir: [] })
+    commit('SET_COURIER_SERVICE', { service: '', price: 0 })
     this.$axios
       .$post('/api/shipping/cost', {
         ...param,
@@ -119,29 +121,26 @@ const actions = {
         })
       })
   },
-  deleteTujuan({ commit }) {
-    commit('DELETE_TUJUAN', { province: [], city: [], ongkir: [] })
-  },
   saveCourierService({ commit }, param) {
     commit('SET_COURIER_SERVICE', param)
   },
   deleteCourierService({ commit }) {
     commit('SET_COURIER_SERVICE', { service: '', price: 0 })
   },
-  saveProvinsi({ commit }, param) {
-    commit('SET_PROVINSI', param)
+  saveProvince({ commit }, param) {
+    commit('SET_PROVINCE', param)
   },
-  saveKotaKabupaten({ commit }, param) {
-    commit('SET_KOTA_KABUPATEN', param)
+  saveCity({ commit }, param) {
+    commit('SET_CITY', param)
   },
-  saveAlamat({ commit }, param) {
-    commit('SET_ALAMAT', param)
+  saveAddress({ commit }, param) {
+    commit('SET_ADDRESS', param)
   },
-  saveNama({ commit }, param) {
-    commit('SET_NAMA', param)
+  saveName({ commit }, param) {
+    commit('SET_NAME', param)
   },
-  saveNoHp({ commit }, param) {
-    commit('SET_NO_HP', param)
+  savePhoneNumber({ commit }, param) {
+    commit('SET_PHONE_NUMBER', param)
   },
   saveCourier({ commit }, param) {
     commit('SET_COURIER', param)
@@ -150,13 +149,20 @@ const actions = {
     commit('SET_IS_VALID', param)
   },
   deleteShippingDetail({ commit }) {
-    commit('SET_PROVINSI', {})
-    commit('SET_KOTA_KABUPATEN', {})
-    commit('SET_ALAMAT', '')
-    commit('SET_NAMA', '')
-    commit('SET_NO_HP', '')
+    commit('SET_CITY', {})
+    commit('SET_ADDRESS', '')
     commit('SET_COURIER', '')
     commit('SET_COURIER_SERVICE', { service: '', price: 0 })
+  },
+  deleteAllShippingDetail({ commit }) {
+    commit('SET_PROVINCE', {})
+    commit('SET_CITY', {})
+    commit('SET_ADDRESS', '')
+    commit('SET_NAME', '')
+    commit('SET_PHONE_NUMBER', '')
+    commit('SET_COURIER', '')
+    commit('SET_COURIER_SERVICE', { service: '', price: 0 })
+    commit('DELETE_TUJUAN', { province: [], city: [], ongkir: [] })
   },
 }
 

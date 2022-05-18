@@ -31,6 +31,11 @@ export const getProductDetailGuest = gql`
           picture
         }
       }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
+      }
     }
   }
 `
@@ -67,6 +72,11 @@ export const getProductDetailUser = gql`
       }
       order_items {
         product_id
+      }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
       }
       carts {
         id
@@ -112,6 +122,11 @@ export const subscriptionProductDetail = gql`
       }
       order_items {
         product_id
+      }
+      order_items_aggregate {
+        aggregate {
+          count(columns: id)
+        }
       }
       carts {
         id

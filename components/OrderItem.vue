@@ -135,7 +135,7 @@
             </div>
             <div class="d-flex justify-space-between mb-4">
               <span>Total Price</span>
-              <span class="text-right" v-text="$currency(totalItemPrice)" />
+              <span class="text-right" v-text="$currency(totalPrice)" />
             </div>
             <v-divider class="mb-4" />
             <div class="d-flex justify-space-between">
@@ -157,7 +157,7 @@
         </v-card>
       </v-dialog>
       <v-btn
-        v-if="orderItem.status !== 'SUCCESS'"
+        v-if="orderItem.status === 'PENDING'"
         class="ms-4"
         color="accent"
         depressed
@@ -185,6 +185,7 @@ export default {
     }
   },
   head() {
+    if (window.snap) return
     return {
       script: [
         {
@@ -208,34 +209,13 @@ export default {
       }
     },
     totalItem() {
-      const itemQuantity = this.orderItem.order_items.map(
-        (item) => item.quantity
-      )
-      const totalItem = itemQuantity.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        0
-      )
-      return totalItem
+      return this.$totalItem(this.orderItem.order_items)
     },
-    totalItemPrice() {
-      const pricePerItem = this.orderItem.order_items.map(
-        (item) => item.product.price * item.quantity
-      )
-      const totalPrice = pricePerItem.reduce(
-        (prev, current) => prev + current,
-        0
-      )
-      return totalPrice
+    totalPrice() {
+      return this.$totalPrice(this.orderItem.order_items)
     },
     totalWeight() {
-      const weightPerItem = this.orderItem.order_items.map(
-        (item) => item.product.weight * item.quantity
-      )
-      const totalWeight = weightPerItem.reduce(
-        (prev, current) => prev + current,
-        0
-      )
-      return totalWeight
+      return this.$totalWeight(this.orderItem.order_items)
     },
   },
   methods: {

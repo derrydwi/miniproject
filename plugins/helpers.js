@@ -6,7 +6,11 @@ import {
   inv,
   capitalize,
   relativeTime,
-} from '~/utils/formatter'
+  totalItem,
+  totalWeight,
+  totalBill,
+  totalPrice,
+} from '~/utils/helpers'
 
 export default function ({ app }, inject) {
   inject('currency', (money) => {
@@ -35,5 +39,21 @@ export default function ({ app }, inject) {
 
   inject('relativeTime', (d1, d2 = new Date()) => {
     return relativeTime(d1, (d2 = new Date()))
+  })
+
+  inject('totalItem', (items) => {
+    return totalItem(items)
+  })
+
+  inject('totalPrice', (items) => {
+    return totalPrice(items)
+  })
+
+  inject('totalBill', (items, shippingPrice) => {
+    return totalBill(items, shippingPrice)
+  })
+
+  inject('totalWeight', (items) => {
+    return totalWeight(items)
   })
 }

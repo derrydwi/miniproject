@@ -74,3 +74,27 @@ export const relativeTime = (d1, d2 = new Date()) => {
     }
   }
 }
+
+export const totalItem = (items) => {
+  const itemQuantity = items.map((item) => item.quantity)
+  const totalItem = itemQuantity.reduce((prev, curr) => prev + curr, 0)
+  return totalItem
+}
+
+export const totalPrice = (items) => {
+  const itemPrice = items.map((item) => item.product.price * item.quantity)
+  const totalPrice = itemPrice.reduce((prev, curr) => prev + curr, 0)
+  return totalPrice
+}
+
+export const totalBill = (items, shippingPrice) => {
+  const itemPrice = items.map((item) => item.product.price * item.quantity)
+  const totalPrice = itemPrice.reduce((prev, curr) => prev + curr, 0)
+  return totalPrice + shippingPrice
+}
+
+export const totalWeight = (items) => {
+  const itemWeight = items.map((item) => item.product.weight * item.quantity)
+  const totalWeight = itemWeight.reduce((prev, curr) => prev + curr, 0)
+  return totalWeight
+}
