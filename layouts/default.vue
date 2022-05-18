@@ -6,8 +6,8 @@
     <TheNavbar @drawer-toggle="drawerToggle" />
     <v-main>
       <Nuxt />
-      <TheFooter />
     </v-main>
+    <TheFooter />
   </v-app>
 </template>
 
