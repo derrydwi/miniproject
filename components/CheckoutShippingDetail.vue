@@ -10,50 +10,52 @@
         <v-row>
           <v-col cols="12" sm="6" class="ps-0">
             <v-text-field
-              v-model="nama"
-              label="Nama"
+              v-model="name"
+              label="Name"
               outlined
-              :rules="rules.namaRules"
+              :rules="rules.nameRules"
               color="accent"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="6" class="pe-0">
             <v-text-field
-              v-model="noHp"
+              v-model="phoneNumber"
               class="input-no-hp"
-              label="No. Hp"
+              label="Phone Number"
               outlined
               :counter="13"
-              :rules="[rules.noHpRules]"
-              :disabled="!nama"
+              :rules="[rules.phoneNumberRules]"
+              :disabled="!name"
               color="accent"
             ></v-text-field>
           </v-col>
         </v-row>
       </v-container>
       <v-autocomplete
-        v-model="provinsi"
+        v-model="province"
         :items="tujuan.province"
         item-value="province_id"
         item-text="province"
         return-object
-        :rules="rules.provinsiRules"
+        :rules="rules.provinceRules"
         :disabled="
-          noHp.length < 12 || noHp.length > 13 || !tujuan.province.length
+          phoneNumber.length < 12 ||
+          phoneNumber.length > 13 ||
+          !tujuan.province.length
         "
-        label="Provinsi"
+        label="Province"
         outlined
         color="accent"
       ></v-autocomplete>
       <v-autocomplete
-        v-model="kotaKabupaten"
+        v-model="city"
         :items="tujuan.city"
         item-value="city_id"
         item-text="city_name"
         return-object
-        :rules="rules.kotaKabupatenRules"
+        :rules="rules.cityRules"
         :disabled="!tujuan.city.length"
-        label="Kota / Kabupaten"
+        label="City"
         outlined
         color="accent"
       >
@@ -65,20 +67,20 @@
         </template></v-autocomplete
       >
       <v-textarea
-        v-model="alamat"
-        label="Alamat"
+        v-model="address"
+        label="Address"
         outlined
-        :rules="rules.alamatRules"
-        :disabled="!kotaKabupaten.city_name"
+        :rules="rules.addressRules"
+        :disabled="!city.city_name"
         color="accent"
       ></v-textarea>
       <v-radio-group
         v-model="courier"
         :rules="rules.courierRules"
-        :disabled="!alamat"
+        :disabled="!address"
         class="mt-0"
       >
-        <p>Pilih Kurir</p>
+        <p>Select Courier</p>
         <v-radio
           v-for="item in courierItems"
           :key="item"
@@ -92,7 +94,7 @@
           v-model="courierService"
           :rules="rules.courierServiceRules"
         >
-          <p>Pilih Layanan</p>
+          <p>Select Service</p>
           <v-radio
             v-for="(ongkirItem, index) in tujuan.ongkir"
             :key="index"
@@ -132,44 +134,44 @@ export default {
     tujuan() {
       return this.$store.getters['checkout/getTujuan']
     },
-    nama: {
+    name: {
       get() {
-        return this.$store.getters['checkout/getNama']
+        return this.$store.getters['checkout/getName']
       },
       set(value) {
-        this.$store.dispatch('checkout/saveNama', value)
+        this.$store.dispatch('checkout/saveName', value)
       },
     },
-    noHp: {
+    phoneNumber: {
       get() {
-        return this.$store.getters['checkout/getNoHp']
+        return this.$store.getters['checkout/getPhoneNumber']
       },
       set(value) {
-        this.$store.dispatch('checkout/saveNoHp', value)
+        this.$store.dispatch('checkout/savePhoneNumber', value)
       },
     },
-    provinsi: {
+    province: {
       get() {
-        return this.$store.getters['checkout/getProvinsi']
+        return this.$store.getters['checkout/getProvince']
       },
       set(value) {
-        this.$store.dispatch('checkout/saveProvinsi', value)
+        this.$store.dispatch('checkout/saveProvince', value)
       },
     },
-    kotaKabupaten: {
+    city: {
       get() {
-        return this.$store.getters['checkout/getKotaKabupaten']
+        return this.$store.getters['checkout/getCity']
       },
       set(value) {
-        this.$store.dispatch('checkout/saveKotaKabupaten', value)
+        this.$store.dispatch('checkout/saveCity', value)
       },
     },
-    alamat: {
+    address: {
       get() {
-        return this.$store.getters['checkout/getAlamat']
+        return this.$store.getters['checkout/getAddress']
       },
       set(value) {
-        this.$store.dispatch('checkout/saveAlamat', value)
+        this.$store.dispatch('checkout/saveAddress', value)
       },
     },
     courier: {
@@ -198,53 +200,36 @@ export default {
     },
   },
   watch: {
-    provinsi() {
-      if (this.provinsi.province_id) {
-        this.$store.dispatch('checkout/fetchWilayah', {
-          type: 'city',
-          param: 'province',
-          id: this.provinsi.province_id,
-        })
-      }
-      this.$store.dispatch('checkout/saveKotaKabupaten', {})
-      this.$store.dispatch('checkout/saveAlamat', '')
-      this.$store.dispatch('checkout/saveCourier', '')
-      this.$store.dispatch('checkout/deleteCourierService')
+    province() {
+      this.fetchWilayah()
     },
     courier() {
       this.fetchOngkir()
     },
-    kotaKabupaten() {
-      this.fetchOngkir()
-    },
   },
   created() {
-    this.$store.dispatch('checkout/deleteShippingDetail')
-    this.$store.dispatch('checkout/deleteTujuan')
+    this.$store.dispatch('checkout/deleteAllShippingDetail')
   },
   mounted() {
     this.$store.dispatch('checkout/fetchWilayah', { type: 'province' })
   },
   methods: {
+    fetchWilayah() {
+      if (!this.province.province_id) return
+      this.$store.dispatch('checkout/fetchWilayah', {
+        type: 'city',
+        param: 'province',
+        id: this.province.province_id,
+      })
+    },
     fetchOngkir() {
-      if (this.kotaKabupaten.city_id && this.courier) {
-        this.$store.dispatch('checkout/fetchOngkir', {
-          /*
-          STORE LOCATION (ORIGIN)
-          "city_id": "152",
-          "province_id": "6",
-          "province": "DKI Jakarta",
-          "type": "Kota",
-          "city_name": "Jakarta Pusat",
-          "postal_code": "10540"
-          */
-          origin: 152,
-          destination: this.kotaKabupaten.city_id,
-          weight: this.totalWeight,
-          courier: this.courier,
-        })
-        this.$store.dispatch('checkout/deleteCourierService')
-      }
+      if (!this.city.city_id && !this.courier) return
+      this.$store.dispatch('checkout/fetchOngkir', {
+        origin: 152,
+        destination: this.city.city_id,
+        weight: this.totalWeight,
+        courier: this.courier,
+      })
     },
   },
 }

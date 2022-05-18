@@ -50,8 +50,8 @@ router.post('/payment/pay', function (req, res, next) {
           res.json(err)
         })
     })
-    .catch((e) => {
-      res.send(e.message)
+    .catch((err) => {
+      res.send(err.message)
     })
 })
 

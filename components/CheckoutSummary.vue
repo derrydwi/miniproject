@@ -25,7 +25,7 @@
         <span class="text-md-h6 font-weight-bold accent--text">Total Bill</span>
         <span
           class="text-md-h6 font-weight-bold accent--text"
-          v-text="$currency(totalPrice + courierService.price)"
+          v-text="$currency(totalBill)"
         />
       </div>
       <v-btn
@@ -47,6 +47,10 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'CartSummary',
   props: {
+    totalBill: {
+      type: Number,
+      default: 0,
+    },
     totalPrice: {
       type: Number,
       default: 0,

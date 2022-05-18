@@ -14,6 +14,7 @@
       <v-col cols="12" md="4" class="mx-auto">
         <CheckoutSummary
           :total-price="totalPrice"
+          :total-bill="totalBill"
           :total-item="totalItem"
           :total-weight="totalWeight"
           @make-order="makeOrder"
@@ -25,7 +26,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getCart, subscriptionCart } from '~/graphql/cart/queries'
+import { getCart } from '~/graphql/cart/queries'
 import { insertOrder } from '~/graphql/order/queries'
 import { insertOrderItem } from '~/graphql/orderItem/queries'
 
@@ -35,12 +36,6 @@ export default {
   apollo: {
     cart: {
       query: getCart,
-      subscribeToMore: {
-        document: subscriptionCart,
-        updateQuery: (_, { subscriptionData }) => {
-          return { cart: subscriptionData.data.cart }
-        },
-      },
     },
   },
   head: {
@@ -48,40 +43,24 @@ export default {
   },
   computed: {
     ...mapGetters('checkout', {
-      alamat: 'getAlamat',
-      kotaKabupaten: 'getKotaKabupaten',
-      provinsi: 'getProvinsi',
-      nama: 'getNama',
-      noHp: 'getNoHp',
+      address: 'getAddress',
+      city: 'getCity',
+      province: 'getProvince',
+      name: 'getName',
+      phoneNumber: 'getPhoneNumber',
       courierService: 'getCourierService',
     }),
+    totalBill() {
+      return this.$totalBill(this.cart, this.courierService.price)
+    },
     totalPrice() {
-      const pricePerItem = this.cart.map(
-        (item) => item.product.price * item.quantity
-      )
-      const totalPrice = pricePerItem.reduce(
-        (prev, current) => prev + current,
-        0
-      )
-      return totalPrice + this.courierService.price
+      return this.$totalPrice(this.cart)
     },
     totalItem() {
-      const itemQuantity = this.cart.map((item) => item.quantity)
-      const totalItem = itemQuantity.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        0
-      )
-      return totalItem
+      return this.$totalItem(this.cart)
     },
     totalWeight() {
-      const weightPerItem = this.cart.map(
-        (item) => item.product.weight * item.quantity
-      )
-      const totalWeight = weightPerItem.reduce(
-        (prev, current) => prev + current,
-        0
-      )
-      return totalWeight
+      return this.$totalWeight(this.cart)
     },
   },
   methods: {
@@ -102,11 +81,11 @@ export default {
         .mutate({
           mutation: insertOrder,
           variables: {
-            nama: this.nama,
-            no_hp: this.noHp,
-            alamat: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
+            nama: this.name,
+            no_hp: this.phoneNumber,
+            alamat: `${this.address}, ${this.city.type} ${this.city.city_name}, ${this.province.province}`,
             shipping_price: this.courierService.price,
-            total_price: this.totalPrice,
+            total_price: this.totalBill,
             status: 'PENDING',
             response_midtrans: null,
           },
@@ -133,12 +112,14 @@ export default {
         id: item.product.id,
         stock: item.product.stock - item.quantity,
       }))
+      const cartId = this.cart.map((item) => item.id)
       this.$apollo
         .mutate({
           mutation: insertOrderItem,
           variables: {
             objectsOrder: orderItem,
             objectsProduct: newStock,
+            _in: cartId,
           },
         })
         .then(() => {
@@ -168,21 +149,21 @@ export default {
       const body = {
         transaction_details: {
           order_id: orderId,
-          gross_amount: this.totalPrice,
+          gross_amount: this.totalBill,
         },
         item_details: [...item, ongkir],
         credit_card: {
           secure: true,
         },
         customer_details: {
-          first_name: this.nama,
+          first_name: this.name,
           email: this.$auth.user.email,
-          phone: this.noHp,
+          phone: this.phoneNumber,
           shipping_address: {
-            first_name: this.nama,
+            first_name: this.name,
             email: this.$auth.user.email,
-            phone: this.noHp,
-            address: `${this.alamat}, ${this.kotaKabupaten.type} ${this.kotaKabupaten.city_name}, ${this.provinsi.province}`,
+            phone: this.phoneNumber,
+            address: `${this.address}, ${this.city.type} ${this.city.city_name}, ${this.province.province}`,
           },
         },
       }

@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { getCart, subscriptionCart, deleteCart } from '~/graphql/cart/queries'
+import { getCart, deleteCart } from '~/graphql/cart/queries'
 
 export default {
   name: 'CartPage',
@@ -49,12 +49,6 @@ export default {
   apollo: {
     cart: {
       query: getCart,
-      subscribeToMore: {
-        document: subscriptionCart,
-        updateQuery: (_, { subscriptionData }) => {
-          return { cart: subscriptionData.data.cart }
-        },
-      },
     },
   },
   data() {
@@ -67,22 +61,10 @@ export default {
   },
   computed: {
     totalPrice() {
-      const pricePerItem = this.cart.map(
-        (item) => item.product.price * item.quantity
-      )
-      const total = pricePerItem.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        0
-      )
-      return total
+      return this.$totalPrice(this.cart)
     },
     totalItem() {
-      const itemQuantity = this.cart.map((item) => item.quantity)
-      const totalItem = itemQuantity.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        0
-      )
-      return totalItem
+      return this.$totalItem(this.cart)
     },
   },
   methods: {

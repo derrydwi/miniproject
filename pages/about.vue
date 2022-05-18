@@ -31,12 +31,12 @@
       Good Desire is a e-commerce application that is able to connect sellers
       and buyers efficiently and easily.
     </p>
-    <p class="text-h6 mt-7">Contact</p>
-    <div v-for="(contact, index) in contacts" :key="index">
-      <v-btn :href="contact.to" target="_blank" icon class="pa-8">
-        <v-icon color="accent" large v-text="contact.icon" />
+    <p class="text-h6 mt-7">Location</p>
+    <div class="d-block d-md-flex justify-start align-center">
+      <v-btn :href="location.to" target="_blank" icon class="pa-8">
+        <v-icon color="accent" large v-text="location.icon" />
       </v-btn>
-      <span class="ms-2" v-text="contact.text" />
+      <span class="ms-2" v-text="location.text" />
     </div>
   </v-container>
 </template>
@@ -46,23 +46,11 @@ export default {
   name: 'AboutPage',
   data() {
     return {
-      contacts: [
-        {
-          to: 'mailto:gooddesire@gmail.com',
-          icon: 'mdi-email-outline',
-          text: 'gooddesire@gmail.com',
-        },
-        {
-          to: 'https://wa.me/+6281396521265',
-          icon: 'mdi-whatsapp',
-          text: '+6281396521265',
-        },
-        {
-          to: 'https://instagram.com/gooddesire',
-          icon: 'mdi-instagram',
-          text: '@gooddesire',
-        },
-      ],
+      location: {
+        to: 'https://goo.gl/maps/rtcYHtFKN7MgUDjh7',
+        icon: 'mdi-map-marker-outline',
+        text: 'Jl. Ir. H. Juanda No. 2, Gambir, DKI Jakarta',
+      },
     }
   },
   head: {

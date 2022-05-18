@@ -7,67 +7,7 @@
         <v-row class="my-3">
           <template v-for="productItem in product">
             <v-fade-transition :key="productItem.id">
-              <v-col cols="12" md="4">
-                <v-card
-                  :to="{ name: 'product-id', params: { id: productItem.id } }"
-                  class="el"
-                >
-                  <v-img :src="productItem.image_url" height="200" contain>
-                    <template #placeholder>
-                      <v-skeleton-loader
-                        class="mx-auto"
-                        type="image@2"
-                      ></v-skeleton-loader>
-                    </template>
-                  </v-img>
-                  <v-card-title class="text-md-body-1 font-weight-bold mb-2">{{
-                    productItem.name.length > 25
-                      ? productItem.name.substring(0, 25) + '...'
-                      : productItem.name
-                  }}</v-card-title>
-                  <v-card-subtitle
-                    class="accent--text pb-3 font-weight-bold"
-                    v-text="$currency(productItem.price)"
-                  />
-                  <v-card-text>
-                    <v-chip
-                      outlined
-                      label
-                      small
-                      class="ms-n1 mb-3"
-                      v-text="productItem.category"
-                    />
-                    <div class="d-flex mb-3">
-                      <v-rating
-                        color="warning"
-                        background-color="grey lighten-1"
-                        class="ms-n1 me-1"
-                        length="1"
-                        readonly
-                        dense
-                        size="20"
-                        :value="1"
-                      ></v-rating>
-                      <span
-                        >{{
-                          $rating(
-                            productItem.reviews_aggregate.aggregate.avg.rating
-                          )
-                        }}
-                        ({{
-                          productItem.reviews_aggregate.aggregate.count
-                        }}
-                        Review)</span
-                      >
-                    </div>
-                    <p class="mb-2">
-                      Stock
-                      {{ productItem.stock }} | Sold
-                      {{ productItem.order_items_aggregate.aggregate.count }}
-                    </p>
-                  </v-card-text>
-                </v-card>
-              </v-col>
+              <SearchItem :product-item="productItem" />
             </v-fade-transition>
           </template>
         </v-row>
@@ -83,7 +23,6 @@ export default {
   name: 'SearchPage',
   apollo: {
     product: {
-      prefetch: true,
       query: getProductByName,
       variables() {
         return { _ilike: `%${this.$route.query.q}%` }

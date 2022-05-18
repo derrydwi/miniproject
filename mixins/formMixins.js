@@ -2,18 +2,16 @@ export default {
   data() {
     return {
       rules: {
-        provinsiRules: [
+        provinceRules: [
           (v) =>
-            !!Object.getOwnPropertyNames(v).length || 'Provinsi is required',
+            !!Object.getOwnPropertyNames(v).length || 'Province is required',
         ],
-        kotaKabupatenRules: [
-          (v) =>
-            !!Object.getOwnPropertyNames(v).length ||
-            'Kota / Kabupaten is required',
+        cityRules: [
+          (v) => !!Object.getOwnPropertyNames(v).length || 'City is required',
         ],
-        namaRules: [(v) => !!v || 'Nama is required'],
-        alamatRules: [(v) => !!v || 'Alamat is required'],
-        noHpRules: (v) => {
+        nameRules: [(v) => !!v || 'Name is required'],
+        addressRules: [(v) => !!v || 'Address is required'],
+        phoneNumberRules: (v) => {
           if (!isNaN(parseInt(v)) && v.length > 11 && v.length < 14) return true
           return `Phone number must consist of 12 - 13 digits`
         },
