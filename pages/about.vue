@@ -32,11 +32,15 @@
       and buyers efficiently and easily.
     </p>
     <p class="text-h6 mt-7">Location</p>
-    <div class="d-block d-md-flex justify-start align-center">
-      <v-btn :href="location.to" target="_blank" icon class="pa-8">
-        <v-icon color="accent" large v-text="location.icon" />
-      </v-btn>
-      <span class="ms-2" v-text="location.text" />
+    <div id="map-wrap">
+      <client-only>
+        <l-map :zoom="zoom" :center="centerLatLng">
+          <l-tile-layer :url="tileUrl"></l-tile-layer>
+          <l-marker :lat-lng="centerLatLng">
+            <l-popup>{{ address }}</l-popup>
+          </l-marker>
+        </l-map>
+      </client-only>
     </div>
   </v-container>
 </template>
@@ -46,11 +50,10 @@ export default {
   name: 'AboutPage',
   data() {
     return {
-      location: {
-        to: 'https://goo.gl/maps/rtcYHtFKN7MgUDjh7',
-        icon: 'mdi-map-marker-outline',
-        text: 'Jl. Ir. H. Juanda No. 2, Gambir, DKI Jakarta',
-      },
+      address: 'Address: Jl. Ir. H. Juanda No. 2, Gambir, DKI Jakarta',
+      zoom: 13,
+      centerLatLng: [-6.167061, 106.82451],
+      tileUrl: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     }
   },
   head: {
@@ -58,3 +61,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+#map-wrap {
+  height: 350px;
+  width: 350px;
+}
+</style>

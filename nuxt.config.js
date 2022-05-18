@@ -52,6 +52,8 @@ export default {
     '@nuxtjs/apollo',
     // https://www.npmjs.com/package/vue-sweetalert2
     'vue-sweetalert2/nuxt/no-css',
+    // https://www.npmjs.com/package/nuxt-leaflet
+    'nuxt-leaflet',
   ],
 
   serverMiddleware: {
