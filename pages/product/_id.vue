@@ -239,12 +239,18 @@ export default {
           : getProductDetailGuest
       },
       variables() {
-        return { id: this.$route.params.id }
+        return {
+          id: this.$route.params.id,
+          ...(this.$auth.loggedIn && { _eq: this.$auth.user.sub }),
+        }
       },
       subscribeToMore: {
         document: subscriptionProductDetail,
         variables() {
-          return { id: this.$route.params.id }
+          return {
+            id: this.$route.params.id,
+            ...(this.$auth.loggedIn && { _eq: this.$auth.user.sub }),
+          }
         },
         updateQuery: (_, { subscriptionData }) => {
           return {
