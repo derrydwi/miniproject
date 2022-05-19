@@ -41,7 +41,7 @@ export const getProductDetailGuest = gql`
 `
 
 export const getProductDetailUser = gql`
-  query getProductDetail($id: Int!) {
+  query getProductDetail($id: Int!, $_eq: String!) {
     productDetail: product_by_pk(id: $id) {
       id
       name
@@ -70,7 +70,7 @@ export const getProductDetailUser = gql`
           picture
         }
       }
-      order_items {
+      order_items(where: { user_id: { _eq: $_eq } }) {
         product_id
       }
       order_items_aggregate {
@@ -91,7 +91,7 @@ export const getProductDetailUser = gql`
 `
 
 export const subscriptionProductDetail = gql`
-  subscription subscriptionProductDetail($id: Int!) {
+  subscription subscriptionProductDetail($id: Int!, $_eq: String!) {
     productDetail: product_by_pk(id: $id) {
       id
       name
@@ -120,7 +120,7 @@ export const subscriptionProductDetail = gql`
           picture
         }
       }
-      order_items {
+      order_items(where: { user_id: { _eq: $_eq } }) {
         product_id
       }
       order_items_aggregate {
