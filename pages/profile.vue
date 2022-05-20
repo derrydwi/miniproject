@@ -10,6 +10,7 @@
       <div class="d-flex justify-space-between mx-6">
         <v-img
           :src="user.picture"
+          :alt="user.username"
           class="rounded-circle mb-4 mt-n13"
           max-width="100"
         />

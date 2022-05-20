@@ -9,7 +9,6 @@ export const getCart = gql`
       product {
         id
         name
-        category
         image_url
         price
         stock
@@ -59,7 +58,6 @@ export const subscriptionCart = gql`
       product {
         id
         name
-        category
         image_url
         price
         stock

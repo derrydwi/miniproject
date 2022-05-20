@@ -8,6 +8,7 @@
               v-for="(contact, index) in contacts"
               :key="index"
               :href="contact.to"
+              :aria-label="contact.name"
               target="_blank"
               icon
               class="pa-8"
@@ -42,16 +43,19 @@ export default {
     return {
       contacts: [
         {
+          name: 'email',
           to: 'mailto:gooddesire@gmail.com',
           icon: 'mdi-email-outline',
           text: 'gooddesire@gmail.com',
         },
         {
+          name: 'whatsapp',
           to: 'https://wa.me/+6281396521265',
           icon: 'mdi-whatsapp',
           text: '+6281396521265',
         },
         {
+          name: 'instagram',
           to: 'https://instagram.com/gooddesire',
           icon: 'mdi-instagram',
           text: '@gooddesire',

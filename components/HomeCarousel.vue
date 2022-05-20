@@ -45,7 +45,11 @@
             </v-card>
           </v-col>
           <v-col cols="12" md="5">
-            <v-img :src="productItem.image_url" class="mx-md-8 my-md-0 my-10">
+            <v-img
+              :src="productItem.image_url"
+              :alt="productItem.name"
+              class="mx-md-8 my-md-0 my-10"
+            >
               <template #placeholder>
                 <v-skeleton-loader
                   class="mx-auto"

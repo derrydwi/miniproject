@@ -23,7 +23,7 @@
       class="mb-4"
     >
       <v-list-item-avatar tile size="150">
-        <v-img :src="item.product.image_url" contain>
+        <v-img :src="item.product.image_url" :alt="item.product.name" contain>
           <template #placeholder>
             <v-skeleton-loader
               class="mx-auto"

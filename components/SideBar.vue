@@ -3,7 +3,7 @@
     <div v-if="$auth.loggedIn && !$apollo.loading">
       <v-list-item>
         <v-list-item-avatar>
-          <v-img :src="user.picture" />
+          <v-img :src="user.picture" :alt="user.username" />
         </v-list-item-avatar>
       </v-list-item>
       <v-list-group color="undefined">

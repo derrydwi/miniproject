@@ -4,7 +4,12 @@
     width="300"
     class="el ma-2 mb-md-5 mr-5"
   >
-    <v-img :src="productItem.image_url" height="250" contain>
+    <v-img
+      :src="productItem.image_url"
+      :alt="productItem.name"
+      height="250"
+      contain
+    >
       <template #placeholder>
         <v-skeleton-loader class="mx-auto" type="image@2"></v-skeleton-loader>
       </template>
