@@ -36,6 +36,7 @@
         <div>
           <v-img
             :src="productDetail.image_url"
+            :alt="productDetail.name"
             width="100%"
             height="50vh"
             class="mb-8"
@@ -97,6 +98,7 @@
               <div class="d-flex justify-start align-center mb-4">
                 <v-img
                   :src="review.user.picture"
+                  :alt="review.user.username"
                   max-width="30"
                   class="rounded-circle mr-2"
                 />

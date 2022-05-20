@@ -4,7 +4,12 @@
       class="el"
       :to="{ name: 'product-id', params: { id: savedItem.product.id } }"
     >
-      <v-img :src="savedItem.product.image_url" height="200" contain>
+      <v-img
+        :src="savedItem.product.image_url"
+        :alt="savedItem.product.name"
+        height="200"
+        contain
+      >
         <template #placeholder>
           <v-skeleton-loader class="mx-auto" type="image@2"></v-skeleton-loader>
         </template>
