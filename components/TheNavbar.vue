@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app clipped-left height="70" class="el">
-    <v-app-bar-nav-icon @click="$emit('drawer-toggle')" />
+    <v-app-bar-nav-icon aria-label="sidebar" @click="$emit('drawer-toggle')" />
     <svg
       width="44"
       height="51"
@@ -22,7 +22,7 @@
       >Good Desire</v-toolbar-title
     >
     <v-spacer />
-    <v-btn icon @click="isDark = !isDark">
+    <v-btn aria-label="darkmode" icon @click="isDark = !isDark">
       <v-icon v-text="darkModeIcon" />
     </v-btn>
     <v-badge
@@ -30,9 +30,15 @@
       :content="cart.length"
       overlap
     >
-      <v-btn icon :to="{ name: 'cart' }"><v-icon>mdi-cart</v-icon></v-btn>
+      <v-btn aria-label="cart" icon :to="{ name: 'cart' }"
+        ><v-icon>mdi-cart</v-icon></v-btn
+      >
     </v-badge>
-    <v-btn v-else-if="$auth.loggedIn" icon :to="{ name: 'cart' }"
+    <v-btn
+      v-else-if="$auth.loggedIn"
+      aria-label="cart"
+      icon
+      :to="{ name: 'cart' }"
       ><v-icon>mdi-cart</v-icon></v-btn
     >
     <v-text-field
@@ -50,13 +56,14 @@
       @blur="!query && searchToggle()"
       @keyup.enter="search"
     ></v-text-field>
-    <v-btn v-else icon @click="searchToggle"
+    <v-btn v-else aria-label="search" icon @click="searchToggle"
       ><v-icon>mdi-magnify</v-icon></v-btn
     >
     <v-btn
       v-if="!$auth.loggedIn"
       color="primary"
       class="ms-4"
+      aria-label="login"
       @click="$auth.loginWith('auth0', { params: { prompt: 'login' } })"
       >Login</v-btn
     >

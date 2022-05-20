@@ -70,7 +70,7 @@ export const getProductDetailUser = gql`
           picture
         }
       }
-      order_items(where: { user_id: { _eq: $_eq } }) {
+      order_items(where: { user_id: { _eq: $_eq } }, limit: 1) {
         product_id
       }
       order_items_aggregate {
@@ -78,12 +78,12 @@ export const getProductDetailUser = gql`
           count(columns: id)
         }
       }
-      carts {
+      carts(limit: 1) {
         id
         product_id
         quantity
       }
-      saveds {
+      saveds(limit: 1) {
         id
       }
     }
@@ -120,7 +120,7 @@ export const subscriptionProductDetail = gql`
           picture
         }
       }
-      order_items(where: { user_id: { _eq: $_eq } }) {
+      order_items(where: { user_id: { _eq: $_eq } }, limit: 1) {
         product_id
       }
       order_items_aggregate {
@@ -128,12 +128,12 @@ export const subscriptionProductDetail = gql`
           count(columns: id)
         }
       }
-      carts {
+      carts(limit: 1) {
         id
         product_id
         quantity
       }
-      saveds {
+      saveds(limit: 1) {
         id
       }
     }

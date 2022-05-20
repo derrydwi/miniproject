@@ -8,10 +8,7 @@ export const getSaved = gql`
       product {
         id
         name
-        description
-        category
         image_url
-        stock
         price
         reviews_aggregate {
           aggregate {
@@ -54,10 +51,7 @@ export const subscriptionSaved = gql`
       product {
         id
         name
-        description
-        category
         image_url
-        stock
         price
         reviews_aggregate {
           aggregate {

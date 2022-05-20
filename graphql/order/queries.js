@@ -57,14 +57,6 @@ export const insertOrder = gql`
   }
 `
 
-export const updatePayOrder = gql`
-  mutation updatePayOrder($id: Int!, $status: Boolean!) {
-    update_order_by_pk(pk_columns: { id: $id }, _set: { status: $status }) {
-      id
-    }
-  }
-`
-
 export const subscriptionOrder = gql`
   subscription subscriptionOrder($limit: Int!, $offset: Int!) {
     order(order_by: { id: desc }, limit: $limit, offset: $offset) {

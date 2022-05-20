@@ -2,7 +2,11 @@
   <v-card class="mx-auto pa-4" width="600" outlined>
     <v-list-item>
       <v-list-item-avatar tile size="150">
-        <v-img contain :src="orderItem.product.image_url" />
+        <v-img
+          contain
+          :src="orderItem.product.image_url"
+          :alt="orderItem.product.name"
+        />
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title
